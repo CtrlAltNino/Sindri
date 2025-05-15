@@ -36,8 +36,6 @@
 
 // Third party
 #include <SDL3/SDL.h>
-#include <fmt/core.h>
-#include <fmt/format.h>
 #include <glm/common.hpp>
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>

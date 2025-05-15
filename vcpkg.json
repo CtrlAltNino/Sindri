@@ -5,7 +5,6 @@
   "dependencies": [
     {
       "name": "glad",
-      "platform": "(windows & x64 & static) | (linux & x64)",
       "features": [
         "extensions"
       ]
@@ -22,8 +21,7 @@
       ]
     },
     "stb",
-    "nativefiledialog-extended",
-    "sdl3"
+    "nativefiledialog-extended"
   ],
   "builtin-baseline": "2c7705e70dcfb70e5f726459c3e399bd780bc1fc"
 }

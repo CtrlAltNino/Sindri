@@ -39,7 +39,7 @@ namespace Sindri
       return false;
     }
 
-    SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
+    // SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 
     // SDL3: Third argument is now a const char* driver name (or nullptr)
     m_Renderer = SDL_CreateRenderer(m_Window, nullptr);
