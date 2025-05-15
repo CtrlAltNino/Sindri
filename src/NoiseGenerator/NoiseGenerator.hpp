@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CompositionStack.hpp"
 #include "ProceduralTexture.hpp"
 
 namespace Sindri
@@ -10,6 +11,8 @@ namespace Sindri
     NoiseGenerator() = default;
 
     void
-    FillTexture(TextureSettings settings, ProceduralTexture& texture);
+    FillTexture(CompositionStack&  compositionStack,
+                TextureSettings&   settings,
+                ProceduralTexture& texture);
   };
 }

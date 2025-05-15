@@ -48,11 +48,7 @@ add_subdirectory(src)
 # =======================================
 # ========== Target Properties ==========
 # =======================================
-set_target_properties(${targetName} PROPERTIES VERSION ${PROJECT_VERSION})
-
-set_target_properties(${targetName} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-)
+#set_target_properties(${targetName} PROPERTIES VERSION ${PROJECT_VERSION})
 
 target_compile_options(${targetName} PRIVATE
     $<$<CXX_COMPILER_ID:Clang>:-Wno-unused-command-line-argument>
@@ -95,12 +91,19 @@ target_link_libraries(${targetName} PRIVATE $<IF:$<TARGET_EXISTS:SDL3_image::SDL
 find_package(magic_enum CONFIG REQUIRED)
 target_link_libraries(${targetName} PRIVATE magic_enum::magic_enum)
 
+find_package(Lua REQUIRED)
+target_include_directories(${targetName} PRIVATE ${LUA_INCLUDE_DIR})
+target_link_libraries(${targetName} PRIVATE ${LUA_LIBRARIES})
+
+find_path(SOL2_INCLUDE_DIRS "sol/abort.hpp")
+target_include_directories(${targetName} PRIVATE ${SOL2_INCLUDE_DIRS})
+
 # ===============================================
 # ========== Copy into build directory ==========
 # ===============================================
 
 # Copy files to build folder
-# add_custom_command(TARGET
-# ${targetName}
-# POST_BUILD COMMAND ${CMAKE_COMMAND}
-# -E copy_directory ${CMAKE_SOURCE_DIR}/data $<TARGET_FILE_DIR:${targetName}>/data)
+add_custom_command(TARGET
+${targetName}
+POST_BUILD COMMAND ${CMAKE_COMMAND}
+-E copy_directory ${CMAKE_SOURCE_DIR}/lua $<TARGET_FILE_DIR:${targetName}>/lua)

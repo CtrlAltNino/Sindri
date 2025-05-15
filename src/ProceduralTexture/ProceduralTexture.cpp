@@ -17,28 +17,15 @@ namespace Sindri
     glGenTextures(1, &mTextureId);
 
     GLenum target = 0;
-    GLint  internalFormat = 0;
+    GLint  internalFormat = GL_R32F;
     GLenum glFormat = GL_RED; // single channel
-    GLenum glType = 0;
+    GLenum glType = GL_FLOAT;
 
     switch (mTextureDimension)
     {
       case TextureDimension::Texture1D: target = GL_TEXTURE_1D; break;
       case TextureDimension::Texture2D: target = GL_TEXTURE_2D; break;
       case TextureDimension::Texture3D: target = GL_TEXTURE_3D; break;
-      default: glDeleteTextures(1, &mTextureId); return;
-    }
-
-    switch (mTextureFormat)
-    {
-      case TextureFormat::U8:
-        internalFormat = GL_R8;
-        glType = GL_UNSIGNED_BYTE;
-        break;
-      case TextureFormat::F32:
-        internalFormat = GL_R32F;
-        glType = GL_FLOAT;
-        break;
       default: glDeleteTextures(1, &mTextureId); return;
     }
 
@@ -58,84 +45,33 @@ namespace Sindri
     // Upload data based on dimension and format
     if (mTextureDimension == TextureDimension::Texture1D)
     {
-      if (mTextureFormat == TextureFormat::U8)
-      {
-        glTexImage1D(target,
-                     0,
-                     internalFormat,
-                     mWidth,
-                     0,
-                     glFormat,
-                     glType,
-                     std::get<std::vector<unsigned char>>(mData).data());
-      }
-      else
-      {
-        glTexImage1D(target,
-                     0,
-                     internalFormat,
-                     mWidth,
-                     0,
-                     glFormat,
-                     glType,
-                     std::get<std::vector<float>>(mData).data());
-      }
+      glTexImage1D(
+        target, 0, internalFormat, mWidth, 0, glFormat, glType, mData.data());
     }
     else if (mTextureDimension == TextureDimension::Texture2D)
     {
-      if (mTextureFormat == TextureFormat::U8)
-      {
-        glTexImage2D(target,
-                     0,
-                     internalFormat,
-                     mWidth,
-                     mHeight,
-                     0,
-                     glFormat,
-                     glType,
-                     std::get<std::vector<unsigned char>>(mData).data());
-      }
-      else
-      {
-        glTexImage2D(target,
-                     0,
-                     internalFormat,
-                     mWidth,
-                     mHeight,
-                     0,
-                     glFormat,
-                     glType,
-                     std::get<std::vector<float>>(mData).data());
-      }
+      glTexImage2D(target,
+                   0,
+                   internalFormat,
+                   mWidth,
+                   mHeight,
+                   0,
+                   glFormat,
+                   glType,
+                   mData.data());
     }
     else if (mTextureDimension == TextureDimension::Texture3D)
     {
-      if (mTextureFormat == TextureFormat::U8)
-      {
-        glTexImage3D(target,
-                     0,
-                     internalFormat,
-                     mWidth,
-                     mHeight,
-                     mDepth,
-                     0,
-                     glFormat,
-                     glType,
-                     std::get<std::vector<unsigned char>>(mData).data());
-      }
-      else
-      {
-        glTexImage3D(target,
-                     0,
-                     internalFormat,
-                     mWidth,
-                     mHeight,
-                     mDepth,
-                     0,
-                     glFormat,
-                     glType,
-                     std::get<std::vector<float>>(mData).data());
-      }
+      glTexImage3D(target,
+                   0,
+                   internalFormat,
+                   mWidth,
+                   mHeight,
+                   mDepth,
+                   0,
+                   glFormat,
+                   glType,
+                   mData.data());
     }
 
     glBindTexture(target, 0);

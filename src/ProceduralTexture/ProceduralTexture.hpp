@@ -7,68 +7,46 @@ namespace Sindri
 {
   class ProceduralTexture
   {
+  private:
+    TextureDimension   mTextureDimension;
+    size_t             mWidth = 0;
+    size_t             mHeight = 0;
+    size_t             mDepth = 0;
+    bool               mIsUploaded = false;
+    std::vector<float> mData;
+    GLuint             mTextureId = 0;
+
   public:
-    ProceduralTexture(TextureFormat textureFormat, size_t width)
+    ProceduralTexture(size_t width)
       : mWidth(width)
-      , mTextureFormat(textureFormat)
       , mTextureDimension(TextureDimension::Texture1D)
     {
       size_t count = width;
-      switch (mTextureFormat)
-      {
-        case TextureFormat::U8:
-          mData = std::vector<unsigned char>(count);
-          break;
-        case TextureFormat::F32: mData = std::vector<float>(count); break;
-      }
+      mData = std::vector<float>(count);
     }
 
-    ProceduralTexture(TextureFormat textureFormat, size_t width, size_t height)
+    ProceduralTexture(size_t width, size_t height)
       : mWidth(width)
       , mHeight(height)
-      , mTextureFormat(textureFormat)
       , mTextureDimension(TextureDimension::Texture2D)
     {
       size_t count = width * height;
-      switch (mTextureFormat)
-      {
-        case TextureFormat::U8:
-          mData = std::vector<unsigned char>(count);
-          break;
-        case TextureFormat::F32: mData = std::vector<float>(count); break;
-      }
+      mData = std::vector<float>(count);
     }
 
-    ProceduralTexture(TextureFormat textureFormat,
-                      size_t        width,
-                      size_t        height,
-                      size_t        depth)
+    ProceduralTexture(size_t width, size_t height, size_t depth)
       : mWidth(width)
       , mHeight(height)
-      , mTextureFormat(textureFormat)
       , mTextureDimension(TextureDimension::Texture3D)
     {
       size_t count = width * height;
-      switch (mTextureFormat)
-      {
-        case TextureFormat::U8:
-          mData = std::vector<unsigned char>(count);
-          break;
-        case TextureFormat::F32: mData = std::vector<float>(count); break;
-      }
+      mData = std::vector<float>(count);
     }
 
-    template<typename T>
     auto
-    GetTypedData() -> std::vector<T>&
+    GetData() -> std::vector<float>&
     {
-      return std::get<std::vector<T>>(mData);
-    }
-
-    [[nodiscard]] auto
-    GetFormat() const -> TextureFormat
-    {
-      return mTextureFormat;
+      return mData;
     }
 
     void
@@ -87,15 +65,5 @@ namespace Sindri
     {
       return mIsUploaded;
     }
-
-  private:
-    TextureFormat    mTextureFormat;
-    TextureDimension mTextureDimension;
-    size_t           mWidth = 0;
-    size_t           mHeight = 0;
-    size_t           mDepth = 0;
-    bool             mIsUploaded = false;
-    std::variant<std::vector<unsigned char>, std::vector<float>> mData;
-    GLuint                                                       mTextureId = 0;
   };
 }

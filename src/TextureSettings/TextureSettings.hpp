@@ -15,7 +15,7 @@ namespace Sindri
     TIFF
   };
 
-  enum class TextureFormat : uint8_t
+  enum class BitDepth : uint8_t
   {
     U8, // unsigned 8-bit
     // F16, // half float
@@ -26,7 +26,7 @@ namespace Sindri
   {
     TextureDimension mDimensions = TextureDimension::Texture2D;
     OutputFormat     mOutputFormat = OutputFormat::PNG;
-    TextureFormat    mTextureFormat = TextureFormat::U8;
+    BitDepth         mBitDepth = BitDepth::U8;
     glm::ivec3       mResolution = glm::ivec3(512, 512, 512);
     uint32_t         mSeed = 0;
   };

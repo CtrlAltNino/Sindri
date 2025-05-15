@@ -22,6 +22,7 @@ namespace Sindri
     }
 
     mTextureSettings.mSeed = mRandomDevice();
+    mScripts = GetLuaScripts();
   }
 
   SindriApp::~SindriApp()
@@ -180,7 +181,7 @@ namespace Sindri
 
     // Create a full-screen ImGui window
     ImGui::Begin("SettingsWindow", nullptr, windowFlags);
-    ImGui::Text("Texture Settings");
+    ImGui::Text("General");
     ImGui::Separator();
 
     ImGui::Text("FPS: %.1f", mFps);
@@ -189,6 +190,10 @@ namespace Sindri
     {
       SDL_GL_SetSwapInterval(mVsync ? 1 : 0);
     }
+
+    ImGui::Spacing();
+    ImGui::Text("Options");
+    ImGui::Separator();
 
     ImGui::InputScalar("Seed", ImGuiDataType_U32, &mTextureSettings.mSeed);
 
@@ -200,7 +205,7 @@ namespace Sindri
 
     ComboEnum("Texture Dimension", mTextureSettings.mDimensions);
     ComboEnum("Output Format", mTextureSettings.mOutputFormat);
-    ComboEnum("Texture Format", mTextureSettings.mTextureFormat);
+    ComboEnum("Texture Format", mTextureSettings.mBitDepth);
 
     switch (mTextureSettings.mDimensions)
     {
@@ -219,9 +224,50 @@ namespace Sindri
         break;
     }
 
+    ImGui::Spacing();
+    ImGui::Text("Lua Scripts");
+    ImGui::Separator();
+
+    LuaScriptSelector();
+
+    ImGui::Spacing();
+    ImGui::Text("Stack");
+    ImGui::Separator();
+
+    // Composition
+    {
+      int index = 0;
+      for (auto& stackEntry : mCompositionStack.GetEntries())
+      {
+        ImGui::PushID(index); // Start a unique ID scope
+        if (ImGui::CollapsingHeader(std::string(std::to_string(index + 1) +
+                                                ". " + stackEntry.GetName())
+                                      .c_str()))
+        {
+          stackEntry.RenderSettings();
+          ImGui::Spacing();
+        }
+        ImGui::PopID();
+        index++;
+      }
+    }
+
+    if (mCompositionStack.GetEntries().empty())
+    {
+      ImGui::BeginDisabled();
+    }
+
+    ImGui::Spacing();
+    ImGui::Separator();
+
     if (ImGui::Button("Generate"))
     {
       GenerateTexture();
+    }
+
+    if (mCompositionStack.GetEntries().empty())
+    {
+      ImGui::EndDisabled();
     }
 
     // You can add buttons, sliders, etc. here
@@ -254,11 +300,71 @@ namespace Sindri
   void
   SindriApp::GenerateTexture()
   {
-    mTexture =
-      std::make_shared<ProceduralTexture>(mTextureSettings.mTextureFormat,
-                                          mTextureSettings.mResolution.x,
-                                          mTextureSettings.mResolution.y);
+    mTexture = std::make_shared<ProceduralTexture>(
+      mTextureSettings.mResolution.x, mTextureSettings.mResolution.y);
 
-    mNoiseGenerator.FillTexture(mTextureSettings, *mTexture);
+    mNoiseGenerator.FillTexture(mCompositionStack, mTextureSettings, *mTexture);
+  }
+
+  auto
+  SindriApp::GetLuaScripts() -> std::vector<std::filesystem::path>
+  {
+    std::vector<std::filesystem::path> scripts;
+    for (const auto& entry : std::filesystem::directory_iterator("lua"))
+    {
+      if (entry.is_regular_file() && entry.path().extension() == ".lua")
+      {
+        scripts.push_back(entry.path()); // relative name
+      }
+    }
+    return scripts;
+  }
+
+  void
+  SindriApp::LuaScriptSelector()
+  {
+    // Combo Box
+    if (ImGui::BeginCombo("Lua Script",
+                          mSelectedScriptIndex >= 0 &&
+                              mSelectedScriptIndex < mScripts.size()
+                            ? mScripts[mSelectedScriptIndex].c_str()
+                            : "Select..."))
+    {
+      for (int i = 0; i < mScripts.size(); ++i)
+      {
+        bool isSelected = (mSelectedScriptIndex == i);
+        if (ImGui::Selectable(mScripts[i].c_str(), isSelected))
+        {
+          mSelectedScriptIndex = i;
+        }
+        if (isSelected)
+        {
+          ImGui::SetItemDefaultFocus();
+        }
+      }
+      ImGui::EndCombo();
+    }
+
+    ImGui::SameLine();
+
+    // Add Button
+    if (ImGui::Button("Add to Stack"))
+    {
+      if (mSelectedScriptIndex >= 0 && mSelectedScriptIndex < mScripts.size())
+      {
+        // std::string selectedScript = mScripts[mSelectedScriptIndex];
+        mCompositionStack.Add(mScripts[mSelectedScriptIndex]);
+        // TODO: Do something with the selected script
+        // std::cout << "Selected: " << selectedScript << std::endl;
+      }
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Refresh"))
+    {
+      mSelectedScriptIndex = 0;
+      mScripts = GetLuaScripts();
+    }
   }
 }

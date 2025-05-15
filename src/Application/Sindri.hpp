@@ -1,9 +1,11 @@
 #pragma once
 
+#include "CompositionStack.hpp"
 #include "NoiseGenerator.hpp"
 #include "ProceduralTexture/ProceduralTexture.hpp"
 #include "TextureSettings/TextureSettings.hpp"
 #include <SDL3/SDL.h>
+#include <filesystem>
 #include <random>
 
 namespace Sindri
@@ -18,6 +20,8 @@ namespace Sindri
 
     NoiseGenerator mNoiseGenerator;
 
+    CompositionStack mCompositionStack;
+
     std::shared_ptr<ProceduralTexture> mTexture = nullptr;
 
     bool mRunning = false;
@@ -29,11 +33,15 @@ namespace Sindri
     int mCurrentWindowWidth = 1280;
     int mCurrentWindowHeight = 720;
 
+    int mSelectedScriptIndex = 0;
+
     bool mVsync = true;
 
     float       mFps = 0.0F;
     float       mMsPerFrame = 0.0F;
     std::string mTitle = "Sindri";
+
+    std::vector<std::filesystem::path> mScripts;
 
     auto
     Init() -> bool; // Internal init
@@ -52,6 +60,12 @@ namespace Sindri
 
     void
     GenerateTexture();
+
+    auto
+    GetLuaScripts() -> std::vector<std::filesystem::path>;
+
+    void
+    LuaScriptSelector();
 
   public:
     SindriApp();
