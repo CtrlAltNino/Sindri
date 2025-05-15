@@ -1,0 +1,29 @@
+{
+  "name": "sindri",
+  "version-string": "0.1.0",
+  "supports": "(windows & x64 & static) | (linux & x64)",
+  "dependencies": [
+    {
+      "name": "glad",
+      "platform": "(windows & x64 & static) | (linux & x64)",
+      "features": [
+        "extensions"
+      ]
+    },
+    "glm",
+    "sdl3",
+    "sdl3-image",
+    {
+      "name": "imgui",
+      "default-features": false,
+      "features": [
+        "sdl3-binding",
+        "sdl3-renderer-binding"
+      ]
+    },
+    "stb",
+    "nativefiledialog-extended",
+    "sdl3"
+  ],
+  "builtin-baseline": "2c7705e70dcfb70e5f726459c3e399bd780bc1fc"
+}

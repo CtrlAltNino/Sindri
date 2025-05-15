@@ -1,0 +1,32 @@
+Checks: >
+  -*,
+  bugprone-*,
+  cert-*,
+  cppcoreguidelines-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+  misc-unused-using-decls,
+  misc-unused-parameters,
+  -cppcoreguidelines-pro-type-union-access
+
+WarningsAsErrors: ""
+HeaderFilterRegex: ".*" # Apply checks to all files
+CheckOptions:
+  # Modernize checks
+  - key: modernize-use-auto.MinTypeNameLength
+    value: 5
+  - key: modernize-use-nullptr.NullMacros
+    value: "NULL"
+  - key: modernize-use-default-member-init.IgnoreMacros
+    value: true
+  # Performance checks
+  - key: performance-unnecessary-value-param.AllowedTypes
+    value: "std::string;std::vector"
+  # Readability improvements
+  - key: readability-identifier-naming.VariableCase
+    value: lower_case
+  - key: readability-identifier-naming.FunctionCase
+    value: CamelBack
+  - key: readability-identifier-naming.LocalVariableCase
+    value: camelBack
