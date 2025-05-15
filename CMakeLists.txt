@@ -92,6 +92,9 @@ target_link_libraries(${targetName} PRIVATE nfd::nfd)
 find_package(SDL3_image CONFIG REQUIRED)
 target_link_libraries(${targetName} PRIVATE $<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image-shared>,SDL3_image::SDL3_image-shared,SDL3_image::SDL3_image-static>)
 
+find_package(magic_enum CONFIG REQUIRED)
+target_link_libraries(${targetName} PRIVATE magic_enum::magic_enum)
+
 # ===============================================
 # ========== Copy into build directory ==========
 # ===============================================

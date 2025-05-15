@@ -1,10 +1,15 @@
 #include "pch.hpp"
 
+#include "Helpers/UI.hpp"
+#include "ProceduralTexture.hpp"
 #include "Sindri.hpp"
+#include "TextureSettings/TextureSettings.hpp"
 #include <chrono>
+#include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
+#include <imgui_impl_opengl3.h>
 #include <imgui_impl_sdl3.h>
-#include <imgui_impl_sdlrenderer3.h>
 #include <iostream>
 
 namespace Sindri
@@ -15,6 +20,8 @@ namespace Sindri
     {
       std::cerr << "[Error] Failed to initialize SindriApp.\n";
     }
+
+    mTextureSettings.mSeed = mRandomDevice();
   }
 
   SindriApp::~SindriApp()
@@ -31,74 +38,69 @@ namespace Sindri
       return false;
     }
 
-    m_Window = SDL_CreateWindow(
-      m_Title.c_str(), m_Width, m_Height, SDL_WINDOW_RESIZABLE);
-    if (!m_Window)
+    SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER,
+                "0"); // optional: disable ES fallback
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
+                        SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+    mWindow = SDL_CreateWindow(mTitle.c_str(),
+                               mWidth,
+                               mHeight,
+                               SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+    if (!mWindow)
     {
       std::cerr << "[SDL] Failed to create window: " << SDL_GetError() << "\n";
       return false;
     }
 
-    // SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
-
     // SDL3: Third argument is now a const char* driver name (or nullptr)
-    m_Renderer = SDL_CreateRenderer(m_Window, nullptr);
-    if (!m_Renderer)
+    mContext = SDL_GL_CreateContext(mWindow);
+
+    // Check if the OpenGL context was created successfully.
+    if (mContext == nullptr)
     {
-      std::cerr << "[SDL] Failed to create renderer: " << SDL_GetError()
-                << "\n";
+      std::cerr << "[SDL] Failed to create context: " << SDL_GetError() << "\n";
       return false;
     }
+
+    SDL_GL_MakeCurrent(mWindow, mContext);
+    SDL_GL_SetSwapInterval(1); // Disable VSync (uncapped framerate)
+
+    gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress);
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
-    (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
     ImGui::StyleColorsDark();
 
-    if (!ImGui_ImplSDL3_InitForSDLRenderer(m_Window, m_Renderer))
-    {
-      std::cerr << "[ImGui] SDL3 init failed\n";
-      return false;
-    }
+    ImGui_ImplSDL3_InitForOpenGL(mWindow, mContext);
+    ImGui_ImplOpenGL3_Init("#version 450");
 
-    if (!ImGui_ImplSDLRenderer3_Init(m_Renderer))
-    {
-      std::cerr << "[ImGui] SDL_Renderer3 init failed\n";
-      return false;
-    }
-
-    m_Running = true;
+    mRunning = true;
     return true;
   }
 
   void
   SindriApp::Shutdown()
   {
-    ImGui_ImplSDLRenderer3_Shutdown();
+    ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL3_Shutdown();
     ImGui::DestroyContext();
 
-    if (m_Renderer)
-    {
-      SDL_DestroyRenderer(m_Renderer);
-      m_Renderer = nullptr;
-    }
-
-    if (m_Window)
-    {
-      SDL_DestroyWindow(m_Window);
-      m_Window = nullptr;
-    }
-
+    SDL_GL_DestroyContext(mContext);
+    SDL_DestroyWindow(mWindow);
     SDL_Quit();
   }
 
   void
   SindriApp::Run()
   {
-    if (!m_Running)
+    if (!mRunning)
     {
       std::cerr << "[SindriApp] Cannot run main loop; init failed.\n";
       return;
@@ -113,17 +115,18 @@ namespace Sindri
     using clock = std::chrono::high_resolution_clock;
     auto lastTime = clock::now();
 
-    while (m_Running)
+    while (mRunning)
     {
       auto  now = clock::now();
       float deltaTime = std::chrono::duration<float>(now - lastTime).count();
       lastTime = now;
       mFps = 1.0f / deltaTime;
       mMsPerFrame = deltaTime * 1000.0f;
+      SDL_GetWindowSize(mWindow, &mCurrentWindowWidth, &mCurrentWindowHeight);
 
       HandleEvents();
 
-      ImGui_ImplSDLRenderer3_NewFrame();
+      ImGui_ImplOpenGL3_NewFrame();
       ImGui_ImplSDL3_NewFrame();
       ImGui::NewFrame();
 
@@ -133,7 +136,7 @@ namespace Sindri
 
       Render();
 
-      SDL_Delay(1); // prevent CPU spinlock
+      // SDL_Delay(1); // prevent CPU spinlock
     }
   }
 
@@ -146,7 +149,7 @@ namespace Sindri
       ImGui_ImplSDL3_ProcessEvent(&event);
       switch (event.type)
       {
-        case SDL_EVENT_QUIT: m_Running = false; break;
+        case SDL_EVENT_QUIT: mRunning = false; break;
         default: break;
       }
     }
@@ -157,20 +160,13 @@ namespace Sindri
   {
     ImGui::Render();
 
-    SDL_SetRenderDrawColor(m_Renderer, 0x1e, 0x1e, 0x1e, 0xff);
-    SDL_RenderClear(m_Renderer);
-    ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), m_Renderer);
-
-    // Your rendering code here
-
-    SDL_RenderPresent(m_Renderer);
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    SDL_GL_SwapWindow(mWindow);
   }
 
   void
   SindriApp::MainWindow()
   {
-    int windowWidth, windowHeight;
-    SDL_GetWindowSize(m_Window, &windowWidth, &windowHeight);
     // Set window flags to disable interactions and visuals
     ImGuiWindowFlags windowFlags =
       ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
@@ -179,17 +175,90 @@ namespace Sindri
 
     // Set next window position and size to fill the screen
     ImGui::SetNextWindowPos(ImVec2(0, 0));
-    ImGui::SetNextWindowSize(ImVec2((float)windowWidth, (float)windowHeight));
+    ImGui::SetNextWindowSize(
+      ImVec2((float)mCurrentWindowWidth / 2, (float)mCurrentWindowHeight));
 
     // Create a full-screen ImGui window
-    ImGui::Begin("MainWindow", nullptr, windowFlags);
-    ImGui::Text("Welcome to SindriApp!");
+    ImGui::Begin("SettingsWindow", nullptr, windowFlags);
+    ImGui::Text("Texture Settings");
     ImGui::Separator();
-    ImGui::Text("This window fills the whole SDL window.");
 
     ImGui::Text("FPS: %.1f", mFps);
     ImGui::Text("Frame Time: %.2f ms", mMsPerFrame);
+    if (ImGui::Checkbox("VSync", &mVsync))
+    {
+      SDL_GL_SetSwapInterval(mVsync ? 1 : 0);
+    }
+
+    ImGui::InputScalar("Seed", ImGuiDataType_U32, &mTextureSettings.mSeed);
+
+    ImGui::SameLine();
+    if (ImGui::Button("Randomize Seed"))
+    {
+      mTextureSettings.mSeed = mRandomDevice();
+    }
+
+    ComboEnum("Texture Dimension", mTextureSettings.mDimensions);
+    ComboEnum("Output Format", mTextureSettings.mOutputFormat);
+    ComboEnum("Texture Format", mTextureSettings.mTextureFormat);
+
+    switch (mTextureSettings.mDimensions)
+    {
+      using enum TextureDimension;
+      case Texture1D:
+        ImGui::InputInt("Resolution",
+                        glm::value_ptr(mTextureSettings.mResolution));
+        break;
+      case Texture2D:
+        ImGui::InputInt2("Resolution",
+                         glm::value_ptr(mTextureSettings.mResolution));
+        break;
+      case Texture3D:
+        ImGui::InputInt3("Resolution",
+                         glm::value_ptr(mTextureSettings.mResolution));
+        break;
+    }
+
+    if (ImGui::Button("Generate"))
+    {
+      GenerateTexture();
+    }
+
     // You can add buttons, sliders, etc. here
     ImGui::End();
+
+    // Set next window position and size to fill the screen
+    ImGui::SetNextWindowPos(ImVec2((float)mCurrentWindowWidth / 2, 0));
+    ImGui::SetNextWindowSize(
+      ImVec2((float)mCurrentWindowWidth / 2, (float)mCurrentWindowHeight));
+
+    ImGui::Begin("PreviewWindow", nullptr, windowFlags);
+    ImGui::Text("Texture Preview");
+    ImGui::Separator();
+
+    // Texture size you want to display (e.g. width, height in pixels or UV
+    // scale)
+    ImVec2 size = ImVec2(ImGui::GetContentRegionAvail().x,
+                         ImGui::GetContentRegionAvail().x);
+
+    // Note: cast GLuint to void* to pass as ImTextureID
+    if (mTexture && mTexture->GetIsUploaded())
+    {
+      ImGui::Image((ImTextureID)mTexture->GetTextureId(), size);
+    }
+
+    // You can add buttons, sliders, etc. here
+    ImGui::End();
+  }
+
+  void
+  SindriApp::GenerateTexture()
+  {
+    mTexture =
+      std::make_shared<ProceduralTexture>(mTextureSettings.mTextureFormat,
+                                          mTextureSettings.mResolution.x,
+                                          mTextureSettings.mResolution.y);
+
+    mNoiseGenerator.FillTexture(mTextureSettings, *mTexture);
   }
 }

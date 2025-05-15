@@ -1,23 +1,39 @@
 #pragma once
 
+#include "NoiseGenerator.hpp"
+#include "ProceduralTexture/ProceduralTexture.hpp"
+#include "TextureSettings/TextureSettings.hpp"
 #include <SDL3/SDL.h>
+#include <random>
 
 namespace Sindri
 {
   class SindriApp
   {
   private:
-    SDL_Window*   m_Window = nullptr;
-    SDL_Renderer* m_Renderer = nullptr;
+    SDL_Window*   mWindow = nullptr;
+    SDL_GLContext mContext = nullptr;
 
-    bool m_Running = false;
+    TextureSettings mTextureSettings;
 
-    int m_Width = 1280;
-    int m_Height = 720;
+    NoiseGenerator mNoiseGenerator;
+
+    std::shared_ptr<ProceduralTexture> mTexture = nullptr;
+
+    bool mRunning = false;
+
+    std::random_device mRandomDevice;
+
+    int mWidth = 1280;
+    int mHeight = 720;
+    int mCurrentWindowWidth = 1280;
+    int mCurrentWindowHeight = 720;
+
+    bool mVsync = true;
 
     float       mFps = 0.0F;
     float       mMsPerFrame = 0.0F;
-    std::string m_Title = "Sindri";
+    std::string mTitle = "Sindri";
 
     auto
     Init() -> bool; // Internal init
@@ -33,6 +49,9 @@ namespace Sindri
 
     void
     MainWindow();
+
+    void
+    GenerateTexture();
 
   public:
     SindriApp();

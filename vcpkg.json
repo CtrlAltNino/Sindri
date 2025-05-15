@@ -17,11 +17,12 @@
       "default-features": false,
       "features": [
         "sdl3-binding",
-        "sdl3-renderer-binding"
+        "opengl3-binding"
       ]
     },
     "stb",
-    "nativefiledialog-extended"
+    "nativefiledialog-extended",
+    "magic-enum"
   ],
   "builtin-baseline": "2c7705e70dcfb70e5f726459c3e399bd780bc1fc"
 }
