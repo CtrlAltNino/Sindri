@@ -236,20 +236,7 @@ namespace Sindri
 
     // Composition
     {
-      int index = 0;
-      for (auto& stackEntry : mCompositionStack.GetEntries())
-      {
-        ImGui::PushID(index); // Start a unique ID scope
-        if (ImGui::CollapsingHeader(std::string(std::to_string(index + 1) +
-                                                ". " + stackEntry.GetName())
-                                      .c_str()))
-        {
-          stackEntry.RenderSettings();
-          ImGui::Spacing();
-        }
-        ImGui::PopID();
-        index++;
-      }
+      mCompositionStack.RenderSettings();
     }
 
     if (mCompositionStack.GetEntries().empty())

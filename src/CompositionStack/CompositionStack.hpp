@@ -22,6 +22,9 @@ namespace Sindri
     auto
     GetEntries() -> std::vector<StackEntry>&;
 
+    void
+    RenderSettings();
+
     auto
     Evaluate(TextureSettings settings, glm::ivec3 coordinate) -> float;
   };
