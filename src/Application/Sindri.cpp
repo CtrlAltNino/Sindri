@@ -274,6 +274,12 @@ namespace Sindri
     ImVec2 size = ImVec2(ImGui::GetContentRegionAvail().x,
                          ImGui::GetContentRegionAvail().x);
 
+    static bool interpolatePreviewTexture = false;
+
+    if (ImGui::Checkbox("Interpolate", &interpolatePreviewTexture))
+    {
+      mTexture->SetInterpolatePreview(interpolatePreviewTexture);
+    }
     // Note: cast GLuint to void* to pass as ImTextureID
     if (mTexture && mTexture->GetIsUploaded())
     {
@@ -287,8 +293,26 @@ namespace Sindri
   void
   SindriApp::GenerateTexture()
   {
-    mTexture = std::make_shared<ProceduralTexture>(
-      mTextureSettings.mResolution.x, mTextureSettings.mResolution.y);
+    if (!mTexture)
+    {
+      mTexture = std::make_shared<ProceduralTexture>();
+    }
+
+    switch (mTextureSettings.mDimensions)
+    {
+      case TextureDimension::Texture1D:
+        mTexture->Reserve(mTextureSettings.mResolution.x);
+        break;
+      case TextureDimension::Texture2D:
+        mTexture->Reserve(mTextureSettings.mResolution.x,
+                          mTextureSettings.mResolution.y);
+        break;
+      case TextureDimension::Texture3D:
+        mTexture->Reserve(mTextureSettings.mResolution.x,
+                          mTextureSettings.mResolution.y,
+                          mTextureSettings.mResolution.z);
+        break;
+    }
 
     mNoiseGenerator.FillTexture(mCompositionStack, mTextureSettings, *mTexture);
   }

@@ -15,33 +15,22 @@ namespace Sindri
     bool               mIsUploaded = false;
     std::vector<float> mData;
     GLuint             mTextureId = 0;
+    bool               mInterpolate = false;
+
+    void
+    UpdateTextureFiltering() const;
 
   public:
-    ProceduralTexture(size_t width)
-      : mWidth(width)
-      , mTextureDimension(TextureDimension::Texture1D)
-    {
-      size_t count = width;
-      mData = std::vector<float>(count);
-    }
+    ProceduralTexture() = default;
 
-    ProceduralTexture(size_t width, size_t height)
-      : mWidth(width)
-      , mHeight(height)
-      , mTextureDimension(TextureDimension::Texture2D)
-    {
-      size_t count = width * height;
-      mData = std::vector<float>(count);
-    }
+    void
+    Reserve(size_t width);
 
-    ProceduralTexture(size_t width, size_t height, size_t depth)
-      : mWidth(width)
-      , mHeight(height)
-      , mTextureDimension(TextureDimension::Texture3D)
-    {
-      size_t count = width * height;
-      mData = std::vector<float>(count);
-    }
+    void
+    Reserve(size_t width, size_t height);
+
+    void
+    Reserve(size_t width, size_t height, size_t depth);
 
     auto
     GetData() -> std::vector<float>&
@@ -65,5 +54,11 @@ namespace Sindri
     {
       return mIsUploaded;
     }
+
+    auto
+    GetInterpolatePreview() const -> bool;
+
+    void
+    SetInterpolatePreview(bool interpolate);
   };
 }
