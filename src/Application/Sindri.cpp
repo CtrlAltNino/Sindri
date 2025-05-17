@@ -314,13 +314,13 @@ namespace Sindri
     if (ImGui::BeginCombo("Lua Script",
                           mSelectedScriptIndex >= 0 &&
                               mSelectedScriptIndex < mScripts.size()
-                            ? mScripts[mSelectedScriptIndex].c_str()
+                            ? mScripts[mSelectedScriptIndex].string().c_str()
                             : "Select..."))
     {
       for (int i = 0; i < mScripts.size(); ++i)
       {
         bool isSelected = (mSelectedScriptIndex == i);
-        if (ImGui::Selectable(mScripts[i].c_str(), isSelected))
+        if (ImGui::Selectable(mScripts[i].string().c_str(), isSelected))
         {
           mSelectedScriptIndex = i;
         }

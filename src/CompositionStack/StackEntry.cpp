@@ -11,7 +11,7 @@ namespace Sindri
   StackEntry::StackEntry(const std::filesystem::path& luaScriptPath)
   {
     lua.open_libraries(sol::lib::math, sol::lib::base);
-    lua.script_file(luaScriptPath);
+    lua.script_file(luaScriptPath.string());
     mEvaluate = lua["evaluate"];
     mName = lua["name"];
     mSettings = lua["settings"];
