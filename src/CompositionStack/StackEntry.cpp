@@ -79,14 +79,15 @@ namespace Sindri
 
   // Compute a float value (0.0 - 1.0)
   auto
-  StackEntry::Evaluate(TextureSettings settings, glm::ivec3 coordinate) -> float
+  StackEntry::Evaluate(std::shared_ptr<TextureSettings> settings,
+                       glm::ivec3                       coordinate) -> float
   {
-    float normalizedX = (float)coordinate.x / (float)settings.mResolution.x;
-    float normalizedY = (float)coordinate.y / (float)settings.mResolution.y;
-    float normalizedZ = (float)coordinate.z / (float)settings.mResolution.z;
+    float normalizedX = (float)coordinate.x / (float)settings->mResolution.x;
+    float normalizedY = (float)coordinate.y / (float)settings->mResolution.y;
+    float normalizedZ = (float)coordinate.z / (float)settings->mResolution.z;
 
     sol::protected_function_result result =
-      mEvaluate(normalizedX, normalizedY, normalizedZ, settings.mSeed);
+      mEvaluate(normalizedX, normalizedY, normalizedZ, settings->mSeed);
 
     float resultFloat = 0.0F;
 

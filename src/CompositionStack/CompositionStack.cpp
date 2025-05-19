@@ -22,8 +22,8 @@ namespace Sindri
   }
 
   auto
-  CompositionStack::Evaluate(TextureSettings settings, glm::ivec3 coordinate)
-    -> float
+  CompositionStack::Evaluate(std::shared_ptr<TextureSettings> settings,
+                             glm::ivec3 coordinate) -> float
   {
     float value = 0;
 

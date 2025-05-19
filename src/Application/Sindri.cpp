@@ -1,3 +1,4 @@
+#include "CompositionStack.hpp"
 #include "pch.hpp"
 
 #include "Helpers/UI.hpp"
@@ -15,13 +16,17 @@
 namespace Sindri
 {
   SindriApp::SindriApp()
+    : mTextureSettings(std::make_shared<TextureSettings>())
+    , mTexture(std::make_shared<ProceduralTexture>())
+    , mCompositionStack(std::make_shared<CompositionStack>())
+    , mNoiseGenerator(mCompositionStack, mTextureSettings, mTexture)
   {
     if (!Init())
     {
       std::cerr << "[Error] Failed to initialize SindriApp.\n";
     }
 
-    mTextureSettings.mSeed = mRandomDevice();
+    mTextureSettings->mSeed = mRandomDevice();
     mScripts = GetLuaScripts();
   }
 
@@ -133,6 +138,12 @@ namespace Sindri
 
       // Demo window for testing
       // ImGui::ShowDemoWindow();
+
+      if (mTexture->GetWaitingForUpload())
+      {
+        mTexture->Upload();
+      }
+
       MainWindow();
 
       Render();
@@ -195,32 +206,32 @@ namespace Sindri
     ImGui::Text("Options");
     ImGui::Separator();
 
-    ImGui::InputScalar("Seed", ImGuiDataType_U32, &mTextureSettings.mSeed);
+    ImGui::InputScalar("Seed", ImGuiDataType_U32, &mTextureSettings->mSeed);
 
     ImGui::SameLine();
     if (ImGui::Button("Randomize Seed"))
     {
-      mTextureSettings.mSeed = mRandomDevice();
+      mTextureSettings->mSeed = mRandomDevice();
     }
 
-    ComboEnum("Texture Dimension", mTextureSettings.mDimensions);
-    ComboEnum("Output Format", mTextureSettings.mOutputFormat);
-    ComboEnum("Texture Format", mTextureSettings.mBitDepth);
+    ComboEnum("Texture Dimension", mTextureSettings->mDimensions);
+    ComboEnum("Output Format", mTextureSettings->mOutputFormat);
+    ComboEnum("Texture Format", mTextureSettings->mBitDepth);
 
-    switch (mTextureSettings.mDimensions)
+    switch (mTextureSettings->mDimensions)
     {
       using enum TextureDimension;
       case Texture1D:
         ImGui::InputInt("Resolution",
-                        glm::value_ptr(mTextureSettings.mResolution));
+                        glm::value_ptr(mTextureSettings->mResolution));
         break;
       case Texture2D:
         ImGui::InputInt2("Resolution",
-                         glm::value_ptr(mTextureSettings.mResolution));
+                         glm::value_ptr(mTextureSettings->mResolution));
         break;
       case Texture3D:
         ImGui::InputInt3("Resolution",
-                         glm::value_ptr(mTextureSettings.mResolution));
+                         glm::value_ptr(mTextureSettings->mResolution));
         break;
     }
 
@@ -236,10 +247,10 @@ namespace Sindri
 
     // Composition
     {
-      mCompositionStack.RenderSettings();
+      mCompositionStack->RenderSettings();
     }
 
-    if (mCompositionStack.GetEntries().empty())
+    if (mCompositionStack->GetEntries().empty())
     {
       ImGui::BeginDisabled();
     }
@@ -252,7 +263,7 @@ namespace Sindri
       GenerateTexture();
     }
 
-    if (mCompositionStack.GetEntries().empty())
+    if (mCompositionStack->GetEntries().empty())
     {
       ImGui::EndDisabled();
     }
@@ -293,28 +304,26 @@ namespace Sindri
   void
   SindriApp::GenerateTexture()
   {
-    if (!mTexture)
-    {
-      mTexture = std::make_shared<ProceduralTexture>();
-    }
-
-    switch (mTextureSettings.mDimensions)
+    switch (mTextureSettings->mDimensions)
     {
       case TextureDimension::Texture1D:
-        mTexture->Reserve(mTextureSettings.mResolution.x);
+        mTexture->Reserve(mTextureSettings->mResolution.x);
         break;
       case TextureDimension::Texture2D:
-        mTexture->Reserve(mTextureSettings.mResolution.x,
-                          mTextureSettings.mResolution.y);
+        mTexture->Reserve(mTextureSettings->mResolution.x,
+                          mTextureSettings->mResolution.y);
         break;
       case TextureDimension::Texture3D:
-        mTexture->Reserve(mTextureSettings.mResolution.x,
-                          mTextureSettings.mResolution.y,
-                          mTextureSettings.mResolution.z);
+        mTexture->Reserve(mTextureSettings->mResolution.x,
+                          mTextureSettings->mResolution.y,
+                          mTextureSettings->mResolution.z);
         break;
     }
 
-    mNoiseGenerator.FillTexture(mCompositionStack, mTextureSettings, *mTexture);
+    mNoiseGenerator.RequestTextureFill();
+
+    // mNoiseGenerator.FillTexture(mCompositionStack, mTextureSettings,
+    // *mTexture);
   }
 
   auto
@@ -364,7 +373,7 @@ namespace Sindri
       if (mSelectedScriptIndex >= 0 && mSelectedScriptIndex < mScripts.size())
       {
         // std::string selectedScript = mScripts[mSelectedScriptIndex];
-        mCompositionStack.Add(mScripts[mSelectedScriptIndex]);
+        mCompositionStack->Add(mScripts[mSelectedScriptIndex]);
         // TODO: Do something with the selected script
         // std::cout << "Selected: " << selectedScript << std::endl;
       }

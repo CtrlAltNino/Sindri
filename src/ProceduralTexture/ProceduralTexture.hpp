@@ -12,6 +12,7 @@ namespace Sindri
     size_t             mWidth = 0;
     size_t             mHeight = 0;
     size_t             mDepth = 0;
+    std::atomic<bool>  mWaitingForUpload = false;
     bool               mIsUploaded = false;
     std::vector<float> mData;
     GLuint             mTextureId = 0;
@@ -55,10 +56,16 @@ namespace Sindri
       return mIsUploaded;
     }
 
-    auto
+    [[nodiscard]] auto
     GetInterpolatePreview() const -> bool;
 
     void
     SetInterpolatePreview(bool interpolate);
+
+    [[nodiscard]] auto
+    GetWaitingForUpload() const -> bool;
+
+    void
+    SetWaitingForUpload(bool waitingForUpload);
   };
 }

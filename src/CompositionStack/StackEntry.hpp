@@ -35,6 +35,7 @@ namespace Sindri
 
     // Compute a float value (0.0 - 1.0)
     auto
-    Evaluate(TextureSettings settings, glm::ivec3 coordinate) -> float;
+    Evaluate(std::shared_ptr<TextureSettings> settings, glm::ivec3 coordinate)
+      -> float;
   };
 }

@@ -103,6 +103,7 @@ namespace Sindri
     }
 
     mIsUploaded = true;
+    SetWaitingForUpload(false);
   }
 
   auto
@@ -136,5 +137,17 @@ namespace Sindri
       glTextureParameteri(mTextureId, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
       glTextureParameteri(mTextureId, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     }
+  }
+
+  auto
+  ProceduralTexture::GetWaitingForUpload() const -> bool
+  {
+    return mWaitingForUpload.load();
+  }
+
+  void
+  ProceduralTexture::SetWaitingForUpload(bool waitingForUpload)
+  {
+    mWaitingForUpload.store(waitingForUpload);
   }
 }

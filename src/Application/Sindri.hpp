@@ -16,13 +16,13 @@ namespace Sindri
     SDL_Window*   mWindow = nullptr;
     SDL_GLContext mContext = nullptr;
 
-    TextureSettings mTextureSettings;
+    std::shared_ptr<TextureSettings> mTextureSettings = nullptr;
 
-    NoiseGenerator mNoiseGenerator;
-
-    CompositionStack mCompositionStack;
+    std::shared_ptr<CompositionStack> mCompositionStack = nullptr;
 
     std::shared_ptr<ProceduralTexture> mTexture = nullptr;
+
+    NoiseGenerator mNoiseGenerator;
 
     bool mRunning = false;
 
