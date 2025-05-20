@@ -9,8 +9,9 @@
 namespace Sindri
 {
   StackEntry::StackEntry(const std::filesystem::path& luaScriptPath)
+    : mPath(luaScriptPath)
   {
-    lua.open_libraries(sol::lib::math, sol::lib::base);
+    lua.open_libraries(sol::lib::math, sol::lib::base, sol::lib::string);
     lua.script_file(luaScriptPath.string());
     mEvaluate = lua["evaluate"];
     mName = lua["name"];
@@ -102,5 +103,25 @@ namespace Sindri
     }
 
     return resultFloat;
+  }
+
+  void
+  StackEntry::Serialize()
+  {
+    // return lua["string"]["dump"](lua["evaluate"]);
+    // TODO: Use serpent to serialize the settings table
+    mSerializedSettings = "";
+  }
+
+  auto
+  StackEntry::GetSerializedSettings() -> std::string
+  {
+    return mSerializedSettings;
+  }
+
+  auto
+  StackEntry::GetPath() -> std::filesystem::path
+  {
+    return mPath;
   }
 }

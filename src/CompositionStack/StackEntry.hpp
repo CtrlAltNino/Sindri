@@ -14,11 +14,13 @@ namespace Sindri
   class StackEntry
   {
   private:
+    std::string             mName;
+    std::filesystem::path   mPath;
+    ComposeType             mComposeType = ComposeType::Add;
     sol::state              lua;
     sol::protected_function mEvaluate;
     sol::table              mSettings;
-    std::string             mName;
-    ComposeType             mComposeType = ComposeType::Add;
+    std::string             mSerializedSettings;
 
   public:
     StackEntry(const std::filesystem::path& luaScriptPath);
@@ -32,6 +34,15 @@ namespace Sindri
 
     auto
     GetComposeType() -> ComposeType;
+
+    void
+    Serialize();
+
+    auto
+    GetSerializedSettings() -> std::string;
+
+    auto
+    GetPath() -> std::filesystem::path;
 
     // Compute a float value (0.0 - 1.0)
     auto

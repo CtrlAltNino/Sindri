@@ -1,8 +1,8 @@
-#include "StackEntry.hpp"
 #include "pch.hpp"
-#include <imgui.h>
 
 #include "CompositionStack.hpp"
+#include "StackEntry.hpp"
+#include <imgui.h>
 
 namespace Sindri
 {

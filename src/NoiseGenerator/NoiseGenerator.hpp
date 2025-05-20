@@ -53,7 +53,8 @@ namespace Sindri
     GenerateWorkloads();
 
     auto
-    EvaluateStack() -> float;
+    EvaluateStack(std::vector<StackState>& stack, glm::ivec3 coordinate)
+      -> float;
 
   public:
     NoiseGenerator(std::shared_ptr<CompositionStack>  compositionStack,
