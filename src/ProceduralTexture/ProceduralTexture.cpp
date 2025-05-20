@@ -36,10 +36,17 @@ namespace Sindri
   void
   ProceduralTexture::Upload()
   {
+    std::cout << "Uploading texture" << std::endl;
     if (mTextureId != 0)
     {
       glDeleteTextures(1, &mTextureId);
     }
+
+    /*for (int i = 0; i < mData.size(); i++)
+    {
+      std::cout << "pixel data at position " << i << ": " << mData[i]
+                << std::endl;
+    }*/
 
     GLenum target = 0;
     GLint  internalFormat = GL_R32F;
@@ -104,6 +111,7 @@ namespace Sindri
 
     mIsUploaded = true;
     SetWaitingForUpload(false);
+    std::cout << "Texture upload complete" << std::endl;
   }
 
   auto

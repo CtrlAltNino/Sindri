@@ -5,6 +5,7 @@
 #include <imgui.h>
 #include <math.h>
 #include <sol/types.hpp>
+#include <variant>
 
 namespace Sindri
 {
@@ -13,9 +14,35 @@ namespace Sindri
   {
     lua.open_libraries(sol::lib::math, sol::lib::base, sol::lib::string);
     lua.script_file(luaScriptPath.string());
-    mEvaluate = lua["evaluate"];
     mName = lua["name"];
-    mSettings = lua["settings"];
+    sol::table settings = lua["settings"];
+
+    for (auto& pair : settings)
+    {
+      std::string key = pair.first.as<std::string>();
+      sol::object value = pair.second;
+      std::cout << key << " raw float value" << value.as<float>() << std::endl;
+
+      if (value.is<float>())
+      {
+        std::cout << key << " is of type float" << std::endl;
+        mSettingsMap[key] = value.as<float>();
+      }
+      else if (value.is<int>())
+      {
+        std::cout << key << " is of type int" << std::endl;
+        mSettingsMap[key] = value.as<int>();
+      }
+      else if (value.is<bool>())
+      {
+        std::cout << key << " is of type bool" << std::endl;
+        mSettingsMap[key] = value.as<bool>();
+      }
+      else
+      {
+        std::cout << key << " is of unknown type" << std::endl;
+      }
+    }
   }
 
   // Renders ImGui based UI for the settings
@@ -24,43 +51,33 @@ namespace Sindri
   {
     ComboEnum("Type", mComposeType);
 
-    for (auto& pair : mSettings)
+    for (auto& pair : mSettingsMap)
     {
-      std::string key = pair.first.as<std::string>();
-      sol::object value = pair.second;
+      std::string                    key = pair.first;
+      std::variant<bool, int, float> value = pair.second;
 
-      if (value.is<int>())
+      if (std::holds_alternative<int>(value))
       {
-        int val = value.as<int>();
-        if (ImGui::SliderInt(key.c_str(), &val, 0, 100))
+        int val = std::get<int>(value);
+        if (ImGui::DragInt(key.c_str(), &val, 1.0F, 0, 100))
         {
-          mSettings[key] = val; // write back
+          mSettingsMap[key] = val; // write back
         }
       }
-      else if (value.is<float>())
+      else if (std::holds_alternative<float>(value))
       {
-        float val = value.as<float>();
-        if (ImGui::SliderFloat(key.c_str(), &val, 0.0f, 10.0f))
+        float val = std::get<float>(value);
+        if (ImGui::DragFloat(key.c_str(), &val, 0.05F, 0.0f, 10.0f))
         {
-          mSettings[key] = val; // write back
+          mSettingsMap[key] = val; // write back
         }
       }
-      else if (value.is<bool>())
+      else if (std::holds_alternative<bool>(value))
       {
-        bool val = value.as<bool>();
+        bool val = std::get<bool>(value);
         if (ImGui::Checkbox(key.c_str(), &val))
         {
-          mSettings[key] = val; // write back
-        }
-      }
-      else if (value.is<std::string>())
-      {
-        std::string val = value.as<std::string>();
-        char        buffer[128];
-        std::snprintf(buffer, sizeof(buffer), "%s", val.c_str());
-        if (ImGui::InputText(key.c_str(), buffer, sizeof(buffer)))
-        {
-          mSettings[key] = std::string(buffer); // write back
+          mSettingsMap[key] = val; // write back
         }
       }
     }
@@ -78,50 +95,16 @@ namespace Sindri
     return mComposeType;
   }
 
-  // Compute a float value (0.0 - 1.0)
-  auto
-  StackEntry::Evaluate(std::shared_ptr<TextureSettings> settings,
-                       glm::ivec3                       coordinate) -> float
-  {
-    float normalizedX = (float)coordinate.x / (float)settings->mResolution.x;
-    float normalizedY = (float)coordinate.y / (float)settings->mResolution.y;
-    float normalizedZ = (float)coordinate.z / (float)settings->mResolution.z;
-
-    sol::protected_function_result result =
-      mEvaluate(normalizedX, normalizedY, normalizedZ, settings->mSeed);
-
-    float resultFloat = 0.0F;
-
-    if (!result.valid())
-    {
-      sol::error err = result;
-      std::cerr << "Lua error: " << err.what() << std::endl;
-    }
-    else
-    {
-      resultFloat = result; // or result.get<float>() for safety
-    }
-
-    return resultFloat;
-  }
-
-  void
-  StackEntry::Serialize()
-  {
-    // return lua["string"]["dump"](lua["evaluate"]);
-    // TODO: Use serpent to serialize the settings table
-    mSerializedSettings = "";
-  }
-
-  auto
-  StackEntry::GetSerializedSettings() -> std::string
-  {
-    return mSerializedSettings;
-  }
-
   auto
   StackEntry::GetPath() -> std::filesystem::path
   {
     return mPath;
+  }
+
+  auto
+  StackEntry::GetSettings()
+    -> std::map<std::string, std::variant<bool, int, float>>
+  {
+    return mSettingsMap;
   }
 }

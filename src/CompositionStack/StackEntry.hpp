@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TextureSettings/TextureSettings.hpp"
+#include <map>
 #include <sol/sol.hpp>
 
 namespace Sindri
@@ -14,13 +15,11 @@ namespace Sindri
   class StackEntry
   {
   private:
-    std::string             mName;
-    std::filesystem::path   mPath;
-    ComposeType             mComposeType = ComposeType::Add;
-    sol::state              lua;
-    sol::protected_function mEvaluate;
-    sol::table              mSettings;
-    std::string             mSerializedSettings;
+    std::string           mName;
+    std::filesystem::path mPath;
+    ComposeType           mComposeType = ComposeType::Add;
+    sol::state            lua;
+    std::map<std::string, std::variant<bool, int, float>> mSettingsMap;
 
   public:
     StackEntry(const std::filesystem::path& luaScriptPath);
@@ -35,18 +34,10 @@ namespace Sindri
     auto
     GetComposeType() -> ComposeType;
 
-    void
-    Serialize();
-
-    auto
-    GetSerializedSettings() -> std::string;
-
     auto
     GetPath() -> std::filesystem::path;
 
-    // Compute a float value (0.0 - 1.0)
     auto
-    Evaluate(std::shared_ptr<TextureSettings> settings, glm::ivec3 coordinate)
-      -> float;
+    GetSettings() -> std::map<std::string, std::variant<bool, int, float>>;
   };
 }

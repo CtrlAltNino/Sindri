@@ -52,34 +52,40 @@ namespace Sindri
           [this] { return !IsWorkloadQueueEmpty() || mStopThreadFlag.load(); });
       }
 
+      std::cout << "Worker thread woken up" << std::endl;
+
       if (!mStopThreadFlag.load())
       {
+        std::cout << "Initializing worker thread" << std::endl;
         // TODO: Create a lua worker state and initialize it
         std::vector<StackState> stack = InitializeState();
 
+        std::cout << "Getting data target" << std::endl;
         std::vector<float>& data = mTexture->GetData();
 
+        std::cout << "Work queue processing" << std::endl;
         while (auto workload = AcquireWorkload())
         {
+          bool lastOne = IsWorkloadQueueEmpty();
           for (size_t i = workload->Offset;
                (i < data.size()) && (i < workload->Offset + workload->Length);
                i++)
           {
-            // TODO: Update to using the thread local lua state
-            /*data[i] = mCompositionStack->Evaluate(
-              mTextureSettings,
-              IndexToCoord(i,
-                           mTextureSettings->mResolution,
-                           mTextureSettings->mDimensions));*/
-            data[i] =
+            float computed =
               EvaluateStack(stack,
                             IndexToCoord(i,
                                          mTextureSettings->mResolution,
                                          mTextureSettings->mDimensions));
+            data[i] = computed;
+            // std::cout << "Computed pixel value: " << computed << std::endl;
           }
 
-          mTexture->SetWaitingForUpload(true);
+          if (lastOne)
+          {
+            mTexture->SetWaitingForUpload(true);
+          }
         }
+        std::cout << "Work queue empty" << std::endl;
       }
     }
   }
@@ -87,12 +93,6 @@ namespace Sindri
   void
   NoiseGenerator::RequestTextureFill()
   {
-    // Serializing the current state so it can be copied to the worker threads
-    for (auto& stackEntry : mCompositionStack->GetEntries())
-    {
-      stackEntry.Serialize();
-    }
-
     // Chunking the work
     GenerateWorkloads();
 
@@ -131,7 +131,7 @@ namespace Sindri
     while (currentPos < mTexture->GetData().size())
     {
       FillWorkload newWorkload;
-      newWorkload.Offset = 0;
+      newWorkload.Offset = currentPos;
       newWorkload.Length =
         (newWorkload.Offset + mWorkloadSize) < mTexture->GetData().size()
           ? mWorkloadSize
@@ -146,6 +146,8 @@ namespace Sindri
   auto
   NoiseGenerator::InitializeState() -> std::vector<StackState>
   {
+    std::vector<StackState> stackState;
+
     for (auto& stackEntry : mCompositionStack->GetEntries())
     {
       StackState state;
@@ -158,7 +160,30 @@ namespace Sindri
 
       // Apply settings
       // TODO:
+
+      for (auto& pair : stackEntry.GetSettings())
+      {
+        std::string                    key = pair.first;
+        std::variant<bool, int, float> value = pair.second;
+
+        if (std::holds_alternative<int>(value))
+        {
+          state.State["settings"][key] = std::get<int>(value);
+        }
+        else if (std::holds_alternative<float>(value))
+        {
+          state.State["settings"][key] = std::get<float>(value);
+        }
+        else if (std::holds_alternative<bool>(value))
+        {
+          state.State["settings"][key] = std::get<bool>(value);
+        }
+      }
+
+      stackState.push_back(std::move(state));
     }
+
+    return stackState;
   }
 
   auto

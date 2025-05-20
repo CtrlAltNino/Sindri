@@ -24,9 +24,5 @@ namespace Sindri
 
     void
     RenderSettings();
-
-    auto
-    Evaluate(std::shared_ptr<TextureSettings> settings, glm::ivec3 coordinate)
-      -> float;
   };
 }

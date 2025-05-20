@@ -21,27 +21,6 @@ namespace Sindri
     mStack.erase(mStack.begin() + index);
   }
 
-  auto
-  CompositionStack::Evaluate(std::shared_ptr<TextureSettings> settings,
-                             glm::ivec3 coordinate) -> float
-  {
-    float value = 0;
-
-    for (auto& stackEntry : mStack)
-    {
-      float computed = stackEntry.Evaluate(settings, coordinate);
-
-      switch (stackEntry.GetComposeType())
-      {
-        using enum ComposeType;
-        case Add: value += computed; break;
-        case Multiply: value *= computed; break;
-      }
-    }
-
-    return value;
-  }
-
   void
   CompositionStack::RenderSettings()
   {
