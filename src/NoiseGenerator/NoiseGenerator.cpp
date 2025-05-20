@@ -18,6 +18,7 @@ namespace Sindri
     : mCompositionStack(std::move(compositionStack))
     , mTextureSettings(std::move(settings))
     , mTexture(std::move(texture))
+    , mThreadCount(std::thread::hardware_concurrency())
   {
     // mUploadThread = std::thread([this]() { TextureFiller(); });
     for (int i = 0; i < mThreadCount; i++)
