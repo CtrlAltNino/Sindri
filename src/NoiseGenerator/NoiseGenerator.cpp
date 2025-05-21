@@ -1,7 +1,7 @@
-#include "StackEntry.hpp"
 #include "pch.hpp"
 
 #include "NoiseGenerator.hpp"
+#include "StackEntry.hpp"
 #include "TextureSettings/TextureSettings.hpp"
 #include "Utility/CoordinateHelper.hpp"
 #include <optional>

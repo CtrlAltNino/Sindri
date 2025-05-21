@@ -21,7 +21,6 @@ namespace Sindri
     {
       std::string key = pair.first.as<std::string>();
       sol::object value = pair.second;
-      std::cout << key << " raw float value" << value.as<float>() << std::endl;
 
       if (value.is<float>())
       {
