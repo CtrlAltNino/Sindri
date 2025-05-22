@@ -34,6 +34,7 @@ namespace Sindri
     float                              mDensityFactor = 0.6F;
     float                              mStepSize = 0.005F;
     int                                mMaxSteps = 580;
+    float                              mRotationSpeed = 0.2F;
 
     void
     SetupShader();
@@ -54,7 +55,7 @@ namespace Sindri
     Render2DPreview(glm::vec2 resolution);
 
     void
-    Render3DPreview(glm::vec2 resolution);
+    Render3DPreview(glm::vec2 resolution, float deltaTime);
 
   public:
     TexturePreview(std::shared_ptr<TextureSettings>   textureSettings,
@@ -63,6 +64,6 @@ namespace Sindri
     ~TexturePreview();
 
     void
-    Render(glm::vec2 resolution);
+    Render(glm::vec2 resolution, float deltaTime);
   };
 }

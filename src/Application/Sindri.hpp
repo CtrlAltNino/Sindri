@@ -62,7 +62,7 @@ namespace Sindri
     Render();
 
     void
-    MainWindow();
+    MainWindow(float deltaTime);
 
     void
     GenerateTexture();

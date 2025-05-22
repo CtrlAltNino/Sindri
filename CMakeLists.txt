@@ -97,6 +97,9 @@ target_link_libraries(${targetName} PRIVATE ${LUA_LIBRARIES})
 find_path(SOL2_INCLUDE_DIRS "sol/abort.hpp")
 target_include_directories(${targetName} PRIVATE ${SOL2_INCLUDE_DIRS})
 
+find_package(SPNG CONFIG REQUIRED)
+target_link_libraries(${targetName} PRIVATE $<IF:$<TARGET_EXISTS:spng::spng>,spng::spng,spng::spng_static>)
+
 # ===============================================
 # ========== Copy into build directory ==========
 # ===============================================

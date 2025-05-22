@@ -149,7 +149,7 @@ namespace Sindri
         mTexture->Upload();
       }
 
-      MainWindow();
+      MainWindow(deltaTime);
 
       Render();
 
@@ -182,7 +182,7 @@ namespace Sindri
   }
 
   void
-  SindriApp::MainWindow()
+  SindriApp::MainWindow(float deltaTime)
   {
     // Set window flags to disable interactions and visuals
     ImGuiWindowFlags windowFlags =
@@ -220,8 +220,7 @@ namespace Sindri
     }
 
     ComboEnum("Texture Dimension", mTextureSettings->mDimensions);
-    ComboEnum("Output Format", mTextureSettings->mOutputFormat);
-    ComboEnum("Texture Format", mTextureSettings->mBitDepth);
+    // TODO: Variable channel amount
 
     switch (mTextureSettings->mDimensions)
     {
@@ -277,7 +276,7 @@ namespace Sindri
 
     if (ImGui::Button("Export"))
     {
-      ImGui::OpenPopup("ExportModal");
+      ImGui::OpenPopup("Export##ExportModal");
     }
 
     mExporter->Render();
@@ -304,7 +303,8 @@ namespace Sindri
     if (mTexture && mTexture->GetIsUploaded())
     {
       mPreview->Render(
-        { ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().x });
+        { ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().x },
+        deltaTime);
     }
 
     // You can add buttons, sliders, etc. here

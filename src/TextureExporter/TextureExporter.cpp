@@ -2,6 +2,7 @@
 
 #include "TextureExporter.hpp"
 #include "Utility/ImGuiHelper.hpp"
+#include "Utility/PngWriter.hpp"
 #include <algorithm>
 #include <imgui.h>
 #include <magic_enum/magic_enum.hpp>
@@ -23,7 +24,9 @@ namespace Sindri
     ImGuiWindowFlags popupFlags =
       ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 
-    if (ImGui::BeginPopupModal("ExportModal", NULL, popupFlags))
+    ImGui::SetNextWindowSize(ImVec2(400, 250));
+
+    if (ImGui::BeginPopupModal("Export##ExportModal", NULL, popupFlags))
     {
       const auto& caps = formatCaps.at(mExportSettings.format);
 
@@ -189,6 +192,8 @@ namespace Sindri
         }
       }
 
+      ImGui::Spacing();
+
       if (ImGui::Button("Close"))
       {
         ImGui::CloseCurrentPopup();
@@ -208,5 +213,15 @@ namespace Sindri
   void
   TextureExporter::Export()
   {
+    switch (mExportSettings.format)
+    {
+      case Sindri::FileFormat::PNG:
+        PngWriter::WritePng(mTexture->GetData(),
+                            mTextureSettings->mResolution.x,
+                            mTextureSettings->mResolution.y,
+                            mExportSettings.channels,
+                            mExportSettings.dataType,
+                            mExportSettings.path);
+    }
   }
 }
