@@ -48,8 +48,7 @@ add_subdirectory(src)
 # =======================================
 # ========== Target Properties ==========
 # =======================================
-#set_target_properties(${targetName} PROPERTIES VERSION ${PROJECT_VERSION})
-
+# set_target_properties(${targetName} PROPERTIES VERSION ${PROJECT_VERSION})
 target_compile_options(${targetName} PRIVATE
     $<$<CXX_COMPILER_ID:Clang>:-Wno-unused-command-line-argument>
 )
@@ -104,6 +103,11 @@ target_include_directories(${targetName} PRIVATE ${SOL2_INCLUDE_DIRS})
 
 # Copy files to build folder
 add_custom_command(TARGET
-${targetName}
-POST_BUILD COMMAND ${CMAKE_COMMAND}
--E copy_directory ${CMAKE_SOURCE_DIR}/lua $<TARGET_FILE_DIR:${targetName}>/lua)
+    ${targetName}
+    POST_BUILD COMMAND ${CMAKE_COMMAND}
+    -E copy_directory ${CMAKE_SOURCE_DIR}/lua $<TARGET_FILE_DIR:${targetName}>/lua)
+
+add_custom_command(TARGET
+    ${targetName}
+    POST_BUILD COMMAND ${CMAKE_COMMAND}
+    -E copy_directory ${CMAKE_SOURCE_DIR}/shaders $<TARGET_FILE_DIR:${targetName}>/shaders)

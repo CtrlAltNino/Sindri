@@ -3,6 +3,8 @@
 #include "CompositionStack.hpp"
 #include "NoiseGenerator.hpp"
 #include "ProceduralTexture/ProceduralTexture.hpp"
+#include "TextureExporter.hpp"
+#include "TexturePreview.hpp"
 #include "TextureSettings/TextureSettings.hpp"
 #include <SDL3/SDL.h>
 #include <filesystem>
@@ -21,6 +23,10 @@ namespace Sindri
     std::shared_ptr<CompositionStack> mCompositionStack = nullptr;
 
     std::shared_ptr<ProceduralTexture> mTexture = nullptr;
+
+    std::shared_ptr<TextureExporter> mExporter = nullptr;
+
+    std::shared_ptr<TexturePreview> mPreview = nullptr;
 
     NoiseGenerator mNoiseGenerator;
 

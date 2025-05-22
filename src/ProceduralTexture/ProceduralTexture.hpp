@@ -16,7 +16,7 @@ namespace Sindri
     bool               mIsUploaded = false;
     std::vector<float> mData;
     GLuint             mTextureId = 0;
-    bool               mInterpolate = false;
+    bool               mInterpolate = true;
 
     void
     UpdateTextureFiltering() const;

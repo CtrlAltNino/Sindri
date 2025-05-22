@@ -35,7 +35,7 @@ namespace Sindri
     std::shared_ptr<ProceduralTexture> mTexture = nullptr;
 
     size_t mThreadCount = 1;
-    size_t mWorkloadSize = 512;
+    size_t mWorkloadSize = 2048;
 
     void
     TextureFiller();

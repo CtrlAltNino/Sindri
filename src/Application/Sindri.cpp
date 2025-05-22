@@ -1,3 +1,4 @@
+#include "TexturePreview.hpp"
 #include "pch.hpp"
 
 #include "CompositionStack.hpp"
@@ -20,11 +21,15 @@ namespace Sindri
     , mTexture(std::make_shared<ProceduralTexture>())
     , mCompositionStack(std::make_shared<CompositionStack>())
     , mNoiseGenerator(mCompositionStack, mTextureSettings, mTexture)
+    , mExporter(std::make_shared<TextureExporter>(mTexture, mTextureSettings))
+
   {
     if (!Init())
     {
       std::cerr << "[Error] Failed to initialize SindriApp.\n";
     }
+
+    mPreview = std::make_shared<TexturePreview>(mTextureSettings, mTexture);
 
     mTextureSettings->mSeed = mRandomDevice();
     mScripts = GetLuaScripts();
@@ -268,6 +273,15 @@ namespace Sindri
       ImGui::EndDisabled();
     }
 
+    ImGui::SameLine();
+
+    if (ImGui::Button("Export"))
+    {
+      ImGui::OpenPopup("ExportModal");
+    }
+
+    mExporter->Render();
+
     // You can add buttons, sliders, etc. here
     ImGui::End();
 
@@ -280,12 +294,7 @@ namespace Sindri
     ImGui::Text("Texture Preview");
     ImGui::Separator();
 
-    // Texture size you want to display (e.g. width, height in pixels or UV
-    // scale)
-    ImVec2 size = ImVec2(ImGui::GetContentRegionAvail().x,
-                         ImGui::GetContentRegionAvail().x);
-
-    static bool interpolatePreviewTexture = false;
+    static bool interpolatePreviewTexture = mTexture->GetInterpolatePreview();
 
     if (ImGui::Checkbox("Interpolate", &interpolatePreviewTexture))
     {
@@ -294,7 +303,8 @@ namespace Sindri
     // Note: cast GLuint to void* to pass as ImTextureID
     if (mTexture && mTexture->GetIsUploaded())
     {
-      ImGui::Image((ImTextureID)mTexture->GetTextureId(), size);
+      mPreview->Render(
+        { ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().x });
     }
 
     // You can add buttons, sliders, etc. here
