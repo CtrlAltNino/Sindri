@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CompositionStack.hpp"
 #include "ProceduralTexture.hpp"
-#include "StackEntry.hpp"
+#include "TexturePipeline/ITexturePipeline.hpp"
+#include "TexturePipelineExecutor/ITexturePipelineExecutor.hpp"
 #include <queue>
 
 namespace Sindri
@@ -15,11 +15,11 @@ namespace Sindri
 
   struct StackState
   {
-    sol::state  State;
-    ComposeType Type;
+    sol::state LuaState;
+    BlendMode  BlendMode;
   };
 
-  class NoiseGenerator
+  class TexturePipelineExecutor : public ITexturePipelineExecutor
   {
   private:
     std::vector<std::thread> mThreadPool;
@@ -30,9 +30,9 @@ namespace Sindri
     std::mutex               mWorkQueueMutex;
     std::queue<FillWorkload> mWorkQueue;
 
-    std::shared_ptr<CompositionStack>  mCompositionStack = nullptr;
-    std::shared_ptr<TextureSettings>   mTextureSettings = nullptr;
+    std::shared_ptr<ITexturePipeline>  mTexturePipeline = nullptr;
     std::shared_ptr<ProceduralTexture> mTexture = nullptr;
+    TextureSettings                    mCurrentTextureSettings;
 
     size_t mThreadCount = 1;
     size_t mWorkloadSize = 2048;
@@ -57,13 +57,12 @@ namespace Sindri
       -> float;
 
   public:
-    NoiseGenerator(std::shared_ptr<CompositionStack>  compositionStack,
-                   std::shared_ptr<TextureSettings>   settings,
-                   std::shared_ptr<ProceduralTexture> texture);
+    TexturePipelineExecutor(std::shared_ptr<ITexturePipeline>  texturePipeline,
+                            std::shared_ptr<ProceduralTexture> texture);
 
-    ~NoiseGenerator();
+    ~TexturePipelineExecutor() override;
 
     void
-    RequestTextureFill();
+    ExecutePipeline(TextureSettings settings) override;
   };
 }

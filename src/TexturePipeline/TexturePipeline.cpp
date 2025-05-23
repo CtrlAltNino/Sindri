@@ -1,32 +1,35 @@
 #include "pch.hpp"
 
-#include "CompositionStack.hpp"
-#include "StackEntry.hpp"
+#include "NoiseLayer/INoiseLayer.hpp"
+#include "TexturePipeline.hpp"
 #include <imgui.h>
 
 namespace Sindri
 {
-  CompositionStack::CompositionStack() {}
-
   void
-  CompositionStack::Add(std::filesystem::path luaScriptPath)
+  TexturePipeline::AddLayer(std::filesystem::path luaScriptPath)
   {
-    mStack.push_back(StackEntry(luaScriptPath));
+    mNoiseLayers.emplace_back(mNoiseLayerFactory->Create(luaScriptPath));
   }
 
   void
-  CompositionStack::Remove(uint32_t index)
+  TexturePipeline::RemoveLayer(uint32_t index)
   {
-    // std::erase(mStack, index);
-    mStack.erase(mStack.begin() + index);
+    mNoiseLayers.erase(mNoiseLayers.begin() + index);
   }
 
   void
-  CompositionStack::RenderSettings()
+  TexturePipeline::MoveLayer(uint32_t fromIndex, uint32_t toIndex)
+  {
+    // TODO: Implement
+  }
+
+  void
+  TexturePipeline::RenderAllSettings()
   {
     int  index = 0;
-    auto deleteIterator = mStack.end();
-    for (auto it = mStack.begin(); it != mStack.end();)
+    auto deleteIterator = mNoiseLayers.end();
+    for (auto it = mNoiseLayers.begin(); it != mNoiseLayers.end();)
     {
       ImGui::PushID(index); // Start a unique ID scope
       {
@@ -38,15 +41,13 @@ namespace Sindri
         ImGui::BeginChild("ChildR", ImVec2(0, 0), childFlags, windowFlags);
         ImGui::Text(
           "%s",
-          std::string(std::to_string(index + 1) + ". " + it->GetName())
+          std::string(std::to_string(index + 1) + ". " + it->get()->GetName())
             .c_str());
         ImGui::Separator();
         ImGui::Spacing();
-        it->RenderSettings();
+        it->get()->RenderSettings();
         if (ImGui::Button("Delete"))
         {
-          // Remove(index);
-          // it = mStack.erase(it);
           deleteIterator = it;
         }
         ImGui::EndChild();
@@ -57,15 +58,15 @@ namespace Sindri
       ImGui::PopID();
     }
 
-    if (deleteIterator != mStack.end())
+    if (deleteIterator != mNoiseLayers.end())
     {
-      mStack.erase(deleteIterator);
+      mNoiseLayers.erase(deleteIterator);
     }
   }
 
   auto
-  CompositionStack::GetEntries() -> std::vector<StackEntry>&
+  TexturePipeline::GetLayers() -> std::vector<std::shared_ptr<INoiseLayer>>&
   {
-    return mStack;
+    return mNoiseLayers;
   }
 }

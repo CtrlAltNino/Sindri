@@ -100,6 +100,9 @@ target_include_directories(${targetName} PRIVATE ${SOL2_INCLUDE_DIRS})
 find_package(SPNG CONFIG REQUIRED)
 target_link_libraries(${targetName} PRIVATE $<IF:$<TARGET_EXISTS:spng::spng>,spng::spng,spng::spng_static>)
 
+find_path(BEXT_DI_INCLUDE_DIRS "boost/di.hpp")
+target_include_directories(${targetName} PRIVATE ${BEXT_DI_INCLUDE_DIRS})
+
 # ===============================================
 # ========== Copy into build directory ==========
 # ===============================================

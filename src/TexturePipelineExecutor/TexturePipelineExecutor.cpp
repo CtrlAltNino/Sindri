@@ -1,22 +1,19 @@
 #include "pch.hpp"
 
-#include "NoiseGenerator.hpp"
-#include "StackEntry.hpp"
+#include "NoiseLayer/INoiseLayer.hpp"
+#include "TexturePipelineExecutor.hpp"
 #include "TextureSettings/TextureSettings.hpp"
 #include "Utility/CoordinateHelper.hpp"
 #include <optional>
-#include <random>
 #include <sol/protected_function_result.hpp>
 #include <utility>
 
 namespace Sindri
 {
-  NoiseGenerator::NoiseGenerator(
-    std::shared_ptr<CompositionStack>  compositionStack,
-    std::shared_ptr<TextureSettings>   settings,
+  TexturePipelineExecutor::TexturePipelineExecutor(
+    std::shared_ptr<ITexturePipeline>  texturePipeline,
     std::shared_ptr<ProceduralTexture> texture)
-    : mCompositionStack(std::move(compositionStack))
-    , mTextureSettings(std::move(settings))
+    : mTexturePipeline(std::move(texturePipeline))
     , mTexture(std::move(texture))
     , mThreadCount(std::thread::hardware_concurrency())
   {
@@ -27,7 +24,7 @@ namespace Sindri
     }
   }
 
-  NoiseGenerator::~NoiseGenerator()
+  TexturePipelineExecutor::~TexturePipelineExecutor()
   {
     mStopThreadFlag.store(true);
     mCondition.notify_all();
@@ -42,7 +39,7 @@ namespace Sindri
   }
 
   void
-  NoiseGenerator::TextureFiller()
+  TexturePipelineExecutor::TextureFiller()
   {
     while (!mStopThreadFlag.load())
     {
@@ -75,8 +72,8 @@ namespace Sindri
             float computed =
               EvaluateStack(stack,
                             IndexToCoord(i,
-                                         mTextureSettings->mResolution,
-                                         mTextureSettings->mDimensions));
+                                         mCurrentTextureSettings.mResolution,
+                                         mCurrentTextureSettings.mDimensions));
             data[i] = computed;
             // std::cout << "Computed pixel value: " << computed << std::endl;
           }
@@ -92,8 +89,10 @@ namespace Sindri
   }
 
   void
-  NoiseGenerator::RequestTextureFill()
+  TexturePipelineExecutor::ExecutePipeline(TextureSettings textureSettings)
   {
+    mCurrentTextureSettings = textureSettings;
+
     // Chunking the work
     GenerateWorkloads();
 
@@ -102,7 +101,7 @@ namespace Sindri
   }
 
   auto
-  NoiseGenerator::IsWorkloadQueueEmpty() -> bool
+  TexturePipelineExecutor::IsWorkloadQueueEmpty() -> bool
   {
     std::unique_lock<std::mutex> lock(mWorkQueueMutex);
     bool                         isEmpty = mWorkQueue.empty();
@@ -111,7 +110,7 @@ namespace Sindri
   }
 
   auto
-  NoiseGenerator::AcquireWorkload() -> std::optional<FillWorkload>
+  TexturePipelineExecutor::AcquireWorkload() -> std::optional<FillWorkload>
   {
     std::unique_lock<std::mutex> lock(mWorkQueueMutex);
 
@@ -126,7 +125,7 @@ namespace Sindri
   }
 
   void
-  NoiseGenerator::GenerateWorkloads()
+  TexturePipelineExecutor::GenerateWorkloads()
   {
     size_t currentPos = 0;
     while (currentPos < mTexture->GetData().size())
@@ -145,39 +144,39 @@ namespace Sindri
   }
 
   auto
-  NoiseGenerator::InitializeState() -> std::vector<StackState>
+  TexturePipelineExecutor::InitializeState() -> std::vector<StackState>
   {
     std::vector<StackState> stackState;
 
-    for (auto& stackEntry : mCompositionStack->GetEntries())
+    for (auto& stackEntry : mTexturePipeline->GetLayers())
     {
       StackState state;
-      state.Type = stackEntry.GetComposeType();
+      state.BlendMode = stackEntry->GetBlendMode();
 
       // Load scripts
-      state.State.open_libraries(
+      state.LuaState.open_libraries(
         sol::lib::math, sol::lib::base, sol::lib::string);
-      state.State.script_file(stackEntry.GetPath().string());
+      state.LuaState.script_file(stackEntry->GetPath().string());
 
       // Apply settings
       // TODO:
 
-      for (auto& pair : stackEntry.GetSettings())
+      for (auto& pair : stackEntry->GetSettings())
       {
         std::string                    key = pair.first;
         std::variant<bool, int, float> value = pair.second;
 
         if (std::holds_alternative<int>(value))
         {
-          state.State["settings"][key] = std::get<int>(value);
+          state.LuaState["settings"][key] = std::get<int>(value);
         }
         else if (std::holds_alternative<float>(value))
         {
-          state.State["settings"][key] = std::get<float>(value);
+          state.LuaState["settings"][key] = std::get<float>(value);
         }
         else if (std::holds_alternative<bool>(value))
         {
-          state.State["settings"][key] = std::get<bool>(value);
+          state.LuaState["settings"][key] = std::get<bool>(value);
         }
       }
 
@@ -188,26 +187,26 @@ namespace Sindri
   }
 
   auto
-  NoiseGenerator::EvaluateStack(std::vector<StackState>& stack,
-                                glm::ivec3               coordinate) -> float
+  TexturePipelineExecutor::EvaluateStack(std::vector<StackState>& stack,
+                                         glm::ivec3 coordinate) -> float
   {
     float value = 0.0F;
 
     for (auto& stackState : stack)
     {
       float normalizedX =
-        (float)coordinate.x / (float)mTextureSettings->mResolution.x;
+        (float)coordinate.x / (float)mCurrentTextureSettings.mResolution.x;
       float normalizedY =
-        (float)coordinate.y / (float)mTextureSettings->mResolution.y;
+        (float)coordinate.y / (float)mCurrentTextureSettings.mResolution.y;
       float normalizedZ =
-        (float)coordinate.z / (float)mTextureSettings->mResolution.z;
+        (float)coordinate.z / (float)mCurrentTextureSettings.mResolution.z;
 
       // sol::protected_function_result result =
       //   mEvaluate(normalizedX, normalizedY, normalizedZ, settings->mSeed);
       float                          result = 0.0F;
       sol::protected_function_result functionResult =
-        stackState.State["evaluate"](
-          normalizedX, normalizedY, normalizedZ, mTextureSettings->mSeed);
+        stackState.LuaState["evaluate"](
+          normalizedX, normalizedY, normalizedZ, mCurrentTextureSettings.mSeed);
 
       if (!functionResult.valid())
       {
@@ -220,7 +219,7 @@ namespace Sindri
           functionResult.get<float>(); // or result.get<float>() for safety
       }
 
-      switch (stackState.Type)
+      switch (stackState.BlendMode)
       {
         case Add:
           {

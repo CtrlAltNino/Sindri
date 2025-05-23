@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CompositionStack.hpp"
-#include "NoiseGenerator.hpp"
 #include "ProceduralTexture/ProceduralTexture.hpp"
 #include "TextureExporter.hpp"
+#include "TexturePipeline/ITexturePipeline.hpp"
+#include "TexturePipelineExecutor/ITexturePipelineExecutor.hpp"
 #include "TexturePreview.hpp"
 #include "TextureSettings/TextureSettings.hpp"
 #include <SDL3/SDL.h>
@@ -12,23 +12,23 @@
 
 namespace Sindri
 {
-  class SindriApp
+  class Sindri
   {
   private:
     SDL_Window*   mWindow = nullptr;
     SDL_GLContext mContext = nullptr;
 
-    std::shared_ptr<TextureSettings> mTextureSettings = nullptr;
+    TextureSettings mTextureSettings;
 
-    std::shared_ptr<CompositionStack> mCompositionStack = nullptr;
+    std::shared_ptr<ITexturePipeline> mCompositionStack = nullptr;
 
-    std::shared_ptr<ProceduralTexture> mTexture = nullptr;
+    // std::shared_ptr<ITextureBuffer> mTextureBuffer = nullptr;
 
     std::shared_ptr<TextureExporter> mExporter = nullptr;
 
     std::shared_ptr<TexturePreview> mPreview = nullptr;
 
-    NoiseGenerator mNoiseGenerator;
+    std::shared_ptr<ITexturePipelineExecutor> mPipelineExecutor;
 
     bool mRunning = false;
 
@@ -74,12 +74,12 @@ namespace Sindri
     LuaScriptSelector();
 
   public:
-    SindriApp();
-    ~SindriApp();
+    Sindri(std::shared_ptr<ITexturePipeline> compositionStack);
+    ~Sindri();
 
-    SindriApp(const SindriApp&) = delete;
+    Sindri(const Sindri&) = delete;
     auto
-    operator=(const SindriApp&) -> SindriApp& = delete;
+    operator=(const Sindri&) -> Sindri& = delete;
 
     void
     Run();

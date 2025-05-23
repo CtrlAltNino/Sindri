@@ -1,10 +1,10 @@
-#include "TexturePreview.hpp"
+#include "TexturePipeline/ITexturePipeline.hpp"
 #include "pch.hpp"
 
-#include "CompositionStack.hpp"
 #include "Helpers/UI.hpp"
 #include "ProceduralTexture.hpp"
 #include "Sindri.hpp"
+#include "TexturePreview.hpp"
 #include "TextureSettings/TextureSettings.hpp"
 #include <chrono>
 #include <glad/glad.h>
@@ -16,17 +16,16 @@
 
 namespace Sindri
 {
-  SindriApp::SindriApp()
-    : mTextureSettings(std::make_shared<TextureSettings>())
-    , mTexture(std::make_shared<ProceduralTexture>())
-    , mCompositionStack(std::make_shared<CompositionStack>())
-    , mNoiseGenerator(mCompositionStack, mTextureSettings, mTexture)
+  Sindri::Sindri(std::shared_ptr<ITexturePipeline> compositionStack)
+    : mTexture(std::make_shared<ITextureBuffer>())
+    , mCompositionStack(std::move(compositionStack))
+    , mPipelineExecutor(mCompositionStack, mTextureSettings, mTexture)
     , mExporter(std::make_shared<TextureExporter>(mTexture, mTextureSettings))
 
   {
     if (!Init())
     {
-      std::cerr << "[Error] Failed to initialize SindriApp.\n";
+      std::cerr << "[Error] Failed to initialize Sindri.\n";
     }
 
     mPreview = std::make_shared<TexturePreview>(mTextureSettings, mTexture);
@@ -35,13 +34,13 @@ namespace Sindri
     mScripts = GetLuaScripts();
   }
 
-  SindriApp::~SindriApp()
+  Sindri::~Sindri()
   {
     Shutdown();
   }
 
   auto
-  SindriApp::Init() -> bool
+  Sindri::Init() -> bool
   {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0)
     {
@@ -97,7 +96,7 @@ namespace Sindri
   }
 
   void
-  SindriApp::Shutdown()
+  Sindri::Shutdown()
   {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL3_Shutdown();
@@ -109,11 +108,11 @@ namespace Sindri
   }
 
   void
-  SindriApp::Run()
+  Sindri::Run()
   {
     if (!mRunning)
     {
-      std::cerr << "[SindriApp] Cannot run main loop; init failed.\n";
+      std::cerr << "[Sindri] Cannot run main loop; init failed.\n";
       return;
     }
 
@@ -121,7 +120,7 @@ namespace Sindri
   }
 
   void
-  SindriApp::MainLoop()
+  Sindri::MainLoop()
   {
     using clock = std::chrono::high_resolution_clock;
     auto lastTime = clock::now();
@@ -158,7 +157,7 @@ namespace Sindri
   }
 
   void
-  SindriApp::HandleEvents()
+  Sindri::HandleEvents()
   {
     SDL_Event event;
     while (SDL_PollEvent(&event))
@@ -173,7 +172,7 @@ namespace Sindri
   }
 
   void
-  SindriApp::Render()
+  Sindri::Render()
   {
     ImGui::Render();
 
@@ -182,7 +181,7 @@ namespace Sindri
   }
 
   void
-  SindriApp::MainWindow(float deltaTime)
+  Sindri::MainWindow(float deltaTime)
   {
     // Set window flags to disable interactions and visuals
     ImGuiWindowFlags windowFlags =
@@ -312,7 +311,7 @@ namespace Sindri
   }
 
   void
-  SindriApp::GenerateTexture()
+  Sindri::GenerateTexture()
   {
     switch (mTextureSettings->mDimensions)
     {
@@ -337,7 +336,7 @@ namespace Sindri
   }
 
   auto
-  SindriApp::GetLuaScripts() -> std::vector<std::filesystem::path>
+  Sindri::GetLuaScripts() -> std::vector<std::filesystem::path>
   {
     std::vector<std::filesystem::path> scripts;
     for (const auto& entry : std::filesystem::directory_iterator("lua"))
@@ -351,7 +350,7 @@ namespace Sindri
   }
 
   void
-  SindriApp::LuaScriptSelector()
+  Sindri::LuaScriptSelector()
   {
     // Combo Box
     if (ImGui::BeginCombo("Lua Script",

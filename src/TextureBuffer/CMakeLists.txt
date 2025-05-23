@@ -1,6 +1,6 @@
 target_sources(${targetName}
     PRIVATE
-    NoiseGenerator.cpp
+    TextureBuffer.cpp
 )
 
 target_include_directories(${targetName} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
