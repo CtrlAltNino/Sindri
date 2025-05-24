@@ -1,5 +1,6 @@
 #pragma once
 
+#include "TextureSettings/TextureSettings.hpp"
 #include <glad/glad.h>
 
 namespace Sindri
@@ -20,6 +21,18 @@ namespace Sindri
 
     virtual auto
     GetData() -> std::vector<float>& = 0;
+
+    virtual auto
+    GetWidth() -> size_t = 0;
+
+    virtual auto
+    GetHeight() -> size_t = 0;
+
+    virtual auto
+    GetDepth() -> size_t = 0;
+
+    virtual auto
+    GetDimension() -> TextureDimension = 0;
 
     /*void
     Upload();

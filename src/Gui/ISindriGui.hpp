@@ -8,6 +8,6 @@ namespace Sindri
     virtual ~ISindriGui() = default;
 
     virtual void
-    Render() = 0;
+    Render(float deltaTime) = 0;
   };
 }

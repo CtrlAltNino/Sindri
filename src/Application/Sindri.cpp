@@ -1,9 +1,9 @@
-#include "TexturePipeline/ITexturePipeline.hpp"
 #include "pch.hpp"
 
 #include "Helpers/UI.hpp"
-#include "ProceduralTexture.hpp"
+#include "ITextureBuffer.hpp"
 #include "Sindri.hpp"
+#include "TexturePipeline/ITexturePipeline.hpp"
 #include "TexturePreview.hpp"
 #include "TextureSettings/TextureSettings.hpp"
 #include <chrono>
@@ -16,30 +16,32 @@
 
 namespace Sindri
 {
-  Sindri::Sindri(std::shared_ptr<ITexturePipeline> compositionStack)
-    : mTexture(std::make_shared<ITextureBuffer>())
-    , mCompositionStack(std::move(compositionStack))
-    , mPipelineExecutor(mCompositionStack, mTextureSettings, mTexture)
-    , mExporter(std::make_shared<TextureExporter>(mTexture, mTextureSettings))
-
+  Sindri::Sindri(std::shared_ptr<ISindriGui>         gui,
+                 std::shared_ptr<IWindow>            window,
+                 std::shared_ptr<ITexturePreview>    preview,
+                 std::shared_ptr<IGpuPreviewTexture> gpuPreviewTexture)
+    : mGui(std::move(gui))
+    , mWindow(std::move(window))
+    , mPreview(std::move(preview))
+    , mGpuPreviewTexture(std::move(gpuPreviewTexture))
   {
-    if (!Init())
+    /*if (!Init())
     {
       std::cerr << "[Error] Failed to initialize Sindri.\n";
-    }
+    }*/
 
-    mPreview = std::make_shared<TexturePreview>(mTextureSettings, mTexture);
+    // mPreview = std::make_shared<TexturePreview>(mTextureSettings, mTexture);
 
-    mTextureSettings->mSeed = mRandomDevice();
-    mScripts = GetLuaScripts();
+    // mTextureSettings->mSeed = mRandomDevice();
+    // mScripts = GetLuaScripts();
   }
 
   Sindri::~Sindri()
   {
-    Shutdown();
+    // Shutdown();
   }
 
-  auto
+  /*auto
   Sindri::Init() -> bool
   {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0)
@@ -93,9 +95,9 @@ namespace Sindri
 
     mRunning = true;
     return true;
-  }
+  }*/
 
-  void
+  /*void
   Sindri::Shutdown()
   {
     ImGui_ImplOpenGL3_Shutdown();
@@ -105,16 +107,14 @@ namespace Sindri
     SDL_GL_DestroyContext(mContext);
     SDL_DestroyWindow(mWindow);
     SDL_Quit();
-  }
+  }*/
 
   void
   Sindri::Run()
   {
-    if (!mRunning)
-    {
-      std::cerr << "[Sindri] Cannot run main loop; init failed.\n";
-      return;
-    }
+    mWindow->ShowWindow();
+
+    mPreview->Init();
 
     MainLoop();
   }
@@ -125,38 +125,41 @@ namespace Sindri
     using clock = std::chrono::high_resolution_clock;
     auto lastTime = clock::now();
 
-    while (mRunning)
+    while (!mWindow->ShouldClose())
     {
       auto  now = clock::now();
       float deltaTime = std::chrono::duration<float>(now - lastTime).count();
       lastTime = now;
-      mFps = 1.0f / deltaTime;
-      mMsPerFrame = deltaTime * 1000.0f;
-      SDL_GetWindowSize(mWindow, &mCurrentWindowWidth, &mCurrentWindowHeight);
+      // mFps = 1.0f / deltaTime;
+      // mMsPerFrame = deltaTime * 1000.0f;
+      //  SDL_GetWindowSize(mWindow, &mCurrentWindowWidth,
+      //  &mCurrentWindowHeight);
 
-      HandleEvents();
+      // HandleEvents();
 
-      ImGui_ImplOpenGL3_NewFrame();
-      ImGui_ImplSDL3_NewFrame();
-      ImGui::NewFrame();
+      // ImGui_ImplOpenGL3_NewFrame();
+      // ImGui_ImplSDL3_NewFrame();
+      // ImGui::NewFrame();
 
       // Demo window for testing
       // ImGui::ShowDemoWindow();
 
-      if (mTexture->GetWaitingForUpload())
+      mGui->Render(deltaTime);
+
+      if (mGpuPreviewTexture->GetWaitingForUpload())
       {
-        mTexture->Upload();
+        mGpuPreviewTexture->Upload();
       }
 
-      MainWindow(deltaTime);
+      // MainWindow(deltaTime);
 
-      Render();
+      // Render();
 
       // SDL_Delay(1); // prevent CPU spinlock
     }
   }
 
-  void
+  /*void
   Sindri::HandleEvents()
   {
     SDL_Event event;
@@ -395,5 +398,5 @@ namespace Sindri
       mSelectedScriptIndex = 0;
       mScripts = GetLuaScripts();
     }
-  }
+  }*/
 }

@@ -30,5 +30,17 @@ namespace Sindri
 
     auto
     GetData() -> std::vector<float>& override;
+
+    auto
+    GetWidth() -> size_t override;
+
+    auto
+    GetHeight() -> size_t override;
+
+    auto
+    GetDepth() -> size_t override;
+
+    auto
+    GetDimension() -> TextureDimension override;
   };
 }

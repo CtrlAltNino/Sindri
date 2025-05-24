@@ -1,6 +1,8 @@
 #pragma once
 
-#include "ProceduralTexture.hpp"
+#include "IGpuPreviewTexture.hpp"
+#include "ITextureBuffer.hpp"
+#include "ITexturePreview.hpp"
 #include "TextureSettings/TextureSettings.hpp"
 
 namespace Sindri
@@ -21,20 +23,21 @@ namespace Sindri
     GLsizei indexCount = 0;
   };
 
-  class TexturePreview
+  class TexturePreview : public ITexturePreview
   {
   private:
     TextureDimension mCachedDimension = TextureDimension::Texture2D;
-    std::shared_ptr<TextureSettings>   mTextureSettings;
-    std::shared_ptr<ProceduralTexture> mTexture;
-    Framebuffer                        mFramebuffer;
-    Mesh                               mCubeMesh;
-    GLuint                             m3DPreviewShader = 0;
-    glm::mat4                          mModelMatrix = glm::mat4(1.0F);
-    float                              mDensityFactor = 0.6F;
-    float                              mStepSize = 0.005F;
-    int                                mMaxSteps = 580;
-    float                              mRotationSpeed = 0.2F;
+    std::shared_ptr<TextureSettings>    mTextureSettings;
+    std::shared_ptr<ITextureBuffer>     mTexture;
+    std::shared_ptr<IGpuPreviewTexture> mGpuPreviewTexture;
+    Framebuffer                         mFramebuffer;
+    Mesh                                mCubeMesh;
+    GLuint                              m3DPreviewShader = 0;
+    glm::mat4                           mModelMatrix = glm::mat4(1.0F);
+    float                               mDensityFactor = 0.6F;
+    float                               mStepSize = 0.005F;
+    int                                 mMaxSteps = 580;
+    float                               mRotationSpeed = 0.2F;
 
     void
     SetupShader();
@@ -58,12 +61,16 @@ namespace Sindri
     Render3DPreview(glm::vec2 resolution, float deltaTime);
 
   public:
-    TexturePreview(std::shared_ptr<TextureSettings>   textureSettings,
-                   std::shared_ptr<ProceduralTexture> texture);
+    TexturePreview(std::shared_ptr<TextureSettings>    textureSettings,
+                   std::shared_ptr<ITextureBuffer>     texture,
+                   std::shared_ptr<IGpuPreviewTexture> gpuPreviewTexture);
 
     ~TexturePreview();
 
     void
-    Render(glm::vec2 resolution, float deltaTime);
+    Init() override;
+
+    void
+    Render(glm::vec2 resolution, float deltaTime) override;
   };
 }

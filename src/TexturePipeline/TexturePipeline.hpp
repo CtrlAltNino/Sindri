@@ -14,7 +14,7 @@ namespace Sindri
     std::vector<std::shared_ptr<INoiseLayer>> mNoiseLayers;
 
   public:
-    TexturePipeline() = default;
+    TexturePipeline(std::shared_ptr<INoiseLayerFactory> noiseLayerFactory);
     ~TexturePipeline() override = default;
 
     void

@@ -11,8 +11,9 @@ namespace Sindri
 
   struct TextureSettings
   {
-    TextureDimension mDimensions = TextureDimension::Texture2D;
-    glm::ivec3       mResolution = glm::ivec3(512, 512, 512);
-    uint32_t         mSeed = 0;
+    TextureSettings() = default;
+    TextureDimension Dimensions = TextureDimension::Texture2D;
+    glm::ivec3       Resolution = glm::ivec3(512, 512, 512);
+    uint32_t         Seed = 0;
   };
 }

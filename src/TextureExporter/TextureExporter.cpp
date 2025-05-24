@@ -1,8 +1,8 @@
 #include "pch.hpp"
 
+#include "Gui/Helpers/ImGuiHelper.hpp"
+#include "ImageWriting/PngWriter.hpp"
 #include "TextureExporter.hpp"
-#include "Utility/ImGuiHelper.hpp"
-#include "Utility/PngWriter.hpp"
 #include <algorithm>
 #include <imgui.h>
 #include <magic_enum/magic_enum.hpp>
@@ -11,8 +11,8 @@
 namespace Sindri
 {
   TextureExporter::TextureExporter(
-    std::shared_ptr<ProceduralTexture> texture,
-    std::shared_ptr<TextureSettings>   textureSettings)
+    std::shared_ptr<ITextureBuffer>  texture,
+    std::shared_ptr<TextureSettings> textureSettings)
     : mTexture(std::move(texture))
     , mTextureSettings(std::move(textureSettings))
   {
@@ -217,8 +217,8 @@ namespace Sindri
     {
       case Sindri::FileFormat::PNG:
         PngWriter::WritePng(mTexture->GetData(),
-                            mTextureSettings->mResolution.x,
-                            mTextureSettings->mResolution.y,
+                            mTextureSettings->Resolution.x,
+                            mTextureSettings->Resolution.y,
                             mExportSettings.channels,
                             mExportSettings.dataType,
                             mExportSettings.path);

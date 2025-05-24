@@ -1,9 +1,10 @@
 #include "pch.hpp"
 
+#include "Helper/CoordinateHelper.hpp"
 #include "NoiseLayer/INoiseLayer.hpp"
 #include "TexturePipelineExecutor.hpp"
 #include "TextureSettings/TextureSettings.hpp"
-#include "Utility/CoordinateHelper.hpp"
+#include <cmath>
 #include <optional>
 #include <sol/protected_function_result.hpp>
 #include <utility>
@@ -11,11 +12,13 @@
 namespace Sindri
 {
   TexturePipelineExecutor::TexturePipelineExecutor(
-    std::shared_ptr<ITexturePipeline>  texturePipeline,
-    std::shared_ptr<ProceduralTexture> texture)
+    std::shared_ptr<ITexturePipeline>   texturePipeline,
+    std::shared_ptr<ITextureBuffer>     texture,
+    std::shared_ptr<IGpuPreviewTexture> gpuPreviewTexture)
     : mTexturePipeline(std::move(texturePipeline))
     , mTexture(std::move(texture))
     , mThreadCount(std::thread::hardware_concurrency())
+    , mGpuPreviewTexture(std::move(gpuPreviewTexture))
   {
     // mUploadThread = std::thread([this]() { TextureFiller(); });
     for (int i = 0; i < mThreadCount; i++)
@@ -62,9 +65,9 @@ namespace Sindri
         std::vector<float>& data = mTexture->GetData();
 
         std::cout << "Work queue processing" << std::endl;
+        mNumActiveWorkers.fetch_add(1, std::memory_order_relaxed);
         while (auto workload = AcquireWorkload())
         {
-          bool lastOne = IsWorkloadQueueEmpty();
           for (size_t i = workload->Offset;
                (i < data.size()) && (i < workload->Offset + workload->Length);
                i++)
@@ -72,16 +75,17 @@ namespace Sindri
             float computed =
               EvaluateStack(stack,
                             IndexToCoord(i,
-                                         mCurrentTextureSettings.mResolution,
-                                         mCurrentTextureSettings.mDimensions));
+                                         mCurrentTextureSettings.Resolution,
+                                         mCurrentTextureSettings.Dimensions));
             data[i] = computed;
             // std::cout << "Computed pixel value: " << computed << std::endl;
           }
+        }
+        mNumActiveWorkers.fetch_sub(1, std::memory_order_relaxed);
 
-          if (lastOne)
-          {
-            mTexture->SetWaitingForUpload(true);
-          }
+        if (mNumActiveWorkers.load() == 0)
+        {
+          mGpuPreviewTexture->SetWaitingForUpload(true);
         }
         std::cout << "Work queue empty" << std::endl;
       }
@@ -141,6 +145,8 @@ namespace Sindri
 
       mWorkQueue.push(newWorkload);
     }
+
+    mCurrentNumWorkloads = mWorkQueue.size();
   }
 
   auto
@@ -195,18 +201,18 @@ namespace Sindri
     for (auto& stackState : stack)
     {
       float normalizedX =
-        (float)coordinate.x / (float)mCurrentTextureSettings.mResolution.x;
+        (float)coordinate.x / (float)mCurrentTextureSettings.Resolution.x;
       float normalizedY =
-        (float)coordinate.y / (float)mCurrentTextureSettings.mResolution.y;
+        (float)coordinate.y / (float)mCurrentTextureSettings.Resolution.y;
       float normalizedZ =
-        (float)coordinate.z / (float)mCurrentTextureSettings.mResolution.z;
+        (float)coordinate.z / (float)mCurrentTextureSettings.Resolution.z;
 
       // sol::protected_function_result result =
       //   mEvaluate(normalizedX, normalizedY, normalizedZ, settings->mSeed);
       float                          result = 0.0F;
       sol::protected_function_result functionResult =
         stackState.LuaState["evaluate"](
-          normalizedX, normalizedY, normalizedZ, mCurrentTextureSettings.mSeed);
+          normalizedX, normalizedY, normalizedZ, mCurrentTextureSettings.Seed);
 
       if (!functionResult.valid())
       {
@@ -235,5 +241,18 @@ namespace Sindri
     }
 
     return value;
+  }
+
+  auto
+  TexturePipelineExecutor::IsRunning() -> bool
+  {
+    return mNumActiveWorkers.load() > 0;
+  }
+
+  auto
+  TexturePipelineExecutor::GetProgress() -> float
+  {
+    return (float)(mCurrentNumWorkloads - mWorkQueue.size()) /
+           (float)mCurrentNumWorkloads;
   }
 }

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "ProceduralTexture.hpp"
+#include "IGpuPreviewTexture.hpp"
+#include "ITextureBuffer.hpp"
 #include "TexturePipeline/ITexturePipeline.hpp"
 #include "TexturePipelineExecutor/ITexturePipelineExecutor.hpp"
 #include <queue>
@@ -29,13 +30,16 @@ namespace Sindri
 
     std::mutex               mWorkQueueMutex;
     std::queue<FillWorkload> mWorkQueue;
+    size_t                   mCurrentNumWorkloads = 0;
 
-    std::shared_ptr<ITexturePipeline>  mTexturePipeline = nullptr;
-    std::shared_ptr<ProceduralTexture> mTexture = nullptr;
-    TextureSettings                    mCurrentTextureSettings;
+    std::shared_ptr<ITexturePipeline>   mTexturePipeline = nullptr;
+    std::shared_ptr<ITextureBuffer>     mTexture = nullptr;
+    std::shared_ptr<IGpuPreviewTexture> mGpuPreviewTexture = nullptr;
+    TextureSettings                     mCurrentTextureSettings;
 
-    size_t mThreadCount = 1;
-    size_t mWorkloadSize = 2048;
+    size_t                mThreadCount = 1;
+    size_t                mWorkloadSize = 2048;
+    std::atomic<uint32_t> mNumActiveWorkers{ 0 };
 
     void
     TextureFiller();
@@ -57,12 +61,20 @@ namespace Sindri
       -> float;
 
   public:
-    TexturePipelineExecutor(std::shared_ptr<ITexturePipeline>  texturePipeline,
-                            std::shared_ptr<ProceduralTexture> texture);
+    TexturePipelineExecutor(
+      std::shared_ptr<ITexturePipeline>   texturePipeline,
+      std::shared_ptr<ITextureBuffer>     texture,
+      std::shared_ptr<IGpuPreviewTexture> gpuPreviewTexture);
 
     ~TexturePipelineExecutor() override;
 
     void
     ExecutePipeline(TextureSettings settings) override;
+
+    auto
+    IsRunning() -> bool override;
+
+    auto
+    GetProgress() -> float override;
   };
 }

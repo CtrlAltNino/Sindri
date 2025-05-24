@@ -1,7 +1,11 @@
 #pragma once
 
+#include "IGpuPreviewTexture.hpp"
+#include "ISindriGui.hpp"
+#include "ITextureExporter.hpp"
+#include "ITexturePreview.hpp"
+#include "IWindow.hpp"
 #include "ProceduralTexture/ProceduralTexture.hpp"
-#include "TextureExporter.hpp"
 #include "TexturePipeline/ITexturePipeline.hpp"
 #include "TexturePipelineExecutor/ITexturePipelineExecutor.hpp"
 #include "TexturePreview.hpp"
@@ -15,66 +19,61 @@ namespace Sindri
   class Sindri
   {
   private:
-    SDL_Window*   mWindow = nullptr;
-    SDL_GLContext mContext = nullptr;
+    // SDL_Window*   mWindow = nullptr;
+    // SDL_GLContext mContext = nullptr;
 
-    TextureSettings mTextureSettings;
+    std::shared_ptr<ISindriGui> mGui = nullptr;
 
-    std::shared_ptr<ITexturePipeline> mCompositionStack = nullptr;
+    std::shared_ptr<IWindow> mWindow = nullptr;
 
-    // std::shared_ptr<ITextureBuffer> mTextureBuffer = nullptr;
+    std::shared_ptr<ITextureExporter> mExporter = nullptr;
 
-    std::shared_ptr<TextureExporter> mExporter = nullptr;
-
-    std::shared_ptr<TexturePreview> mPreview = nullptr;
+    std::shared_ptr<ITexturePreview> mPreview = nullptr;
 
     std::shared_ptr<ITexturePipelineExecutor> mPipelineExecutor;
 
-    bool mRunning = false;
+    std::shared_ptr<IGpuPreviewTexture> mGpuPreviewTexture;
 
-    std::random_device mRandomDevice;
+    // bool mRunning = false;
 
-    int mWidth = 1280;
-    int mHeight = 720;
-    int mCurrentWindowWidth = 1280;
-    int mCurrentWindowHeight = 720;
+    // int mSelectedScriptIndex = 0;
+    // std::vector<std::filesystem::path> mScripts;
 
-    int mSelectedScriptIndex = 0;
+    // bool mVsync = true;
 
-    bool mVsync = true;
+    // float       mFps = 0.0F;
+    // float       mMsPerFrame = 0.0F;
+    // std::string mTitle = "Sindri";
 
-    float       mFps = 0.0F;
-    float       mMsPerFrame = 0.0F;
-    std::string mTitle = "Sindri";
-
-    std::vector<std::filesystem::path> mScripts;
-
-    auto
-    Init() -> bool; // Internal init
-    void
-    Shutdown(); // Internal shutdown
+    // auto
+    // Init() -> bool; // Internal init
+    // void
+    // Shutdown(); // Internal shutdown
     void
     MainLoop(); // Internal loop
 
-    void
-    HandleEvents(); // Poll input events
-    void
-    Render();
+    // void
+    // HandleEvents(); // Poll input events
+    // void
+    // Render();
 
-    void
-    MainWindow(float deltaTime);
+    // void
+    // MainWindow(float deltaTime);
 
-    void
-    GenerateTexture();
+    // void
+    // GenerateTexture();
 
-    auto
-    GetLuaScripts() -> std::vector<std::filesystem::path>;
+    // auto
+    // GetLuaScripts() -> std::vector<std::filesystem::path>;
 
-    void
-    LuaScriptSelector();
+    // void
+    // LuaScriptSelector();
 
   public:
-    Sindri(std::shared_ptr<ITexturePipeline> compositionStack);
+    Sindri(std::shared_ptr<ISindriGui>         gui,
+           std::shared_ptr<IWindow>            window,
+           std::shared_ptr<ITexturePreview>    preview,
+           std::shared_ptr<IGpuPreviewTexture> gpuPreviewTexture);
     ~Sindri();
 
     Sindri(const Sindri&) = delete;

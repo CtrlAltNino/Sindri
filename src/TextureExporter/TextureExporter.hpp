@@ -1,7 +1,9 @@
 #pragma once
 
-#include "ProceduralTexture.hpp"
+#include "ITextureBuffer.hpp"
+#include "ITextureExporter.hpp"
 #include "TextureSettings/TextureSettings.hpp"
+
 namespace Sindri
 {
   enum class FileFormat : uint8_t
@@ -128,21 +130,21 @@ namespace Sindri
         .supportsCompression = true } },
   };
 
-  class TextureExporter
+  class TextureExporter : public ITextureExporter
   {
   private:
-    ExportSettings                     mExportSettings;
-    std::shared_ptr<ProceduralTexture> mTexture;
-    std::shared_ptr<TextureSettings>   mTextureSettings;
+    ExportSettings                   mExportSettings;
+    std::shared_ptr<ITextureBuffer>  mTexture;
+    std::shared_ptr<TextureSettings> mTextureSettings;
 
     void
     Export();
 
   public:
-    TextureExporter(std::shared_ptr<ProceduralTexture> texture,
-                    std::shared_ptr<TextureSettings>   textureSettings);
+    TextureExporter(std::shared_ptr<ITextureBuffer>  texture,
+                    std::shared_ptr<TextureSettings> textureSettings);
 
     void
-    Render();
+    Render() override;
   };
 }

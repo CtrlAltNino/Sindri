@@ -40,7 +40,7 @@ namespace Sindri
   void
   NoiseLayer::RenderSettings()
   {
-    ComboEnum("Type", mBlendMode);
+    ComboEnum("Blend mode", mBlendMode);
 
     for (auto& pair : mSettings)
     {

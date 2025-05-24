@@ -6,6 +6,12 @@
 
 namespace Sindri
 {
+  TexturePipeline::TexturePipeline(
+    std::shared_ptr<INoiseLayerFactory> noiseLayerFactory)
+    : mNoiseLayerFactory(std::move(noiseLayerFactory))
+  {
+  }
+
   void
   TexturePipeline::AddLayer(std::filesystem::path luaScriptPath)
   {

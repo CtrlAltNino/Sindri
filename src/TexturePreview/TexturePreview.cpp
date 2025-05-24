@@ -1,8 +1,8 @@
-#include "TextureSettings/TextureSettings.hpp"
 #include "pch.hpp"
 
+#include "ImageWriting/ShaderHelper.hpp"
 #include "TexturePreview.hpp"
-#include "Utility/ShaderHelper.hpp"
+#include "TextureSettings/TextureSettings.hpp"
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
@@ -10,14 +10,13 @@
 namespace Sindri
 {
   TexturePreview::TexturePreview(
-    std::shared_ptr<TextureSettings>   textureSettings,
-    std::shared_ptr<ProceduralTexture> texture)
+    std::shared_ptr<TextureSettings>    textureSettings,
+    std::shared_ptr<ITextureBuffer>     texture,
+    std::shared_ptr<IGpuPreviewTexture> gpuPreviewTexture)
     : mTextureSettings(std::move(textureSettings))
     , mTexture(std::move(texture))
+    , mGpuPreviewTexture(std::move(gpuPreviewTexture))
   {
-    SetupShader();
-    SetupCubeMesh();
-    SetupFramebuffer({ 512, 512 });
   }
 
   TexturePreview::~TexturePreview()
@@ -201,7 +200,7 @@ namespace Sindri
   void
   TexturePreview::Render2DPreview(glm::vec2 resolution)
   {
-    ImGui::Image((ImTextureID)mTexture->GetTextureId(),
+    ImGui::Image((ImTextureID)mGpuPreviewTexture->GetTextureId(),
                  ImVec2(resolution.x, resolution.y));
   }
 
@@ -259,8 +258,8 @@ namespace Sindri
 
     glActiveTexture(GL_TEXTURE0); // Activate texture unit 0
     glBindTexture(GL_TEXTURE_3D,
-                  mTexture->GetTextureId()); // Bind your 3D texture
-    glUseProgram(m3DPreviewShader);          // Use your shader program
+                  mGpuPreviewTexture->GetTextureId()); // Bind your 3D texture
+    glUseProgram(m3DPreviewShader); // Use your shader program
     glUniform1i(locTex, 0);
 
     mModelMatrix =
@@ -295,9 +294,17 @@ namespace Sindri
   }
 
   void
+  TexturePreview::Init()
+  {
+    SetupShader();
+    SetupCubeMesh();
+    SetupFramebuffer({ 512, 512 });
+  }
+
+  void
   TexturePreview::Render(glm::vec2 resolution, float deltaTime)
   {
-    switch (mTextureSettings->mDimensions)
+    switch (mTextureSettings->Dimensions)
     {
       case Sindri::TextureDimension::Texture1D: break;
       case TextureDimension::Texture2D: Render2DPreview(resolution); break;
