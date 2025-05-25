@@ -9,8 +9,6 @@ namespace Sindri
     std::string Title = "Sindri";
     int         Width = 0;
     int         Height = 0;
-    // GraphicsApi Api = GraphicsApi::OpenGL;
-    // bool Resizable = false;
   };
 
   /**

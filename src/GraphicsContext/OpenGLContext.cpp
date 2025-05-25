@@ -54,15 +54,13 @@ namespace Sindri
     // Enable OpenGL debug output
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-    // glDebugMessageCallback(debugCallback, nullptr);
+    glDebugMessageCallback(debugCallback, nullptr);
     glEnable(GL_MULTISAMPLE);
 
     GLint maxColorSamples = 0;
     GLint maxDepthSamples = 0;
     glGetIntegerv(GL_MAX_SAMPLES, &maxColorSamples);
     glGetIntegerv(GL_MAX_DEPTH_TEXTURE_SAMPLES, &maxDepthSamples);
-    // OpenGLUtilities::CheckOpenGLError("Init() End", "OpenGLContext",
-    // mLogger);
   }
 
   void

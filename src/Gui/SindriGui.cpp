@@ -1,8 +1,7 @@
-#include "TextureSettings/TextureSettings.hpp"
 #include "pch.hpp"
 
-#include "Helpers/UI.hpp"
 #include "SindriGui.hpp"
+#include "TextureSettings/TextureSettings.hpp"
 #include <imgui.h>
 
 namespace Sindri
@@ -32,8 +31,8 @@ namespace Sindri
   void
   SindriGui::RenderImGui(float deltaTime)
   {
-    mFps = 1.0f / deltaTime;
-    mMsPerFrame = deltaTime * 1000.0f;
+    mFps = 1.0F / deltaTime;
+    mMsPerFrame = deltaTime * 1000.0F;
 
     // Set window flags to disable interactions and visuals
     ImGuiWindowFlags windowFlags =

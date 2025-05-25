@@ -3,7 +3,6 @@
 #include "Helpers/UI.hpp"
 #include "NoiseLayer.hpp"
 #include <imgui.h>
-#include <math.h>
 #include <sol/types.hpp>
 #include <utility>
 

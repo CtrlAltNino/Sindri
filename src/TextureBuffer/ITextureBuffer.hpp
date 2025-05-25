@@ -33,34 +33,5 @@ namespace Sindri
 
     virtual auto
     GetDimension() -> TextureDimension = 0;
-
-    /*void
-    Upload();
-
-    [[nodiscard]]
-    auto
-    GetTextureId() const -> uintptr_t
-    {
-      return mTextureId;
-    }
-
-    [[nodiscard]]
-    auto
-    GetIsUploaded() const -> bool
-    {
-      return mIsUploaded;
-    }
-
-    [[nodiscard]] auto
-    GetInterpolatePreview() const -> bool;
-
-    void
-    SetInterpolatePreview(bool interpolate);
-
-    [[nodiscard]] auto
-    GetWaitingForUpload() const -> bool;
-
-    void
-    SetWaitingForUpload(bool waitingForUpload);*/
   };
 }

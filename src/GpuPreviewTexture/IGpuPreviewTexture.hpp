@@ -5,6 +5,8 @@ namespace Sindri
   class IGpuPreviewTexture
   {
   public:
+    virtual ~IGpuPreviewTexture() = default;
+
     virtual void
     Upload() = 0;
 

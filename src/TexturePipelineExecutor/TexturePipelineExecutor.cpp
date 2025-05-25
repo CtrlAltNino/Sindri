@@ -4,7 +4,6 @@
 #include "NoiseLayer/INoiseLayer.hpp"
 #include "TexturePipelineExecutor.hpp"
 #include "TextureSettings/TextureSettings.hpp"
-#include <cmath>
 #include <optional>
 #include <sol/protected_function_result.hpp>
 #include <utility>
@@ -17,7 +16,7 @@ namespace Sindri
     std::shared_ptr<IGpuPreviewTexture> gpuPreviewTexture)
     : mTexturePipeline(std::move(texturePipeline))
     , mTexture(std::move(texture))
-    , mThreadCount(std::thread::hardware_concurrency())
+    , mThreadCount(std::max(1U, std::thread::hardware_concurrency() - 1))
     , mGpuPreviewTexture(std::move(gpuPreviewTexture))
   {
     // mUploadThread = std::thread([this]() { TextureFiller(); });

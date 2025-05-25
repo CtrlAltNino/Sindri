@@ -4,7 +4,6 @@
 #include <glad/glad.h>
 #include <sstream>
 
-
 namespace Sindri
 {
   auto

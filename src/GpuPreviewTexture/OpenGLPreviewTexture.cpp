@@ -12,11 +12,18 @@ namespace Sindri
   {
   }
 
+  OpenGLPreviewTexture::~OpenGLPreviewTexture()
+  {
+    if (glIsTexture(mTextureId))
+    {
+      glDeleteTextures(1, &mTextureId);
+    }
+  }
+
   void
   OpenGLPreviewTexture::Upload()
   {
-    std::cout << "Uploading texture" << std::endl;
-    if (mTextureId != 0)
+    if (glIsTexture(mTextureId))
     {
       glDeleteTextures(1, &mTextureId);
     }
@@ -105,7 +112,18 @@ namespace Sindri
 
     mIsUploaded = true;
     SetWaitingForUpload(false);
-    std::cout << "Texture upload complete" << std::endl;
+  }
+
+  auto
+  OpenGLPreviewTexture::GetTextureId() const -> uintptr_t
+  {
+    return mTextureId;
+  }
+
+  auto
+  OpenGLPreviewTexture::GetIsUploaded() const -> bool
+  {
+    return mIsUploaded;
   }
 
   auto

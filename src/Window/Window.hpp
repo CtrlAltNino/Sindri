@@ -1,9 +1,6 @@
 #pragma once
 
 #include "GraphicsContext/IGraphicsContextFactory.hpp"
-// #include "Editor/Stats/IEditorStats.hpp"
-// #include "Input/IInputManager.hpp"
-// #include "Logging/ISindriLogger.hpp"
 #include "Gui/ImGui/IImGuiLayerFactory.hpp"
 #include "Window/IWindow.hpp"
 

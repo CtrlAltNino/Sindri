@@ -1,3 +1,5 @@
+#pragma once
+
 #include "TextureSettings/TextureSettings.hpp"
 #include <glm/glm.hpp>
 

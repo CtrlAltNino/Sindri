@@ -1,7 +1,6 @@
 #pragma once
 
 #include "TextureExporter.hpp"
-#include "TextureSettings/TextureSettings.hpp"
 #include <spng.h>
 
 namespace Sindri

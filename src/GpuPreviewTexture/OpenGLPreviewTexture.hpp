@@ -2,7 +2,6 @@
 
 #include "IGpuPreviewTexture.hpp"
 #include "ITextureBuffer.hpp"
-#include "TextureSettings/TextureSettings.hpp"
 #include <glad/glad.h>
 
 namespace Sindri
@@ -21,23 +20,18 @@ namespace Sindri
 
   public:
     OpenGLPreviewTexture(std::shared_ptr<ITextureBuffer> textureBuffer);
+    ~OpenGLPreviewTexture() override;
 
     void
     Upload() override;
 
     [[nodiscard]]
     auto
-    GetTextureId() const -> uintptr_t override
-    {
-      return mTextureId;
-    }
+    GetTextureId() const -> uintptr_t override;
 
     [[nodiscard]]
     auto
-    GetIsUploaded() const -> bool override
-    {
-      return mIsUploaded;
-    }
+    GetIsUploaded() const -> bool override;
 
     [[nodiscard]] auto
     GetInterpolatePreview() const -> bool override;
