@@ -18,6 +18,8 @@ set(VCPKG_MAX_CONCURRENCY 8)
 # Platform dependant settings
 IF(WIN32)
     set(VCPKG_TARGET_TRIPLET "x64-windows-static")
+    set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/app_icon_windows.rc")
+    set(EXECUTABLE_ADDITIONAL_SETTINGS ${APP_ICON_RESOURCE_WINDOWS})
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 ELSEIF(UNIX)
     set(VCPKG_TARGET_TRIPLET "x64-linux")
@@ -41,6 +43,7 @@ set(targetName sindri)
 
 # Create an executable
 add_executable(${targetName})
+target_sources(${targetName} PRIVATE ${EXECUTABLE_ADDITIONAL_SETTINGS})
 
 # Add the source files to the target through directory level CMakeLists.txt
 add_subdirectory(src)
