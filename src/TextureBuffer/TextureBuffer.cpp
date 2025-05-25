@@ -3,40 +3,54 @@
 #include "TextureBuffer.hpp"
 #include "TextureSettings/TextureSettings.hpp"
 
-
 namespace Sindri
 {
   void
   TextureBuffer::Reserve(size_t width)
   {
-    mWidth = width;
+    mTempWidth = width;
     mTextureDimension = TextureDimension::Texture1D;
-    mData = std::vector<float>(mWidth);
+    mTempData = std::vector<float>(mTempWidth);
   }
 
   void
   TextureBuffer::Reserve(size_t width, size_t height)
   {
-    mWidth = width;
-    mHeight = height;
+    mTempWidth = width;
+    mTempHeight = height;
     mTextureDimension = TextureDimension::Texture2D;
-    mData = std::vector<float>(mWidth * mHeight);
+    mTempData = std::vector<float>(mTempWidth * mTempHeight);
   }
 
   void
   TextureBuffer::Reserve(size_t width, size_t height, size_t depth)
   {
-    mWidth = width;
-    mHeight = height;
-    mDepth = depth;
+    mTempWidth = width;
+    mTempHeight = height;
+    mTempDepth = depth;
     mTextureDimension = TextureDimension::Texture3D;
-    mData = std::vector<float>(mWidth * mHeight * mDepth);
+    mTempData = std::vector<float>(mTempWidth * mTempHeight * mTempDepth);
   }
 
   auto
   TextureBuffer::GetData() -> std::vector<float>&
   {
     return mData;
+  }
+
+  auto
+  TextureBuffer::GetTempData() -> std::vector<float>&
+  {
+    return mTempData;
+  }
+
+  void
+  TextureBuffer::PromoteTemp()
+  {
+    mWidth = mTempWidth;
+    mHeight = mTempHeight;
+    mDepth = mTempDepth;
+    mData = mTempData;
   }
 
   auto

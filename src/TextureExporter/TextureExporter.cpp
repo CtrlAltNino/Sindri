@@ -217,8 +217,8 @@ namespace Sindri
     {
       case Sindri::FileFormat::PNG:
         PngWriter::WritePng(mTexture->GetData(),
-                            mTextureSettings->Resolution.x,
-                            mTextureSettings->Resolution.y,
+                            mTexture->GetWidth(),
+                            mTexture->GetHeight(),
                             mExportSettings.channels,
                             mExportSettings.dataType,
                             mExportSettings.path);

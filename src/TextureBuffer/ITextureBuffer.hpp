@@ -23,6 +23,12 @@ namespace Sindri
     GetData() -> std::vector<float>& = 0;
 
     virtual auto
+    GetTempData() -> std::vector<float>& = 0;
+
+    virtual void
+    PromoteTemp() = 0;
+
+    virtual auto
     GetWidth() -> size_t = 0;
 
     virtual auto

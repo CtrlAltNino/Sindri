@@ -13,7 +13,11 @@ namespace Sindri
     size_t             mWidth = 0;
     size_t             mHeight = 0;
     size_t             mDepth = 0;
+    size_t             mTempWidth = 0;
+    size_t             mTempHeight = 0;
+    size_t             mTempDepth = 0;
     std::vector<float> mData;
+    std::vector<float> mTempData;
 
   public:
     TextureBuffer() = default;
@@ -30,6 +34,12 @@ namespace Sindri
 
     auto
     GetData() -> std::vector<float>& override;
+
+    auto
+    GetTempData() -> std::vector<float>& override;
+
+    void
+    PromoteTemp() override;
 
     auto
     GetWidth() -> size_t override;

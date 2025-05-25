@@ -56,7 +56,7 @@ namespace Sindri
         // TODO: Create a lua worker state and initialize it
         std::vector<StackState> stack = InitializeState();
 
-        std::vector<float>& data = mTexture->GetData();
+        std::vector<float>& data = mTexture->GetTempData();
 
         mNumActiveWorkers.fetch_add(1, std::memory_order_relaxed);
         while (auto workload = AcquireWorkload())
@@ -96,6 +96,7 @@ namespace Sindri
 
           if (mNumActiveWorkers.load() == 0)
           {
+            mTexture->PromoteTemp();
             mGpuPreviewTexture->SetWaitingForUpload(true);
           }
         }
@@ -143,14 +144,14 @@ namespace Sindri
   TexturePipelineExecutor::GenerateWorkloads()
   {
     size_t currentPos = 0;
-    while (currentPos < mTexture->GetData().size())
+    while (currentPos < mTexture->GetTempData().size())
     {
       FillWorkload newWorkload;
       newWorkload.Offset = currentPos;
       newWorkload.Length =
-        (newWorkload.Offset + mWorkloadSize) < mTexture->GetData().size()
+        (newWorkload.Offset + mWorkloadSize) < mTexture->GetTempData().size()
           ? mWorkloadSize
-          : mTexture->GetData().size() - currentPos;
+          : mTexture->GetTempData().size() - currentPos;
 
       currentPos += newWorkload.Length;
 
