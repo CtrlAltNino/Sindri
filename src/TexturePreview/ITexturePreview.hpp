@@ -12,5 +12,8 @@ namespace Sindri
 
     virtual void
     Render(glm::vec2 resolution, float deltaTime) = 0;
+
+    virtual void
+    RenderSettings() = 0;
   };
 }

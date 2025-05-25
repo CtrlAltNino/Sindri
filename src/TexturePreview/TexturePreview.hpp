@@ -72,5 +72,8 @@ namespace Sindri
 
     void
     Render(glm::vec2 resolution, float deltaTime) override;
+
+    void
+    RenderSettings() override;
   };
 }

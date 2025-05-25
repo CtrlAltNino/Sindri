@@ -111,6 +111,11 @@ namespace Sindri
     }
 
     ImGui::Spacing();
+    ImGui::SeparatorText("Preview Settings");
+
+    mPreview->RenderSettings();
+
+    ImGui::Spacing();
     ImGui::SeparatorText("Lua Scripts");
 
     LuaScriptSelector();
@@ -183,19 +188,38 @@ namespace Sindri
     ImGui::Begin("PreviewWindow", nullptr, windowFlags);
     ImGui::SeparatorText("Texture Preview");
 
-    static bool interpolatePreviewTexture =
-      mGpuPreviewTexture->GetInterpolatePreview();
+    std::cout << "Available width: " << ImGui::GetContentRegionAvail().x
+              << std::endl;
+    std::cout << "Available height: " << ImGui::GetContentRegionAvail().y
+              << std::endl;
 
-    if (ImGui::Checkbox("Interpolate", &interpolatePreviewTexture))
-    {
-      mGpuPreviewTexture->SetInterpolatePreview(interpolatePreviewTexture);
-    }
     // Note: cast GLuint to void* to pass as ImTextureID
     if (mGpuPreviewTexture->GetIsUploaded())
     {
-      mPreview->Render(
-        { ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().x },
-        deltaTime);
+      ImVec2 position = ImGui::GetCursorPos();
+
+      if (ImGui::GetContentRegionAvail().x <= ImGui::GetContentRegionAvail().y)
+      {
+        position.y += (ImGui::GetContentRegionAvail().y -
+                       ImGui::GetContentRegionAvail().x) /
+                      2.0F;
+      }
+      else if (ImGui::GetContentRegionAvail().y <
+               ImGui::GetContentRegionAvail().x)
+      {
+        position.x += (ImGui::GetContentRegionAvail().x -
+                       ImGui::GetContentRegionAvail().y) /
+                      2.0F;
+      }
+
+      ImGui::SetCursorPos(position);
+
+      glm::vec2 size = glm::vec2(ImGui::GetContentRegionAvail().x <=
+                                     ImGui::GetContentRegionAvail().y
+                                   ? ImGui::GetContentRegionAvail().x
+                                   : ImGui::GetContentRegionAvail().y);
+
+      mPreview->Render(size, deltaTime);
     }
 
     // You can add buttons, sliders, etc. here

@@ -282,11 +282,6 @@ namespace Sindri
     glUseProgram(0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    ImGui::SliderFloat("Density factor", &mDensityFactor, 0.0F, 1.0F, "%.2F");
-    ImGui::SliderFloat("Step Size", &mStepSize, 0.000001F, 0.1F, "%.4F");
-    ImGui::SliderInt("Max steps", &mMaxSteps, 1, 2048);
-    ImGui::SliderFloat("Rotation speed", &mRotationSpeed, 0.0F, 2.0F, "%.2F");
-
     ImGui::Image((ImTextureID)mFramebuffer.colorTexture,
                  ImVec2(resolution.x, resolution.y),
                  ImVec2(0, 1),
@@ -306,11 +301,31 @@ namespace Sindri
   {
     switch (mTextureSettings->Dimensions)
     {
-      case Sindri::TextureDimension::Texture1D: break;
+      case TextureDimension::Texture1D: break;
       case TextureDimension::Texture2D: Render2DPreview(resolution); break;
       case TextureDimension::Texture3D:
         Render3DPreview(resolution, deltaTime);
         break;
+    }
+  }
+
+  void
+  TexturePreview::RenderSettings()
+  {
+    static bool interpolatePreviewTexture =
+      mGpuPreviewTexture->GetInterpolatePreview();
+
+    if (ImGui::Checkbox("Interpolate", &interpolatePreviewTexture))
+    {
+      mGpuPreviewTexture->SetInterpolatePreview(interpolatePreviewTexture);
+    }
+
+    if (mTextureSettings->Dimensions == TextureDimension::Texture3D)
+    {
+      ImGui::SliderFloat("Density factor", &mDensityFactor, 0.0F, 1.0F, "%.2F");
+      ImGui::SliderFloat("Step Size", &mStepSize, 0.000001F, 0.1F, "%.4F");
+      ImGui::SliderInt("Max steps", &mMaxSteps, 1, 2048);
+      ImGui::SliderFloat("Rotation speed", &mRotationSpeed, 0.0F, 2.0F, "%.2F");
     }
   }
 }
