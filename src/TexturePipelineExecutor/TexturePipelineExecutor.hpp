@@ -27,6 +27,7 @@ namespace Sindri
     std::mutex               mUploadMutex;
     std::condition_variable  mCondition;
     std::atomic<bool>        mStopThreadFlag = false;
+    std::atomic<bool>        mCancelFlag = false;
 
     std::mutex               mWorkQueueMutex;
     std::queue<FillWorkload> mWorkQueue;
@@ -70,6 +71,9 @@ namespace Sindri
 
     void
     ExecutePipeline(TextureSettings settings) override;
+
+    void
+    CancelExecution() override;
 
     auto
     IsRunning() -> bool override;

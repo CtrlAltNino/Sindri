@@ -19,7 +19,6 @@ namespace Sindri
     , mThreadCount(std::max(1U, std::thread::hardware_concurrency() - 1))
     , mGpuPreviewTexture(std::move(gpuPreviewTexture))
   {
-    // mUploadThread = std::thread([this]() { TextureFiller(); });
     for (int i = 0; i < mThreadCount; i++)
     {
       mThreadPool.emplace_back([this]() { TextureFiller(); });
@@ -52,18 +51,13 @@ namespace Sindri
           [this] { return !IsWorkloadQueueEmpty() || mStopThreadFlag.load(); });
       }
 
-      std::cout << "Worker thread woken up" << std::endl;
-
       if (!mStopThreadFlag.load())
       {
-        std::cout << "Initializing worker thread" << std::endl;
         // TODO: Create a lua worker state and initialize it
         std::vector<StackState> stack = InitializeState();
 
-        std::cout << "Getting data target" << std::endl;
         std::vector<float>& data = mTexture->GetData();
 
-        std::cout << "Work queue processing" << std::endl;
         mNumActiveWorkers.fetch_add(1, std::memory_order_relaxed);
         while (auto workload = AcquireWorkload())
         {
@@ -77,16 +71,34 @@ namespace Sindri
                                          mCurrentTextureSettings.Resolution,
                                          mCurrentTextureSettings.Dimensions));
             data[i] = computed;
-            // std::cout << "Computed pixel value: " << computed << std::endl;
+          }
+
+          if (mCancelFlag.load())
+          {
+            break;
           }
         }
-        mNumActiveWorkers.fetch_sub(1, std::memory_order_relaxed);
 
-        if (mNumActiveWorkers.load() == 0)
+        if (mCancelFlag.load())
         {
-          mGpuPreviewTexture->SetWaitingForUpload(true);
+          std::unique_lock<std::mutex> lock(mWorkQueueMutex);
+          mNumActiveWorkers.fetch_sub(1, std::memory_order_relaxed);
+          mWorkQueue = {};
+          mCurrentNumWorkloads = 0;
+          if (mNumActiveWorkers.load() == 0)
+          {
+            mCancelFlag.store(false);
+          }
         }
-        std::cout << "Work queue empty" << std::endl;
+        else
+        {
+          mNumActiveWorkers.fetch_sub(1, std::memory_order_relaxed);
+
+          if (mNumActiveWorkers.load() == 0)
+          {
+            mGpuPreviewTexture->SetWaitingForUpload(true);
+          }
+        }
       }
     }
   }
@@ -240,6 +252,12 @@ namespace Sindri
     }
 
     return value;
+  }
+
+  void
+  TexturePipelineExecutor::CancelExecution()
+  {
+    mCancelFlag.store(true);
   }
 
   auto

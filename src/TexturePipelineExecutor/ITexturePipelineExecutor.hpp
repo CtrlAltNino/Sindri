@@ -12,6 +12,9 @@ namespace Sindri
     virtual void
     ExecutePipeline(TextureSettings settings) = 0;
 
+    virtual void
+    CancelExecution() = 0;
+
     virtual auto
     IsRunning() -> bool = 0;
 

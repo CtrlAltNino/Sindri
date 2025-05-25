@@ -171,7 +171,13 @@ namespace Sindri
     if (mExecutor->IsRunning())
     {
       ImGui::SameLine();
-      ImGui::ProgressBar(mExecutor->GetProgress(), ImVec2(0.0F, 0.0F));
+      if (ImGui::Button("Cancel"))
+      {
+        mExecutor->CancelExecution();
+      }
+      ImGui::SameLine();
+      ImGui::ProgressBar(mExecutor->GetProgress(),
+                         ImVec2(ImGui::GetContentRegionAvail().x, 0.0F));
     }
 
     mExporter->Render();
@@ -187,11 +193,6 @@ namespace Sindri
 
     ImGui::Begin("PreviewWindow", nullptr, windowFlags);
     ImGui::SeparatorText("Texture Preview");
-
-    std::cout << "Available width: " << ImGui::GetContentRegionAvail().x
-              << std::endl;
-    std::cout << "Available height: " << ImGui::GetContentRegionAvail().y
-              << std::endl;
 
     // Note: cast GLuint to void* to pass as ImTextureID
     if (mGpuPreviewTexture->GetIsUploaded())
