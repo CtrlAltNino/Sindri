@@ -120,3 +120,8 @@ add_custom_command(TARGET
     ${targetName}
     POST_BUILD COMMAND ${CMAKE_COMMAND}
     -E copy_directory ${CMAKE_SOURCE_DIR}/shaders $<TARGET_FILE_DIR:${targetName}>/shaders)
+
+add_custom_command(TARGET
+    ${targetName}
+    POST_BUILD COMMAND ${CMAKE_COMMAND}
+    -E copy_directory ${CMAKE_SOURCE_DIR}/fonts $<TARGET_FILE_DIR:${targetName}>/fonts)

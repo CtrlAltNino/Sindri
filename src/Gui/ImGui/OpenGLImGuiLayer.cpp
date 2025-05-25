@@ -28,7 +28,6 @@ namespace Sindri
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
 
-    // io.IniFilename = mIniFilePath.c_str();
     io.ConfigFlags |=
       ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable
@@ -37,9 +36,8 @@ namespace Sindri
     io.ConfigWindowsMoveFromTitleBarOnly = true;
 
     io.ConfigWindowsResizeFromEdges = true;
-    io.Fonts->AddFontDefault();
-    // io.FontDefault = io.Fonts->AddFontFromFileTTF(
-    //   "data/engine/fonts/Roboto-Regular.ttf", 15.0F);
+    io.FontDefault =
+      io.Fonts->AddFontFromFileTTF("fonts/FiraCode-Regular.ttf", 16.0F);
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
