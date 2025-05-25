@@ -71,8 +71,27 @@ namespace Sindri
       mTextureSettings->Seed = mRandomDevice();
     }
 
-    ComboEnum<TextureDimension>("Texture Dimension",
-                                mTextureSettings->Dimensions);
+    if (ImGui::RadioButton("Texture 1D",
+                           mTextureSettings->Dimensions ==
+                             TextureDimension::Texture1D))
+    {
+      mTextureSettings->Dimensions = TextureDimension::Texture1D;
+    }
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Texture 2D",
+                           mTextureSettings->Dimensions ==
+                             TextureDimension::Texture2D))
+    {
+      mTextureSettings->Dimensions = TextureDimension::Texture2D;
+    }
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Texture 3D",
+                           mTextureSettings->Dimensions ==
+                             TextureDimension::Texture3D))
+    {
+      mTextureSettings->Dimensions = TextureDimension::Texture3D;
+    }
+
     // TODO: Variable channel amount
 
     switch (mTextureSettings->Dimensions)

@@ -5,35 +5,14 @@
 #include <imgui.h>
 #include <math.h>
 #include <sol/types.hpp>
+#include <utility>
 
 namespace Sindri
 {
-  NoiseLayer::NoiseLayer(const std::filesystem::path& luaScriptPath)
-    : mPath(luaScriptPath)
+  NoiseLayer::NoiseLayer(std::filesystem::path luaScriptPath)
+    : mPath(std::move(luaScriptPath))
   {
-    lua.open_libraries(sol::lib::math, sol::lib::base, sol::lib::string);
-    lua.script_file(luaScriptPath.string());
-    mName = lua["name"];
-    sol::table settings = lua["settings"];
-
-    for (auto& pair : settings)
-    {
-      std::string key = pair.first.as<std::string>();
-      sol::object value = pair.second;
-
-      if (value.is<float>())
-      {
-        mSettings[key] = value.as<float>();
-      }
-      else if (value.is<int>())
-      {
-        mSettings[key] = value.as<int>();
-      }
-      else if (value.is<bool>())
-      {
-        mSettings[key] = value.as<bool>();
-      }
-    }
+    ReloadScriptFile();
   }
 
   // Renders ImGui based UI for the settings
@@ -97,5 +76,34 @@ namespace Sindri
     -> std::map<std::string, std::variant<bool, int, float>>
   {
     return mSettings;
+  }
+
+  void
+  NoiseLayer::ReloadScriptFile()
+  {
+    lua = sol::state{};
+    lua.open_libraries(sol::lib::math, sol::lib::base, sol::lib::string);
+    lua.script_file(mPath.string());
+    mName = lua["name"];
+    sol::table settings = lua["settings"];
+
+    for (auto& pair : settings)
+    {
+      std::string key = pair.first.as<std::string>();
+      sol::object value = pair.second;
+
+      if (value.is<float>())
+      {
+        mSettings[key] = value.as<float>();
+      }
+      else if (value.is<int>())
+      {
+        mSettings[key] = value.as<int>();
+      }
+      else if (value.is<bool>())
+      {
+        mSettings[key] = value.as<bool>();
+      }
+    }
   }
 }

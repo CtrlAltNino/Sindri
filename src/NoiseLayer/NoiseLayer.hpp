@@ -16,7 +16,7 @@ namespace Sindri
     std::map<std::string, std::variant<bool, int, float>> mSettings;
 
   public:
-    NoiseLayer(const std::filesystem::path& luaScriptPath);
+    NoiseLayer(std::filesystem::path luaScriptPath);
     ~NoiseLayer() override = default;
 
     // Renders ImGui based UI for the settings
@@ -35,5 +35,8 @@ namespace Sindri
     auto
     GetSettings()
       -> std::map<std::string, std::variant<bool, int, float>> override;
+
+    void
+    ReloadScriptFile() override;
   };
 }

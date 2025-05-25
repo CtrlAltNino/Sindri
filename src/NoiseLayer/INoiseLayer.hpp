@@ -37,5 +37,8 @@ namespace Sindri
 
     virtual auto
     GetSettings() -> std::map<std::string, std::variant<bool, int, float>> = 0;
+
+    virtual void
+    ReloadScriptFile() = 0;
   };
 }

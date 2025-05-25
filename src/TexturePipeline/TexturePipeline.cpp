@@ -52,6 +52,13 @@ namespace Sindri
         ImGui::Separator();
         ImGui::Spacing();
         it->get()->RenderSettings();
+        if (ImGui::Button("Reload"))
+        {
+          it->get()->ReloadScriptFile();
+        }
+
+        ImGui::SameLine();
+
         if (ImGui::Button("Delete"))
         {
           deleteIterator = it;
