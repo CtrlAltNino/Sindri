@@ -21,8 +21,9 @@ namespace Sindri
   void
   TextureExporter::Render()
   {
-    ImGuiWindowFlags popupFlags =
-      ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+    ImGuiWindowFlags popupFlags = ImGuiWindowFlags_NoResize |
+                                  ImGuiWindowFlags_NoMove |
+                                  ImGuiWindowFlags_AlwaysAutoResize;
 
     if (ImGui::BeginPopupModal("Export##ExportModal", NULL, popupFlags))
     {
