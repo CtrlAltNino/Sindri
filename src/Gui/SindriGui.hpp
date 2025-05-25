@@ -40,6 +40,9 @@ namespace Sindri
     std::vector<std::filesystem::path> mScripts;
 
     void
+    SetupImGuiStyles();
+
+    void
     RenderImGui(float deltaTime);
 
     auto

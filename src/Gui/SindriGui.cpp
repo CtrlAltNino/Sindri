@@ -26,6 +26,7 @@ namespace Sindri
   {
     mTextureSettings->Seed = mRandomDevice();
     mScripts = GetLuaScripts();
+    SetupImGuiStyles();
   }
 
   void
@@ -266,17 +267,12 @@ namespace Sindri
       ImGui::EndCombo();
     }
 
-    // ImGui::SameLine();
-
     // Add Button
     if (ImGui::Button("Add layer"))
     {
       if (mSelectedScriptIndex >= 0 && mSelectedScriptIndex < mScripts.size())
       {
-        // std::string selectedScript = mScripts[mSelectedScriptIndex];
         mTexturePipeline->AddLayer(mScripts[mSelectedScriptIndex]);
-        // TODO: Do something with the selected script
-        // std::cout << "Selected: " << selectedScript << std::endl;
       }
     }
 
@@ -308,17 +304,117 @@ namespace Sindri
         break;
     }
 
-    // mNoiseGenerator.RequestTextureFill();
-
     mExecutor->ExecutePipeline(*mTextureSettings);
-
-    // mNoiseGenerator.FillTexture(mCompositionStack, mTextureSettings,
   }
+
   void
   SindriGui::Render(float deltaTime)
   {
     mWindow->NewFrame();
     RenderImGui(deltaTime);
     mWindow->EndFrame();
+  }
+
+  void
+  SindriGui::SetupImGuiStyles()
+  {
+    ImVec4* colors = ImGui::GetStyle().Colors;
+
+    // Polar Night
+    colors[ImGuiCol_Text] = ImVec4(0.847f, 0.871f, 0.914f, 1.00f); // #D8DEE9
+    colors[ImGuiCol_TextDisabled] =
+      ImVec4(0.533f, 0.573f, 0.678f, 1.00f); // #8892AD
+    colors[ImGuiCol_WindowBg] =
+      ImVec4(0.180f, 0.204f, 0.251f, 1.00f); // #2E3440
+    colors[ImGuiCol_ChildBg] = ImVec4(0.180f, 0.204f, 0.251f, 1.00f);
+    colors[ImGuiCol_PopupBg] = ImVec4(0.180f, 0.204f, 0.251f, 1.00f);
+    colors[ImGuiCol_Border] = ImVec4(0.298f, 0.337f, 0.416f, 1.00f); // #4C566A
+    colors[ImGuiCol_BorderShadow] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+
+    // Frost
+    colors[ImGuiCol_FrameBg] = ImVec4(0.231f, 0.259f, 0.322f, 1.00f); // #3B4252
+    colors[ImGuiCol_FrameBgHovered] =
+      ImVec4(0.369f, 0.506f, 0.675f, 1.00f); // #5E81AC
+    colors[ImGuiCol_FrameBgActive] =
+      ImVec4(0.506f, 0.631f, 0.757f, 1.00f); // #8191C1
+
+    colors[ImGuiCol_TitleBg] = ImVec4(0.180f, 0.204f, 0.251f, 1.00f); // #2E3440
+    colors[ImGuiCol_TitleBgActive] =
+      ImVec4(0.231f, 0.259f, 0.322f, 1.00f); // #3B4252
+    colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.180f, 0.204f, 0.251f, 0.78f);
+
+    colors[ImGuiCol_MenuBarBg] = ImVec4(0.231f, 0.259f, 0.322f, 1.00f);
+
+    colors[ImGuiCol_ScrollbarBg] = ImVec4(0.180f, 0.204f, 0.251f, 1.00f);
+    colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.298f, 0.337f, 0.416f, 1.00f);
+    colors[ImGuiCol_ScrollbarGrabHovered] =
+      ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
+    colors[ImGuiCol_ScrollbarGrabActive] =
+      ImVec4(0.506f, 0.631f, 0.757f, 1.00f);
+
+    colors[ImGuiCol_CheckMark] =
+      ImVec4(0.533f, 0.753f, 0.816f, 1.00f); // #88C0D0
+    colors[ImGuiCol_SliderGrab] = ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
+    colors[ImGuiCol_SliderGrabActive] = ImVec4(0.506f, 0.631f, 0.757f, 1.00f);
+
+    colors[ImGuiCol_Button] = ImVec4(0.231f, 0.259f, 0.322f, 1.00f);
+    colors[ImGuiCol_ButtonHovered] = ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
+    colors[ImGuiCol_ButtonActive] = ImVec4(0.506f, 0.631f, 0.757f, 1.00f);
+
+    colors[ImGuiCol_Header] = ImVec4(0.298f, 0.337f, 0.416f, 1.00f);
+    colors[ImGuiCol_HeaderHovered] = ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
+    colors[ImGuiCol_HeaderActive] = ImVec4(0.506f, 0.631f, 0.757f, 1.00f);
+
+    colors[ImGuiCol_Separator] = ImVec4(0.298f, 0.337f, 0.416f, 1.00f);
+    colors[ImGuiCol_SeparatorHovered] = ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
+    colors[ImGuiCol_SeparatorActive] = ImVec4(0.506f, 0.631f, 0.757f, 1.00f);
+
+    colors[ImGuiCol_ResizeGrip] = ImVec4(0.298f, 0.337f, 0.416f, 1.00f);
+    colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
+    colors[ImGuiCol_ResizeGripActive] = ImVec4(0.506f, 0.631f, 0.757f, 1.00f);
+
+    colors[ImGuiCol_Tab] = ImVec4(0.298f, 0.337f, 0.416f, 1.00f);
+    colors[ImGuiCol_TabHovered] = ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
+    colors[ImGuiCol_TabActive] = ImVec4(0.506f, 0.631f, 0.757f, 1.00f);
+    colors[ImGuiCol_TabUnfocused] = ImVec4(0.231f, 0.259f, 0.322f, 1.00f);
+    colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
+
+    colors[ImGuiCol_PlotLines] =
+      ImVec4(0.533f, 0.753f, 0.816f, 1.00f); // #88C0D0
+    colors[ImGuiCol_PlotLinesHovered] =
+      ImVec4(0.706f, 0.557f, 0.678f, 1.00f); // #B48EAD
+    colors[ImGuiCol_PlotHistogram] =
+      ImVec4(0.847f, 0.682f, 0.369f, 1.00f); // #EBCB8B
+    colors[ImGuiCol_PlotHistogramHovered] =
+      ImVec4(0.749f, 0.380f, 0.416f, 1.00f); // #BF616A
+
+    colors[ImGuiCol_TextSelectedBg] = ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
+    colors[ImGuiCol_DragDropTarget] = ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
+    colors[ImGuiCol_NavHighlight] = ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
+    colors[ImGuiCol_NavWindowingHighlight] =
+      ImVec4(0.506f, 0.631f, 0.757f, 1.00f);
+    colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.180f, 0.204f, 0.251f, 0.70f);
+    colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.180f, 0.204f, 0.251f, 0.78f);
+
+    ImGuiStyle& style = ImGui::GetStyle();
+
+    // These values are commonly adjusted for visual feel and alignment with the
+    // Nord theme
+    style.WindowRounding = 5.0f;
+    style.FrameRounding = 4.0f;
+    style.GrabRounding = 4.0f;
+    style.ScrollbarRounding = 6.0f;
+    style.TabRounding = 4.0f;
+    style.PopupRounding = 4.0F;
+
+    style.FramePadding = ImVec2(6.0f, 4.0f);
+    style.ItemSpacing = ImVec2(8.0f, 6.0f);
+    style.ItemInnerSpacing = ImVec2(6.0f, 4.0f);
+    style.IndentSpacing = 20.0f;
+    style.ScrollbarSize = 14.0f;
+    style.GrabMinSize = 10.0f;
+
+    style.WindowPadding = ImVec2(8.0f, 8.0f);
+    style.WindowTitleAlign = ImVec2(0.5f, 0.5f); // Center title
   }
 }

@@ -46,7 +46,7 @@ namespace Sindri
   struct ExportSettings
   {
     FileFormat      format = FileFormat::PNG;
-    DataType        dataType = DataType::Float32;
+    DataType        dataType = DataType::UNorm8;
     ChannelCount    channels = ChannelCount::RGBA;
     CompressionType compression = CompressionType::None;
     std::string     path;
