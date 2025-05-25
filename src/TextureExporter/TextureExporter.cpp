@@ -24,8 +24,6 @@ namespace Sindri
     ImGuiWindowFlags popupFlags =
       ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 
-    ImGui::SetNextWindowSize(ImVec2(400, 250));
-
     if (ImGui::BeginPopupModal("Export##ExportModal", NULL, popupFlags))
     {
       const auto& caps = formatCaps.at(mExportSettings.format);
@@ -34,15 +32,13 @@ namespace Sindri
         ImGuiSelectableFlags_DontClosePopups;
 
       // Format Combo
-      // int currentIndex = static_cast<int>(mExportSettings.format);
       if (ImGui::BeginCombo(
             "Format", magic_enum::enum_name(mExportSettings.format).data()))
       {
         for (auto fmt : magic_enum::enum_values<FileFormat>())
         {
           bool selected = (fmt == mExportSettings.format);
-          if (ImGui::Selectable(
-                magic_enum::enum_name(fmt).data(), selected, selectableFlags))
+          if (ImGui::Selectable(magic_enum::enum_name(fmt).data(), selected, 0))
           {
             mExportSettings.format = fmt;
           }
@@ -76,7 +72,7 @@ namespace Sindri
           }
           bool selected = (type == mExportSettings.dataType);
           if (ImGui::Selectable(
-                magic_enum::enum_name(type).data(), selected, selectableFlags))
+                magic_enum::enum_name(type).data(), selected, 0))
           {
             if (supported)
             {
@@ -109,8 +105,7 @@ namespace Sindri
             ImGui::BeginDisabled();
           }
           bool selected = (ch == mExportSettings.channels);
-          if (ImGui::Selectable(
-                magic_enum::enum_name(ch).data(), selected, selectableFlags))
+          if (ImGui::Selectable(magic_enum::enum_name(ch).data(), selected, 0))
           {
             if (supported)
             {
@@ -143,8 +138,7 @@ namespace Sindri
           for (auto c : magic_enum::enum_values<CompressionType>())
           {
             bool selected = (c == mExportSettings.compression);
-            if (ImGui::Selectable(
-                  magic_enum::enum_name(c).data(), selected, selectableFlags))
+            if (ImGui::Selectable(magic_enum::enum_name(c).data(), selected, 0))
             {
               mExportSettings.compression = c;
             }
@@ -162,6 +156,8 @@ namespace Sindri
         }
       }
 
+      ImGui::Spacing();
+
       {
         // ImGui::InputText("Path", )
         // ImGui::Text("%s", mExportSettings.path.string().c_str());
@@ -173,8 +169,15 @@ namespace Sindri
           NFD::Guard nfdGuard;
           // auto-freeing memory
           NFD::UniquePath outPath;
+          std::string     formatName =
+            std::string(magic_enum::enum_name(mExportSettings.format));
+          nfdfilteritem_t filterItem[1] = {
+            { formatName.c_str(),
+              formatFileExtensions.at(mExportSettings.format).c_str() }
+          };
           // show the dialog
-          nfdresult_t result = NFD::PickFolder(outPath);
+          // nfdresult_t result = NFD::PickFolder(outPath);
+          nfdresult_t result = NFD::SaveDialog(outPath, filterItem, 1);
 
           if (result == NFD_OKAY)
           {

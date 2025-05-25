@@ -62,6 +62,13 @@ namespace Sindri
     bool                      supportsCompression;
   };
 
+  const std::unordered_map<FileFormat, std::string> formatFileExtensions = {
+    { FileFormat::PNG, "png" },  { FileFormat::PNG, "tga" },
+    { FileFormat::PNG, "exr" },  { FileFormat::PNG, "hdr" },
+    { FileFormat::PNG, "dds" },  { FileFormat::PNG, "ktx" },
+    { FileFormat::PNG, "ktx2" },
+  };
+
   const std::unordered_map<FileFormat, FormatCapabilities> formatCaps = {
     { FileFormat::PNG,
       { .supportsUNorm8 = true,
