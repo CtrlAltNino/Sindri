@@ -35,6 +35,8 @@ namespace Sindri
   {
     int  index = 0;
     auto deleteIterator = mNoiseLayers.end();
+    auto moveUpIterator = mNoiseLayers.end();
+    auto moveDownIterator = mNoiseLayers.end();
     for (auto it = mNoiseLayers.begin(); it != mNoiseLayers.end();)
     {
       ImGui::PushID(index); // Start a unique ID scope
@@ -63,12 +65,43 @@ namespace Sindri
         {
           deleteIterator = it;
         }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Move up"))
+        {
+          moveUpIterator = it;
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Move down"))
+        {
+          moveDownIterator = it;
+        }
+
         ImGui::EndChild();
         ImGui::PopStyleVar();
         index++;
         ++it;
       }
       ImGui::PopID();
+    }
+
+    if (moveUpIterator != mNoiseLayers.end())
+    {
+      if (moveUpIterator != mNoiseLayers.begin())
+      {
+        std::iter_swap(moveUpIterator, std::prev(moveUpIterator));
+      }
+    }
+
+    if (moveDownIterator != mNoiseLayers.end())
+    {
+      if (moveDownIterator + 1 != mNoiseLayers.end())
+      {
+        std::iter_swap(moveDownIterator, moveDownIterator + 1);
+      }
     }
 
     if (deleteIterator != mNoiseLayers.end())

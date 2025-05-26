@@ -1,5 +1,6 @@
 #include "pch.hpp"
 
+#include "Helper/FileHelper.hpp"
 #include "SindriGui.hpp"
 #include "TextureSettings/TextureSettings.hpp"
 #include <imgui.h>
@@ -66,7 +67,7 @@ namespace Sindri
     ImGui::InputScalar("Seed", ImGuiDataType_U32, &mTextureSettings->Seed);
 
     ImGui::SameLine();
-    if (ImGui::Button("Randomize"))
+    if (ImGui::Button("Random"))
     {
       mTextureSettings->Seed = mRandomDevice();
     }
@@ -246,16 +247,17 @@ namespace Sindri
   SindriGui::LuaScriptSelector()
   {
     // Combo Box
-    if (ImGui::BeginCombo("Lua Script",
-                          mSelectedScriptIndex >= 0 &&
-                              mSelectedScriptIndex < mScripts.size()
-                            ? mScripts[mSelectedScriptIndex].string().c_str()
-                            : "Select..."))
+    if (ImGui::BeginCombo(
+          "Lua Script",
+          mSelectedScriptIndex >= 0 && mSelectedScriptIndex < mScripts.size()
+            ? mScripts[mSelectedScriptIndex].filename().string().c_str()
+            : "Select..."))
     {
       for (int i = 0; i < mScripts.size(); ++i)
       {
         bool isSelected = (mSelectedScriptIndex == i);
-        if (ImGui::Selectable(mScripts[i].string().c_str(), isSelected))
+        if (ImGui::Selectable(mScripts[i].filename().string().c_str(),
+                              isSelected))
         {
           mSelectedScriptIndex = i;
         }
@@ -282,6 +284,13 @@ namespace Sindri
     {
       mSelectedScriptIndex = 0;
       mScripts = GetLuaScripts();
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Open directory"))
+    {
+      OpenInFileExplorer("lua");
     }
   }
 
