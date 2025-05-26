@@ -30,9 +30,6 @@ namespace Sindri
     std::string vertexSource = LoadFile("shaders/raymarch.vert");
     std::string fragmentSource = LoadFile("shaders/raymarch.frag");
 
-    std::cout << "Vertex shader:\n" << vertexSource << std::endl;
-    std::cout << "Fragment shader:\n" << fragmentSource << std::endl;
-
     m3DPreviewShader =
       CompileShaderProgram(vertexSource.c_str(), fragmentSource.c_str());
   }
@@ -177,7 +174,6 @@ namespace Sindri
     SetupFramebuffer(resolution);
     return;
 
-    std::cout << "Resizing" << std::endl;
     mFramebuffer.width = resolution.x;
     mFramebuffer.height = resolution.y;
 

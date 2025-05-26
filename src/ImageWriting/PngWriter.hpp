@@ -20,8 +20,6 @@ namespace Sindri
       const size_t expected_size =
         static_cast<size_t>(width) * height * channels;
 
-      std::cout << "Data length: " << data.size() << std::endl;
-
       if (data.size() != expected_size)
         throw std::runtime_error(
           "Input data size does not match width * height * channels");
