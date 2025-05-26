@@ -270,6 +270,18 @@ namespace Sindri
     }
 
     // Add Button
+    ImGui::PushStyleColor(
+      ImGuiCol_Button,
+      ImVec4(163.0F / 255.0F, 190.0F / 255.0F, 140.0F / 255.0F, 1.0F));
+    ImGui::PushStyleColor(
+      ImGuiCol_ButtonHovered,
+      ImVec4(189.0F / 255.0F, 220.0F / 255.0F, 162.0F / 255.0F, 1.0F));
+    ImGui::PushStyleColor(
+      ImGuiCol_ButtonActive,
+      ImVec4(138.0F / 255.0F, 160.0F / 255.0F, 118.0F / 255.0F, 1.0F));
+    ImGui::PushStyleColor(
+      ImGuiCol_Text,
+      ImVec4(76.0F / 255.0F, 86.0F / 255.0F, 106.0F / 255.0F, 1.0F));
     if (ImGui::Button("Add layer"))
     {
       if (mSelectedScriptIndex >= 0 && mSelectedScriptIndex < mScripts.size())
@@ -277,6 +289,7 @@ namespace Sindri
         mTexturePipeline->AddLayer(mScripts[mSelectedScriptIndex]);
       }
     }
+    ImGui::PopStyleColor(4);
 
     ImGui::SameLine();
 

@@ -61,10 +61,20 @@ namespace Sindri
 
         ImGui::SameLine();
 
+        ImGui::PushStyleColor(
+          ImGuiCol_Button,
+          ImVec4(191.0F / 255.0F, 97.0F / 255.0F, 106.0F / 255.0F, 1.0F));
+        ImGui::PushStyleColor(
+          ImGuiCol_ButtonHovered,
+          ImVec4(220.0F / 255.0F, 112.0F / 255.0F, 122.0F / 255.0F, 1.0F));
+        ImGui::PushStyleColor(
+          ImGuiCol_ButtonActive,
+          ImVec4(172.0F / 255.0F, 88.0F / 255.0F, 96.0F / 255.0F, 1.0F));
         if (ImGui::Button("Delete"))
         {
           deleteIterator = it;
         }
+        ImGui::PopStyleColor(3);
 
         ImGui::SameLine();
 
