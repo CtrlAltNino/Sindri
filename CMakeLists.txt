@@ -64,6 +64,10 @@ IF(WIN32)
     target_compile_definitions(${targetName} PRIVATE UNICODE _UNICODE)
 ENDIF()
 
+target_compile_definitions(${targetName} PRIVATE
+    $<$<CONFIG:Debug>:SINDRI_DEBUG_BUILD>
+)
+
 target_include_directories(${targetName} PRIVATE src)
 target_precompile_headers(${targetName} PRIVATE src/pch.hpp)
 

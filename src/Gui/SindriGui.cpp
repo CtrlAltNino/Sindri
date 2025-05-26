@@ -49,7 +49,9 @@ namespace Sindri
 
     // Create a full-screen ImGui window
     ImGui::Begin("SettingsWindow", nullptr, windowFlags);
-    ImGui::SeparatorText("General");
+
+#ifdef SINDRI_DEBUG_BUILD
+    ImGui::SeparatorText("Debug");
 
     ImGui::Text("FPS: %.1f", mFps);
     ImGui::Text("Frame Time: %.2f ms", mMsPerFrame);
@@ -62,6 +64,8 @@ namespace Sindri
     }
 
     ImGui::Spacing();
+#endif
+
     ImGui::SeparatorText("Options");
 
     ImGui::InputScalar("Seed", ImGuiDataType_U32, &mTextureSettings->Seed);

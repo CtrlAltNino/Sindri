@@ -81,7 +81,7 @@ namespace Sindri
   NoiseLayer::ReloadScriptFile()
   {
     lua = sol::state{};
-    lua.open_libraries(sol::lib::math, sol::lib::base, sol::lib::string);
+    lua.open_libraries(sol::lib::math, sol::lib::base);
     lua.script_file(mPath.string());
     mName = lua["name"];
     sol::table settings = lua["settings"];
