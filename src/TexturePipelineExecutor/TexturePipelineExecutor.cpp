@@ -186,16 +186,21 @@ namespace Sindri
 
         if (std::holds_alternative<int>(value))
         {
-          state.LuaState["settings"][key] = std::get<int>(value);
+          state.LuaState["Settings"][key] = std::get<int>(value);
         }
         else if (std::holds_alternative<float>(value))
         {
-          state.LuaState["settings"][key] = std::get<float>(value);
+          state.LuaState["Settings"][key] = std::get<float>(value);
         }
         else if (std::holds_alternative<bool>(value))
         {
-          state.LuaState["settings"][key] = std::get<bool>(value);
+          state.LuaState["Settings"][key] = std::get<bool>(value);
         }
+      }
+
+      if (state.LuaState["Setup"].valid())
+      {
+        state.LuaState["Setup"](mCurrentTextureSettings.Seed);
       }
 
       stackState.push_back(std::move(state));
@@ -221,10 +226,21 @@ namespace Sindri
 
       // sol::protected_function_result result =
       //   mEvaluate(normalizedX, normalizedY, normalizedZ, settings->mSeed);
-      float                          result = 0.0F;
-      sol::protected_function_result functionResult =
-        stackState.LuaState["evaluate"](
+      float result = 0.0F;
+
+      sol::protected_function_result functionResult;
+
+      if (mCurrentTextureSettings.Dimensions == TextureDimension::Texture2D)
+      {
+        functionResult = stackState.LuaState["Evaluate2D"](
+          normalizedX, normalizedY, mCurrentTextureSettings.Seed);
+      }
+      else if (mCurrentTextureSettings.Dimensions ==
+               TextureDimension::Texture3D)
+      {
+        functionResult = stackState.LuaState["Evaluate3D"](
           normalizedX, normalizedY, normalizedZ, mCurrentTextureSettings.Seed);
+      }
 
       if (!functionResult.valid())
       {

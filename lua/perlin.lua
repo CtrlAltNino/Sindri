@@ -1,5 +1,5 @@
 -- Settings exposed to the C++ side
-settings = {
+Settings = {
     amplitude = 1.0,
     frequency = 2.0,
     octaves = 5,
@@ -7,7 +7,7 @@ settings = {
     use_3d = false -- set true if using volumetric textures or 3D domains
 }
 
-name = "Perlin Noise"
+Name = "Perlin Noise"
 
 -- Permutation table (classic Perlin)
 local permutation = {
@@ -88,7 +88,7 @@ local function perlin(x, y, z)
 end
 
 -- Evaluates the noise
-function evaluate(x, y, z, seed)
+function Evaluate(x, y, z, seed)
     local value = 0.0
     local amp = settings.amplitude
     local freq = settings.frequency

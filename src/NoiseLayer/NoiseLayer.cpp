@@ -83,8 +83,8 @@ namespace Sindri
     lua = sol::state{};
     lua.open_libraries(sol::lib::math, sol::lib::base);
     lua.script_file(mPath.string());
-    mName = lua["name"];
-    sol::table settings = lua["settings"];
+    mName = lua["Name"];
+    sol::table settings = lua["Settings"];
 
     for (auto& pair : settings)
     {
