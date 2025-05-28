@@ -15,6 +15,7 @@ namespace Sindri
     sol::state            mLua;
     std::map<std::string, std::variant<bool, int, float>> mSettings;
     bool                                                  mEnabled = true;
+    float                                                 mContribution = 1.0F;
 
   public:
     NoiseLayer(std::filesystem::path luaScriptPath);
@@ -35,6 +36,9 @@ namespace Sindri
 
     auto
     GetPath() -> std::filesystem::path override;
+
+    auto
+    GetContribution() -> float override;
 
     auto
     GetSettings()

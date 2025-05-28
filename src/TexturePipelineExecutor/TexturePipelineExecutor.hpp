@@ -18,6 +18,7 @@ namespace Sindri
   {
     sol::state LuaState;
     BlendMode  BlendMode;
+    float      Contribution;
   };
 
   class TexturePipelineExecutor : public ITexturePipelineExecutor

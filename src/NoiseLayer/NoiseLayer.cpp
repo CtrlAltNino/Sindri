@@ -20,6 +20,7 @@ namespace Sindri
   {
     ImGui::Checkbox("Enabled", &mEnabled);
     ComboEnum("Blend mode", mBlendMode);
+    ImGui::SliderFloat("Contribution", &mContribution, 0.0F, 1.0F, "%.2F");
 
     for (auto& pair : mSettings)
     {
@@ -82,6 +83,12 @@ namespace Sindri
     -> std::map<std::string, std::variant<bool, int, float>>
   {
     return mSettings;
+  }
+
+  auto
+  NoiseLayer::GetContribution() -> float
+  {
+    return mContribution;
   }
 
   void

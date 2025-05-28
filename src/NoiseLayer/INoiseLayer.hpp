@@ -39,6 +39,9 @@ namespace Sindri
     GetPath() -> std::filesystem::path = 0;
 
     virtual auto
+    GetContribution() -> float = 0;
+
+    virtual auto
     GetSettings() -> std::map<std::string, std::variant<bool, int, float>> = 0;
 
     virtual void

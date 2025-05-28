@@ -174,6 +174,7 @@ namespace Sindri
       }
       StackState state;
       state.BlendMode = stackEntry->GetBlendMode();
+      state.Contribution = stackEntry->GetContribution();
 
       // Load scripts
       state.LuaState.open_libraries(
@@ -256,6 +257,8 @@ namespace Sindri
         result =
           functionResult.get<float>(); // or result.get<float>() for safety
       }
+
+      result *= stackState.Contribution;
 
       switch (stackState.BlendMode)
       {
