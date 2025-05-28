@@ -1,10 +1,9 @@
 -- Settings exposed to the C++ side
 Settings = {
-    amplitude = 1.0,
-    frequency = 2.0,
-    octaves = 5,
-    persistence = 0.5,
-    use_3d = false -- set true if using volumetric textures or 3D domains
+    Amplitude = 1.0,
+    Frequency = 2.0,
+    Octaves = 5,
+    Persistence = 0.5,
 }
 
 Name = "Perlin Noise"
@@ -88,28 +87,47 @@ local function perlin(x, y, z)
 end
 
 -- Evaluates the noise
-function Evaluate(x, y, z, seed)
+function Evaluate2D(x, y, seed)
     local value = 0.0
-    local amp = settings.amplitude
-    local freq = settings.frequency
+    local amp = Settings.Amplitude
+    local freq = Settings.Frequency
 
     -- Offset input by seed for randomness
     local offset = seed * 31.4159 -- prime-ish constant for better hashing
 
-    for i = 1, settings.octaves do
+    for i = 1, Settings.Octaves do
+        local nx = (x + offset) * freq
+        local ny = (y + offset) * freq
+
+        local n = perlin(nx, ny, 0.0)
+
+        value = value + amp * n
+        amp = amp * Settings.Persistence
+        freq = freq * 2.0
+    end
+
+    -- Normalize to [0,1]
+    return (value + 1.0) * 0.5
+end
+
+-- Evaluates the noise
+function Evaluate3D(x, y, z, seed)
+    local value = 0.0
+    local amp = Settings.Amplitude
+    local freq = Settings.Frequency
+
+    -- Offset input by seed for randomness
+    local offset = seed * 31.4159 -- prime-ish constant for better hashing
+
+    for i = 1, Settings.Octaves do
         local nx = (x + offset) * freq
         local ny = (y + offset) * freq
         local nz = (z + offset) * freq
 
-        local n
-        if settings.use_3d then
-            n = perlin(nx, ny, nz)
-        else
-            n = perlin(nx, ny, 0.0)
-        end
+        local n = perlin(nx, ny, nz)
 
         value = value + amp * n
-        amp = amp * settings.persistence
+        amp = amp * Settings.Persistence
         freq = freq * 2.0
     end
 

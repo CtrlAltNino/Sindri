@@ -168,6 +168,10 @@ namespace Sindri
 
     for (auto& stackEntry : mTexturePipeline->GetLayers())
     {
+      if (!stackEntry->IsEnabled())
+      {
+        continue;
+      }
       StackState state;
       state.BlendMode = stackEntry->GetBlendMode();
 

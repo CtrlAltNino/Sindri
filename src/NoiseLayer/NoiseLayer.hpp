@@ -12,8 +12,9 @@ namespace Sindri
     std::string           mName;
     std::filesystem::path mPath;
     BlendMode             mBlendMode = BlendMode::Add;
-    sol::state            lua;
+    sol::state            mLua;
     std::map<std::string, std::variant<bool, int, float>> mSettings;
+    bool                                                  mEnabled = true;
 
   public:
     NoiseLayer(std::filesystem::path luaScriptPath);
@@ -22,6 +23,9 @@ namespace Sindri
     // Renders ImGui based UI for the settings
     void
     RenderSettings() override;
+
+    auto
+    IsEnabled() -> bool override;
 
     auto
     GetName() -> std::string override;

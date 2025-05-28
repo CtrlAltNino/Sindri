@@ -18,6 +18,7 @@ namespace Sindri
   void
   NoiseLayer::RenderSettings()
   {
+    ImGui::Checkbox("Enabled", &mEnabled);
     ComboEnum("Blend mode", mBlendMode);
 
     for (auto& pair : mSettings)
@@ -53,6 +54,12 @@ namespace Sindri
   }
 
   auto
+  NoiseLayer ::IsEnabled() -> bool
+  {
+    return mEnabled;
+  }
+
+  auto
   NoiseLayer::GetName() -> std::string
   {
     return mName;
@@ -80,11 +87,11 @@ namespace Sindri
   void
   NoiseLayer::ReloadScriptFile()
   {
-    lua = sol::state{};
-    lua.open_libraries(sol::lib::math, sol::lib::base);
-    lua.script_file(mPath.string());
-    mName = lua["Name"];
-    sol::table settings = lua["Settings"];
+    mLua = sol::state{};
+    mLua.open_libraries(sol::lib::math, sol::lib::base);
+    mLua.script_file(mPath.string());
+    mName = mLua["Name"];
+    sol::table settings = mLua["Settings"];
 
     for (auto& pair : settings)
     {

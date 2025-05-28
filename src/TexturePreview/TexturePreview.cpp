@@ -318,7 +318,7 @@ namespace Sindri
 
     if (mTextureSettings->Dimensions == TextureDimension::Texture3D)
     {
-      ImGui::SliderFloat("Density factor", &mDensityFactor, 0.0F, 1.0F, "%.2F");
+      ImGui::SliderFloat("Density factor", &mDensityFactor, 0.0F, 4.0F, "%.2F");
       ImGui::SliderFloat("Step Size", &mStepSize, 0.000001F, 0.1F, "%.4F");
       ImGui::SliderInt("Max steps", &mMaxSteps, 1, 2048);
       ImGui::SliderFloat("Rotation speed", &mRotationSpeed, 0.0F, 2.0F, "%.2F");

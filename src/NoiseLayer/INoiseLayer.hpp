@@ -27,6 +27,9 @@ namespace Sindri
     RenderSettings() = 0;
 
     virtual auto
+    IsEnabled() -> bool = 0;
+
+    virtual auto
     GetName() -> std::string = 0;
 
     virtual auto

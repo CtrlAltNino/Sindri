@@ -1,49 +1,49 @@
 Settings = {
-    cell_count = 4,  -- Zoom level
-    inverted = false -- Whether to invert brightness (1.0 - distance)
+    Cell_Count = 4, -- Zoom level
+    Jitter = 1.0,
+    Invert = false  -- Whether to invert brightness (1.0 - distance)
 }
+
+Name = "Worley Noise"
+
+local feature_points = {}
 
 function Setup(seed)
     -- No setup needed for this implementation
+    math.randomseed(seed)
+    local count = Settings.Cell_Count
+
+    for z = 0, count - 1 do
+        feature_points[z] = {}
+        for y = 0, count - 1 do
+            feature_points[z][y] = {}
+            for x = 0, count - 1 do
+                -- Generate a pseudo-random point inside the cell
+                local jitter = Settings.Jitter
+
+                -- Wrap the positions into [0, count) domain to preserve tileability
+                feature_points[z][y][x] = {
+                    math.random(),
+                    math.random(),
+                    math.random()
+                }
+            end
+        end
+    end
 end
 
--- 2D hash function to generate pseudo-random vec2 from integer coordinates
-local function rand2D(ix, iy)
-    local dot1 = ix * 127.1 + iy * 311.7
-    local dot2 = ix * 269.5 + iy * 183.3
+function Evaluate2D(x, y)
+    local count = Settings.Cell_Count
 
-    local sin1 = math.sin(dot1) * 43758.5453
-    local sin2 = math.sin(dot2) * 43758.5453
-
-    return {
-        sin1 - math.floor(sin1),
-        sin2 - math.floor(sin2)
-    }
-end
-
-local function rand3D(ix, iy, iz)
-    local dot1 = ix * 127.1 + iy * 311.7 + iz * 74.7
-    local dot2 = ix * 269.5 + iy * 183.3 + iz * 246.1
-    local dot3 = ix * 113.5 + iy * 271.9 + iz * 124.6
-
-    local sin1 = math.sin(dot1) * 43758.5453
-    local sin2 = math.sin(dot2) * 43758.5453
-    local sin3 = math.sin(dot3) * 43758.5453
-
-    return {
-        sin1 - math.floor(sin1),
-        sin2 - math.floor(sin2),
-        sin3 - math.floor(sin3)
-    }
-end
-
-function Evaluate2D(x, y, seed)
-    local count = Settings.cell_count
+    -- Scaled coordinate from [0, 1] to [0, cell_count]
     local px = x * count
     local py = y * count
 
+    -- Feature point indices
     local ix = math.floor(px)
     local iy = math.floor(py)
+
+    -- Relative coordinate in the cell [0, 1]
     local fx = px - ix
     local fy = py - iy
 
@@ -51,44 +51,50 @@ function Evaluate2D(x, y, seed)
 
     for dy = -1, 1 do
         for dx = -1, 1 do
-            local cx = ix + dx
-            local cy = iy + dy
+            -- The current cell index, with wrapping
+            local cx = (ix + dx) % count
+            local cy = (iy + dy) % count
 
-            local r = rand2D(cx, cy)
+            -- Feature point to compare
+            local feature = feature_points[0][cy][cx]
 
-            local feature_x = dx + r[1]
-            local feature_y = dy + r[2]
+            -- Current feature offsetted
+            local feature_offset = { feature[1] + dx, feature[2] + dy };
 
-            local dx2 = fx - feature_x
-            local dy2 = fy - feature_y
+            local diff_x = fx - feature_offset[1]
+            local diff_y = fy - feature_offset[2]
 
-            local dist = math.sqrt(dx2 * dx2 + dy2 * dy2)
-            if dist < min_dist then
-                min_dist = dist
+            local distance = math.sqrt(diff_x * diff_x + diff_y * diff_y)
+
+            if distance < min_dist then
+                min_dist = distance
             end
         end
     end
 
-    -- Optional normalization (remove if you prefer raw distances)
-    --min_dist = math.min(min_dist / math.sqrt(2), 1.0)
+    local color = min_dist
 
-    -- Inversion toggle
-    if Settings.inverted then
-        return 1.0 - min_dist
-    else
-        return min_dist
+    if Settings.Invert then
+        color = 1.0 - color
     end
+
+    return color
 end
 
-function Evaluate3D(x, y, z, seed)
-    local count = Settings.cell_count
+function Evaluate3D(x, y, z)
+    local count = Settings.Cell_Count
+
+    -- Scaled coordinate from [0, 1] to [0, cell_count]
     local px = x * count
     local py = y * count
     local pz = z * count
 
+    -- Feature point indices
     local ix = math.floor(px)
     local iy = math.floor(py)
     local iz = math.floor(pz)
+
+    -- Relative coordinate in the cell [0, 1]
     local fx = px - ix
     local fy = py - iy
     local fz = pz - iz
@@ -98,35 +104,35 @@ function Evaluate3D(x, y, z, seed)
     for dz = -1, 1 do
         for dy = -1, 1 do
             for dx = -1, 1 do
-                local cx = ix + dx
-                local cy = iy + dy
-                local cz = iz + dz
+                -- The current cell index, with wrapping
+                local cx = (ix + dx) % count
+                local cy = (iy + dy) % count
+                local cz = (iz + dz) % count
 
-                local r = rand3D(cx, cy, cz)
+                -- Feature point to compare
+                local feature = feature_points[cz][cy][cx]
 
-                local feature_x = dx + r[1]
-                local feature_y = dy + r[2]
-                local feature_z = dz + r[3]
+                -- Current feature offsetted
+                local feature_offset = { feature[1] + dx, feature[2] + dy, feature[3] + dz };
 
-                local dx2 = fx - feature_x
-                local dy2 = fy - feature_y
-                local dz2 = fz - feature_z
+                local diff_x = fx - feature_offset[1]
+                local diff_y = fy - feature_offset[2]
+                local diff_z = fz - feature_offset[3]
 
-                local dist = math.sqrt(dx2 * dx2 + dy2 * dy2 + dz2 * dz2)
-                if dist < min_dist then
-                    min_dist = dist
+                local distance = math.sqrt(diff_x * diff_x + diff_y * diff_y + diff_z * diff_z)
+
+                if distance < min_dist then
+                    min_dist = distance
                 end
             end
         end
     end
 
-    -- Optional normalization (remove if you prefer raw distances)
-    --min_dist = math.min(min_dist / math.sqrt(2), 1.0)
+    local color = min_dist
 
-    -- Inversion toggle
-    if Settings.inverted then
-        return 1.0 - min_dist
-    else
-        return min_dist
+    if Settings.Invert then
+        color = 1.0 - color
     end
+
+    return color
 end
