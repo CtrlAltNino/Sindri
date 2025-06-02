@@ -23,7 +23,7 @@ namespace Sindri
     // = 1.0F;
 
     auto
-    ScriptNode::GetLuaScripts() -> std::vector<std::filesystem::path>
+    GetLuaScripts() -> std::vector<std::filesystem::path>
     {
       std::vector<std::filesystem::path> scripts;
       for (const auto& entry : std::filesystem::directory_iterator("lua"))
@@ -66,7 +66,7 @@ namespace Sindri
     }
 
     void
-    ScriptNode::LuaScriptSelector()
+    LuaScriptSelector()
     {
       // ImGui::SeparatorText("Script");
 
