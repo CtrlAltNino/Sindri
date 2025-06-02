@@ -10,6 +10,7 @@
 #include "ITexturePipelineExecutor.hpp"
 #include "ITexturePreview.hpp"
 #include "ImGuiLayerFactory.hpp"
+#include "NodeEditor.hpp"
 #include "NoiseLayerFactory.hpp"
 #include "OpenGLPreviewTexture.hpp"
 #include "SindriGui.hpp"
@@ -30,6 +31,8 @@ namespace Sindri
     return boost::di::make_injector<boost::di::extension::shared_config>(
       boost::di::bind<TextureSettings>.in(boost::di::extension::shared),
       boost::di::bind<ITextureBuffer>.to<TextureBuffer>().in(
+        boost::di::extension::shared),
+      boost::di::bind<INodeEditor>.to<NodeEditor>().in(
         boost::di::extension::shared),
       boost::di::bind<ITexturePreview>.to<TexturePreview>().in(
         boost::di::extension::shared),

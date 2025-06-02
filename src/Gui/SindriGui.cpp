@@ -15,7 +15,8 @@ namespace Sindri
     std::shared_ptr<ITextureBuffer>           textureBuffer,
     std::shared_ptr<ITexturePreview>          preview,
     std::shared_ptr<IGpuPreviewTexture>       gpuPreviewTexture,
-    std::shared_ptr<ITexturePipelineExecutor> texturePipelineExecutor)
+    std::shared_ptr<ITexturePipelineExecutor> texturePipelineExecutor,
+    std::shared_ptr<INodeEditor>              nodeEditor)
     : mWindow(std::move(window))
     , mTextureSettings(std::move(textureSettings))
     , mTexturePipeline(std::move(texturePipeline))
@@ -24,6 +25,7 @@ namespace Sindri
     , mPreview(std::move(preview))
     , mGpuPreviewTexture(std::move(gpuPreviewTexture))
     , mExecutor(std::move(texturePipelineExecutor))
+    , mNodeEditor(std::move(nodeEditor))
   {
     mTextureSettings->Seed = mRandomDevice();
     mScripts = GetLuaScripts();
@@ -36,6 +38,26 @@ namespace Sindri
     mFps = 1.0F / deltaTime;
     mMsPerFrame = deltaTime * 1000.0F;
 
+    RenderPreviewWindow(deltaTime,
+                        ImVec2(0, 0),
+                        ImVec2((float)mWindow->GetWidth() * (1.0F / 3.0F),
+                               (float)mWindow->GetHeight() / 2.0F));
+
+    RenderSettingsWindow(deltaTime,
+                         ImVec2(0, (float)mWindow->GetHeight() / 2.0F),
+                         ImVec2((float)mWindow->GetWidth() * (1.0F / 3.0F),
+                                (float)mWindow->GetHeight() / 2.0F));
+
+    RenderNodeEditorWindow(
+      deltaTime,
+      ImVec2((float)mWindow->GetWidth() * (1.0F / 3.0F), 0),
+      ImVec2((float)mWindow->GetWidth() * (2.0F / 3.0F),
+             (float)mWindow->GetHeight()));
+  }
+
+  void
+  SindriGui::RenderSettingsWindow(float deltaTime, ImVec2 position, ImVec2 size)
+  {
     // Set window flags to disable interactions and visuals
     ImGuiWindowFlags windowFlags =
       ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
@@ -43,9 +65,8 @@ namespace Sindri
       ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
     // Set next window position and size to fill the screen
-    ImGui::SetNextWindowPos(ImVec2(0, 0));
-    ImGui::SetNextWindowSize(ImVec2((float)mWindow->GetWidth() * (1.0F / 3.0F),
-                                    (float)mWindow->GetHeight()));
+    ImGui::SetNextWindowPos(position);
+    ImGui::SetNextWindowSize(size);
 
     // Create a full-screen ImGui window
     ImGui::Begin("SettingsWindow", nullptr, windowFlags);
@@ -121,7 +142,7 @@ namespace Sindri
 
     mPreview->RenderSettings();
 
-    ImGui::Spacing();
+    /*ImGui::Spacing();
     ImGui::SeparatorText("Lua Scripts");
 
     LuaScriptSelector();
@@ -137,7 +158,7 @@ namespace Sindri
     else
     {
       mTexturePipeline->RenderAllSettings();
-    }
+    }*/
 
     if (mTexturePipeline->GetLayers().empty() || mExecutor->IsRunning())
     {
@@ -190,12 +211,19 @@ namespace Sindri
 
     // You can add buttons, sliders, etc. here
     ImGui::End();
+  }
 
+  void
+  SindriGui::RenderPreviewWindow(float deltaTime, ImVec2 position, ImVec2 size)
+  {
+    // Set window flags to disable interactions and visuals
+    ImGuiWindowFlags windowFlags =
+      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+      ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse |
+      ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
     // Set next window position and size to fill the screen
-    ImGui::SetNextWindowPos(
-      ImVec2((float)mWindow->GetWidth() * (1.0F / 3.0F), 0));
-    ImGui::SetNextWindowSize(ImVec2((float)mWindow->GetWidth() * (2.0F / 3.0F),
-                                    (float)mWindow->GetHeight()));
+    ImGui::SetNextWindowPos(position);
+    ImGui::SetNextWindowSize(size);
 
     ImGui::Begin("PreviewWindow", nullptr, windowFlags);
     ImGui::SeparatorText("Texture Preview");
@@ -228,6 +256,31 @@ namespace Sindri
 
       mPreview->Render(size, deltaTime);
     }
+
+    // You can add buttons, sliders, etc. here
+    ImGui::End();
+  }
+
+  void
+  SindriGui::RenderNodeEditorWindow(float  deltaTime,
+                                    ImVec2 position,
+                                    ImVec2 size)
+  {
+    // Set window flags to disable interactions and visuals
+    ImGuiWindowFlags windowFlags =
+      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+      ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse |
+      ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+    // Set next window position and size to fill the screen
+    ImGui::SetNextWindowPos(position);
+    ImGui::SetNextWindowSize(size);
+
+    // Create a full-screen ImGui window
+    ImGui::Begin("NodeEditorWindow", nullptr, windowFlags);
+    ImGui::SeparatorText("Node Editor");
+
+    mNodeEditor->Render();
 
     // You can add buttons, sliders, etc. here
     ImGui::End();

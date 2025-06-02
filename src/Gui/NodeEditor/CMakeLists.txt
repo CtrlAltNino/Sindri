@@ -1,9 +1,6 @@
 target_sources(${targetName}
     PRIVATE
-    SindriGui.cpp
+    NodeEditor.cpp
 )
-
-add_subdirectory(ImGui)
-add_subdirectory(NodeEditor)
 
 target_include_directories(${targetName} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

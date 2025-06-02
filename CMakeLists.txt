@@ -74,6 +74,30 @@ target_precompile_headers(${targetName} PRIVATE src/pch.hpp)
 # =========================================
 # ========== Target Dependencies ==========
 # =========================================
+include(FetchContent)
+
+FetchContent_Declare(ImNodeFlow
+    GIT_REPOSITORY "https://github.com/Fattorino/ImNodeFlow.git"
+    GIT_TAG master
+)
+
+FetchContent_MakeAvailable(ImNodeFlow)
+
+# Define the directory manually (ImNodeFlow doesn't have CMakeLists.txt)
+set(IMNODEFLOW_DIR ${imnodeflow_SOURCE_DIR})
+
+list(APPEND imnode_flow_sources
+    ${IMNODEFLOW_DIR}/src/ImNodeFlow.cpp
+)
+
+target_sources(${targetName}
+    PRIVATE
+    ${imnode_flow_sources}
+)
+
+target_include_directories(${targetName}
+    PRIVATE ${IMNODEFLOW_DIR}/include
+)
 
 # this is heuristically generated, and may not be correct
 find_package(glad CONFIG REQUIRED)
@@ -87,6 +111,9 @@ target_link_libraries(${targetName} PRIVATE SDL3::SDL3)
 
 find_package(imgui CONFIG REQUIRED)
 target_link_libraries(${targetName} PRIVATE imgui::imgui)
+target_compile_definitions(${targetName}
+    PRIVATE IMGUI_DEFINE_MATH_OPERATORS
+)
 
 find_package(nfd CONFIG REQUIRED)
 target_link_libraries(${targetName} PRIVATE nfd::nfd)
