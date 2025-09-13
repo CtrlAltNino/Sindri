@@ -3,7 +3,7 @@
 #include "IGpuPreviewTexture.hpp"
 #include "ITextureBuffer.hpp"
 #include "ITexturePreview.hpp"
-#include "TextureSettings/TextureSettings.hpp"
+#include "WorkflowSettings/WorkflowSettings.hpp"
 
 namespace Sindri
 {
@@ -27,7 +27,7 @@ namespace Sindri
   {
   private:
     TextureDimension mCachedDimension = TextureDimension::Texture2D;
-    std::shared_ptr<TextureSettings>    mTextureSettings;
+    std::shared_ptr<WorkflowSettings>   mWorkflowSettings;
     std::shared_ptr<ITextureBuffer>     mTexture;
     std::shared_ptr<IGpuPreviewTexture> mGpuPreviewTexture;
     Framebuffer                         mFramebuffer;
@@ -61,7 +61,7 @@ namespace Sindri
     Render3DPreview(glm::vec2 resolution, float deltaTime);
 
   public:
-    TexturePreview(std::shared_ptr<TextureSettings>    textureSettings,
+    TexturePreview(std::shared_ptr<WorkflowSettings>   workflowSettings,
                    std::shared_ptr<ITextureBuffer>     texture,
                    std::shared_ptr<IGpuPreviewTexture> gpuPreviewTexture);
 

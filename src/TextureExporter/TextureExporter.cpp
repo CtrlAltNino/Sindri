@@ -11,10 +11,10 @@
 namespace Sindri
 {
   TextureExporter::TextureExporter(
-    std::shared_ptr<ITextureBuffer>  texture,
-    std::shared_ptr<TextureSettings> textureSettings)
+    std::shared_ptr<ITextureBuffer>   texture,
+    std::shared_ptr<WorkflowSettings> workflowSettings)
     : mTexture(std::move(texture))
-    , mTextureSettings(std::move(textureSettings))
+    , mWorkflowSettings(std::move(workflowSettings))
   {
   }
 

@@ -2,7 +2,7 @@
 
 #include "ImageWriting/ShaderHelper.hpp"
 #include "TexturePreview.hpp"
-#include "TextureSettings/TextureSettings.hpp"
+#include "WorkflowSettings/WorkflowSettings.hpp"
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
@@ -10,10 +10,10 @@
 namespace Sindri
 {
   TexturePreview::TexturePreview(
-    std::shared_ptr<TextureSettings>    textureSettings,
+    std::shared_ptr<WorkflowSettings>   workflowSettings,
     std::shared_ptr<ITextureBuffer>     texture,
     std::shared_ptr<IGpuPreviewTexture> gpuPreviewTexture)
-    : mTextureSettings(std::move(textureSettings))
+    : mWorkflowSettings(std::move(workflowSettings))
     , mTexture(std::move(texture))
     , mGpuPreviewTexture(std::move(gpuPreviewTexture))
   {
@@ -295,7 +295,7 @@ namespace Sindri
   void
   TexturePreview::Render(glm::vec2 resolution, float deltaTime)
   {
-    switch (mTextureSettings->Dimensions)
+    switch (mWorkflowSettings->Dimensions)
     {
       case TextureDimension::Texture1D: break;
       case TextureDimension::Texture2D: Render2DPreview(resolution); break;
@@ -316,7 +316,7 @@ namespace Sindri
       mGpuPreviewTexture->SetInterpolatePreview(interpolatePreviewTexture);
     }
 
-    if (mTextureSettings->Dimensions == TextureDimension::Texture3D)
+    if (mWorkflowSettings->Dimensions == TextureDimension::Texture3D)
     {
       ImGui::SliderFloat("Density factor", &mDensityFactor, 0.0F, 4.0F, "%.2F");
       ImGui::SliderFloat("Step Size", &mStepSize, 0.000001F, 0.1F, "%.4F");

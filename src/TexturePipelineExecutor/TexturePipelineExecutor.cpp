@@ -3,7 +3,7 @@
 #include "Helper/CoordinateHelper.hpp"
 #include "NoiseLayer/INoiseLayer.hpp"
 #include "TexturePipelineExecutor.hpp"
-#include "TextureSettings/TextureSettings.hpp"
+#include "WorkflowSettings/WorkflowSettings.hpp"
 #include <optional>
 #include <sol/protected_function_result.hpp>
 #include <utility>
@@ -42,7 +42,7 @@ namespace Sindri
   void
   TexturePipelineExecutor::TextureFiller()
   {
-    while (!mStopThreadFlag.load())
+    /*while (!mStopThreadFlag.load())
     {
       {
         std::unique_lock<std::mutex> lock(mUploadMutex);
@@ -68,8 +68,8 @@ namespace Sindri
             float computed =
               EvaluateStack(stack,
                             IndexToCoord(i,
-                                         mCurrentTextureSettings.Resolution,
-                                         mCurrentTextureSettings.Dimensions));
+                                         mCurrentWorkflowSettings.Resolution,
+                                         mCurrentWorkflowSettings.Dimensions));
             data[i] = computed;
           }
 
@@ -101,13 +101,13 @@ namespace Sindri
           }
         }
       }
-    }
+    }*/
   }
 
   void
-  TexturePipelineExecutor::ExecutePipeline(TextureSettings textureSettings)
+  TexturePipelineExecutor::ExecutePipeline(WorkflowSettings workflowSettings)
   {
-    mCurrentTextureSettings = textureSettings;
+    mCurrentWorkflowSettings = workflowSettings;
 
     // Chunking the work
     GenerateWorkloads();
@@ -205,7 +205,7 @@ namespace Sindri
 
       if (state.LuaState["Setup"].valid())
       {
-        state.LuaState["Setup"](mCurrentTextureSettings.Seed);
+        state.LuaState["Setup"](mCurrentWorkflowSettings.Seed);
       }
 
       stackState.push_back(std::move(state));
@@ -220,14 +220,14 @@ namespace Sindri
   {
     float value = 0.0F;
 
-    for (auto& stackState : stack)
+    /*for (auto& stackState : stack)
     {
       float normalizedX =
-        (float)coordinate.x / (float)mCurrentTextureSettings.Resolution.x;
+        (float)coordinate.x / (float)mCurrentWorkflowSettings.Resolution.x;
       float normalizedY =
-        (float)coordinate.y / (float)mCurrentTextureSettings.Resolution.y;
+        (float)coordinate.y / (float)mCurrentWorkflowSettings.Resolution.y;
       float normalizedZ =
-        (float)coordinate.z / (float)mCurrentTextureSettings.Resolution.z;
+        (float)coordinate.z / (float)mCurrentWorkflowSettings.Resolution.z;
 
       // sol::protected_function_result result =
       //   mEvaluate(normalizedX, normalizedY, normalizedZ, settings->mSeed);
@@ -235,16 +235,16 @@ namespace Sindri
 
       sol::protected_function_result functionResult;
 
-      if (mCurrentTextureSettings.Dimensions == TextureDimension::Texture2D)
+      if (mCurrentWorkflowSettings.Dimensions == TextureDimension::Texture2D)
       {
         functionResult = stackState.LuaState["Evaluate2D"](
-          normalizedX, normalizedY, mCurrentTextureSettings.Seed);
+          normalizedX, normalizedY, mCurrentWorkflowSettings.Seed);
       }
-      else if (mCurrentTextureSettings.Dimensions ==
+      else if (mCurrentWorkflowSettings.Dimensions ==
                TextureDimension::Texture3D)
       {
         functionResult = stackState.LuaState["Evaluate3D"](
-          normalizedX, normalizedY, normalizedZ, mCurrentTextureSettings.Seed);
+          normalizedX, normalizedY, normalizedZ, mCurrentWorkflowSettings.Seed);
       }
 
       if (!functionResult.valid())
@@ -273,7 +273,7 @@ namespace Sindri
           }
           break;
       }
-    }
+    }*/
 
     return value;
   }

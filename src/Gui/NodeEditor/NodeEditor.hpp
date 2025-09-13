@@ -1,10 +1,18 @@
 #pragma once
 
 #include "INodeEditor.hpp"
-#include "Nodes/DecomposeNode.hpp"
+#include "Nodes/Arithmetic Operations/DivideNode.hpp"
+#include "Nodes/Arithmetic Operations/MultiplyNode.hpp"
+#include "Nodes/Arithmetic Operations/NegateNode.hpp"
+#include "Nodes/Arithmetic Operations/OneMinusNode.hpp"
+#include "Nodes/Arithmetic Operations/PowNode.hpp"
+#include "Nodes/Arithmetic Operations/SqrtNode.hpp"
+#include "Nodes/Arithmetic Operations/SubtractNode.hpp"
+#include "Nodes/Arithmetic Operations/SumNode.hpp"
+#include "Nodes/LuaScriptNode.hpp"
 #include "Nodes/OutputNode.hpp"
-#include "Nodes/ScriptNode.hpp"
 #include "Nodes/UVNode.hpp"
+#include "Nodes/Vector Operations/DecomposeVectorNode.hpp"
 #include <ImNodeFlow.h>
 #include <imgui.h>
 
@@ -39,9 +47,38 @@ namespace Sindri
             {
             }
 
-            if (ImGui::BeginMenu("Add math node"))
+            if (ImGui::BeginMenu("Arithmetic operations"))
             {
-              if (ImGui::MenuItem("Add"))
+              if (ImGui::MenuItem("Sum"))
+              {
+                mINF.addNode<SumNode>(ImGui::GetMousePos());
+              }
+              if (ImGui::MenuItem("Subtract"))
+              {
+                mINF.addNode<SubtractNode>(ImGui::GetMousePos());
+              }
+              if (ImGui::MenuItem("Divide"))
+              {
+                mINF.addNode<DivideNode>(ImGui::GetMousePos());
+              }
+              if (ImGui::MenuItem("Multiply"))
+              {
+                mINF.addNode<SumNode>(ImGui::GetMousePos());
+              }
+              if (ImGui::MenuItem("Negate"))
+              {
+                mINF.addNode<NegateNode>(ImGui::GetMousePos());
+              }
+              if (ImGui::MenuItem("Negate"))
+              {
+                mINF.addNode<NegateNode>(ImGui::GetMousePos());
+              }
+              ImGui::EndMenu();
+            }
+
+            /*if (ImGui::BeingMenu("Vector Operations"))
+            {
+              if (ImGui::MenuItem("Sum"))
               {
               }
               if (ImGui::MenuItem("Subtract"))
@@ -54,7 +91,7 @@ namespace Sindri
               {
               }
               ImGui::EndMenu();
-            }
+            }*/
           }
           else
           {

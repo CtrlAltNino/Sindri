@@ -29,7 +29,7 @@ namespace Sindri
     -> boost::di::injector<std::shared_ptr<Sindri>>
   {
     return boost::di::make_injector<boost::di::extension::shared_config>(
-      boost::di::bind<TextureSettings>.in(boost::di::extension::shared),
+      boost::di::bind<WorkflowSettings>.in(boost::di::extension::shared),
       boost::di::bind<ITextureBuffer>.to<TextureBuffer>().in(
         boost::di::extension::shared),
       boost::di::bind<INodeEditor>.to<NodeEditor>().in(

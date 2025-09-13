@@ -1,7 +1,7 @@
 #include "pch.hpp"
 
 #include "OpenGLPreviewTexture.hpp"
-#include "TextureSettings/TextureSettings.hpp"
+#include "WorkflowSettings/WorkflowSettings.hpp"
 #include <glad/glad.h>
 
 namespace Sindri

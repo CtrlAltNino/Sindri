@@ -9,7 +9,7 @@
 #include "ITexturePreview.hpp"
 #include "IWindow.hpp"
 #include "NodeEditor/INodeEditor.hpp"
-#include "TextureSettings/TextureSettings.hpp"
+#include "WorkflowSettings/WorkflowSettings.hpp"
 #include <imgui.h>
 
 namespace Sindri
@@ -19,7 +19,7 @@ namespace Sindri
   private:
     std::shared_ptr<IWindow> mWindow;
 
-    std::shared_ptr<TextureSettings> mTextureSettings;
+    std::shared_ptr<WorkflowSettings> mWorkflowSettings;
 
     std::shared_ptr<ITexturePipeline> mTexturePipeline;
 
@@ -72,7 +72,7 @@ namespace Sindri
 
   public:
     SindriGui(std::shared_ptr<IWindow>                  window,
-              std::shared_ptr<TextureSettings>          textureSettings,
+              std::shared_ptr<WorkflowSettings>         workflowSettings,
               std::shared_ptr<ITexturePipeline>         texturePipeline,
               std::shared_ptr<ITextureExporter>         exporter,
               std::shared_ptr<ITextureBuffer>           textureBuffer,

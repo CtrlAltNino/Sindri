@@ -2,47 +2,11 @@
 
 #include "ITextureBuffer.hpp"
 #include "ITextureExporter.hpp"
-#include "TextureSettings/TextureSettings.hpp"
+#include "Texture/TextureTypes.hpp"
+#include "WorkflowSettings/WorkflowSettings.hpp"
 
 namespace Sindri
 {
-  enum class FileFormat : uint8_t
-  {
-    PNG,
-    TGA,
-    EXR,
-    HDR,
-    DDS,
-    KTX,
-    KTX2
-  };
-
-  enum class DataType
-  {
-    UNorm8,
-    UNorm16,
-    Float16,
-    Float32
-  };
-  enum class ChannelCount
-  {
-    R = 1,
-    RG = 2,
-    RGB = 3,
-    RGBA = 4
-  };
-  enum class CompressionType
-  {
-    None,
-    BC1,
-    BC3,
-    BC4,
-    BC5,
-    BC6H,
-    BC7,
-    ASTC
-  };
-
   struct ExportSettings
   {
     FileFormat      format = FileFormat::PNG;
@@ -140,16 +104,16 @@ namespace Sindri
   class TextureExporter : public ITextureExporter
   {
   private:
-    ExportSettings                   mExportSettings;
-    std::shared_ptr<ITextureBuffer>  mTexture;
-    std::shared_ptr<TextureSettings> mTextureSettings;
+    ExportSettings                    mExportSettings;
+    std::shared_ptr<ITextureBuffer>   mTexture;
+    std::shared_ptr<WorkflowSettings> mWorkflowSettings;
 
     void
     Export();
 
   public:
-    TextureExporter(std::shared_ptr<ITextureBuffer>  texture,
-                    std::shared_ptr<TextureSettings> textureSettings);
+    TextureExporter(std::shared_ptr<ITextureBuffer>   texture,
+                    std::shared_ptr<WorkflowSettings> workflowSettings);
 
     void
     Render() override;

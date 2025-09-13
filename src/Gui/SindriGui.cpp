@@ -1,15 +1,16 @@
+#include "Helpers/UI.hpp"
 #include "pch.hpp"
 
 #include "Helper/FileHelper.hpp"
 #include "SindriGui.hpp"
-#include "TextureSettings/TextureSettings.hpp"
+#include "WorkflowSettings/WorkflowSettings.hpp"
 #include <imgui.h>
 
 namespace Sindri
 {
   SindriGui::SindriGui(
     std::shared_ptr<IWindow>                  window,
-    std::shared_ptr<TextureSettings>          textureSettings,
+    std::shared_ptr<WorkflowSettings>         workflowSettings,
     std::shared_ptr<ITexturePipeline>         texturePipeline,
     std::shared_ptr<ITextureExporter>         exporter,
     std::shared_ptr<ITextureBuffer>           textureBuffer,
@@ -18,7 +19,7 @@ namespace Sindri
     std::shared_ptr<ITexturePipelineExecutor> texturePipelineExecutor,
     std::shared_ptr<INodeEditor>              nodeEditor)
     : mWindow(std::move(window))
-    , mTextureSettings(std::move(textureSettings))
+    , mWorkflowSettings(std::move(workflowSettings))
     , mTexturePipeline(std::move(texturePipeline))
     , mExporter(std::move(exporter))
     , mTextureBuffer(std::move(textureBuffer))
@@ -27,7 +28,7 @@ namespace Sindri
     , mExecutor(std::move(texturePipelineExecutor))
     , mNodeEditor(std::move(nodeEditor))
   {
-    mTextureSettings->Seed = mRandomDevice();
+    mWorkflowSettings->Seed = mRandomDevice();
     mScripts = GetLuaScripts();
     SetupImGuiStyles();
   }
@@ -87,80 +88,46 @@ namespace Sindri
     ImGui::Spacing();
 #endif
 
-    ImGui::SeparatorText("Options");
+    ImGui::SeparatorText("Workflow Settings");
 
-    ImGui::InputScalar("Seed", ImGuiDataType_U32, &mTextureSettings->Seed);
+    ImGui::InputScalar("Seed", ImGuiDataType_U32, &mWorkflowSettings->Seed);
 
     ImGui::SameLine();
     if (ImGui::Button("Random"))
     {
-      mTextureSettings->Seed = mRandomDevice();
+      mWorkflowSettings->Seed = mRandomDevice();
     }
 
     if (ImGui::RadioButton("Texture 1D",
-                           mTextureSettings->Dimensions ==
+                           mWorkflowSettings->Dimensions ==
                              TextureDimension::Texture1D))
     {
-      mTextureSettings->Dimensions = TextureDimension::Texture1D;
+      mWorkflowSettings->Dimensions = TextureDimension::Texture1D;
     }
     ImGui::SameLine();
     if (ImGui::RadioButton("Texture 2D",
-                           mTextureSettings->Dimensions ==
+                           mWorkflowSettings->Dimensions ==
                              TextureDimension::Texture2D))
     {
-      mTextureSettings->Dimensions = TextureDimension::Texture2D;
+      mWorkflowSettings->Dimensions = TextureDimension::Texture2D;
     }
     ImGui::SameLine();
     if (ImGui::RadioButton("Texture 3D",
-                           mTextureSettings->Dimensions ==
+                           mWorkflowSettings->Dimensions ==
                              TextureDimension::Texture3D))
     {
-      mTextureSettings->Dimensions = TextureDimension::Texture3D;
+      mWorkflowSettings->Dimensions = TextureDimension::Texture3D;
     }
 
-    // TODO: Variable channel amount
-
-    switch (mTextureSettings->Dimensions)
-    {
-      using enum TextureDimension;
-      case Texture1D:
-        ImGui::InputInt("Resolution",
-                        glm::value_ptr(mTextureSettings->Resolution));
-        break;
-      case Texture2D:
-        ImGui::InputInt2("Resolution",
-                         glm::value_ptr(mTextureSettings->Resolution));
-        break;
-      case Texture3D:
-        ImGui::InputInt3("Resolution",
-                         glm::value_ptr(mTextureSettings->Resolution));
-        break;
-    }
+    // Set channel count
+    ComboEnum("Channels", mWorkflowSettings->ChannelCount);
 
     ImGui::Spacing();
     ImGui::SeparatorText("Preview Settings");
 
     mPreview->RenderSettings();
 
-    /*ImGui::Spacing();
-    ImGui::SeparatorText("Lua Scripts");
-
-    LuaScriptSelector();
-
-    ImGui::Spacing();
-    ImGui::SeparatorText("Noise Layers");
-
-    // Composition
-    if (mTexturePipeline->GetLayers().empty())
-    {
-      ImGui::Text("Your composition is empty, add layers above");
-    }
-    else
-    {
-      mTexturePipeline->RenderAllSettings();
-    }*/
-
-    if (mTexturePipeline->GetLayers().empty() || mExecutor->IsRunning())
+    /*if (mTexturePipeline->GetLayers().empty() || mExecutor->IsRunning())
     {
       ImGui::BeginDisabled();
     }
@@ -178,7 +145,7 @@ namespace Sindri
       ImGui::EndDisabled();
     }
 
-    ImGui::SameLine();
+    ImGui::SameLine();*/
 
     if (mTextureBuffer->GetData().empty() || mExecutor->IsRunning())
     {
@@ -367,23 +334,24 @@ namespace Sindri
   void
   SindriGui::GenerateTexture()
   {
-    switch (mTextureSettings->Dimensions)
+    // TODO: Probably not needed anymore, as preview generation is automatic
+    /*switch (mWorkflowSettings->Dimensions)
     {
       case TextureDimension::Texture1D:
-        mTextureBuffer->Reserve(mTextureSettings->Resolution.x);
+        mTextureBuffer->Reserve(mWorkflowSettings->Resolution.x);
         break;
       case TextureDimension::Texture2D:
-        mTextureBuffer->Reserve(mTextureSettings->Resolution.x,
-                                mTextureSettings->Resolution.y);
+        mTextureBuffer->Reserve(mWorkflowSettings->Resolution.x,
+                                mWorkflowSettings->Resolution.y);
         break;
       case TextureDimension::Texture3D:
-        mTextureBuffer->Reserve(mTextureSettings->Resolution.x,
-                                mTextureSettings->Resolution.y,
-                                mTextureSettings->Resolution.z);
+        mTextureBuffer->Reserve(mWorkflowSettings->Resolution.x,
+                                mWorkflowSettings->Resolution.y,
+                                mWorkflowSettings->Resolution.z);
         break;
     }
 
-    mExecutor->ExecutePipeline(*mTextureSettings);
+    mExecutor->ExecutePipeline(*mWorkflowSettings);*/
   }
 
   void
@@ -400,100 +368,100 @@ namespace Sindri
     ImVec4* colors = ImGui::GetStyle().Colors;
 
     // Polar Night
-    colors[ImGuiCol_Text] = ImVec4(0.847f, 0.871f, 0.914f, 1.00f); // #D8DEE9
+    colors[ImGuiCol_Text] = ImVec4(0.847F, 0.871F, 0.914F, 1.00F); // #D8DEE9
     colors[ImGuiCol_TextDisabled] =
-      ImVec4(0.533f, 0.573f, 0.678f, 1.00f); // #8892AD
+      ImVec4(0.533F, 0.573F, 0.678F, 1.00F); // #8892AD
     colors[ImGuiCol_WindowBg] =
-      ImVec4(0.180f, 0.204f, 0.251f, 1.00f); // #2E3440
-    colors[ImGuiCol_ChildBg] = ImVec4(0.180f, 0.204f, 0.251f, 1.00f);
-    colors[ImGuiCol_PopupBg] = ImVec4(0.180f, 0.204f, 0.251f, 1.00f);
-    colors[ImGuiCol_Border] = ImVec4(0.298f, 0.337f, 0.416f, 1.00f); // #4C566A
-    colors[ImGuiCol_BorderShadow] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+      ImVec4(0.180F, 0.204F, 0.251F, 1.00F); // #2E3440
+    colors[ImGuiCol_ChildBg] = ImVec4(0.180F, 0.204F, 0.251F, 1.00F);
+    colors[ImGuiCol_PopupBg] = ImVec4(0.180F, 0.204F, 0.251F, 1.00F);
+    colors[ImGuiCol_Border] = ImVec4(0.298F, 0.337F, 0.416F, 1.00F); // #4C566A
+    colors[ImGuiCol_BorderShadow] = ImVec4(0.0F, 0.0F, 0.0F, 0.0F);
 
     // Frost
-    colors[ImGuiCol_FrameBg] = ImVec4(0.231f, 0.259f, 0.322f, 1.00f); // #3B4252
+    colors[ImGuiCol_FrameBg] = ImVec4(0.231F, 0.259F, 0.322F, 1.00F); // #3B4252
     colors[ImGuiCol_FrameBgHovered] =
-      ImVec4(0.369f, 0.506f, 0.675f, 1.00f); // #5E81AC
+      ImVec4(0.369F, 0.506F, 0.675F, 1.00F); // #5E81AC
     colors[ImGuiCol_FrameBgActive] =
-      ImVec4(0.506f, 0.631f, 0.757f, 1.00f); // #8191C1
+      ImVec4(0.506F, 0.631F, 0.757F, 1.00F); // #8191C1
 
-    colors[ImGuiCol_TitleBg] = ImVec4(0.180f, 0.204f, 0.251f, 1.00f); // #2E3440
+    colors[ImGuiCol_TitleBg] = ImVec4(0.180F, 0.204F, 0.251F, 1.00F); // #2E3440
     colors[ImGuiCol_TitleBgActive] =
-      ImVec4(0.231f, 0.259f, 0.322f, 1.00f); // #3B4252
-    colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.180f, 0.204f, 0.251f, 0.78f);
+      ImVec4(0.231F, 0.259F, 0.322F, 1.00F); // #3B4252
+    colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.180F, 0.204F, 0.251F, 0.78F);
 
-    colors[ImGuiCol_MenuBarBg] = ImVec4(0.231f, 0.259f, 0.322f, 1.00f);
+    colors[ImGuiCol_MenuBarBg] = ImVec4(0.231F, 0.259F, 0.322F, 1.00F);
 
-    colors[ImGuiCol_ScrollbarBg] = ImVec4(0.180f, 0.204f, 0.251f, 1.00f);
-    colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.298f, 0.337f, 0.416f, 1.00f);
+    colors[ImGuiCol_ScrollbarBg] = ImVec4(0.180F, 0.204F, 0.251F, 1.00F);
+    colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.298F, 0.337F, 0.416F, 1.00F);
     colors[ImGuiCol_ScrollbarGrabHovered] =
-      ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
+      ImVec4(0.369F, 0.506F, 0.675F, 1.00F);
     colors[ImGuiCol_ScrollbarGrabActive] =
-      ImVec4(0.506f, 0.631f, 0.757f, 1.00f);
+      ImVec4(0.506F, 0.631F, 0.757F, 1.00F);
 
     colors[ImGuiCol_CheckMark] =
-      ImVec4(0.533f, 0.753f, 0.816f, 1.00f); // #88C0D0
-    colors[ImGuiCol_SliderGrab] = ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
-    colors[ImGuiCol_SliderGrabActive] = ImVec4(0.506f, 0.631f, 0.757f, 1.00f);
+      ImVec4(0.533F, 0.753F, 0.816F, 1.00F); // #88C0D0
+    colors[ImGuiCol_SliderGrab] = ImVec4(0.369F, 0.506F, 0.675F, 1.00F);
+    colors[ImGuiCol_SliderGrabActive] = ImVec4(0.506F, 0.631F, 0.757F, 1.00F);
 
-    colors[ImGuiCol_Button] = ImVec4(0.231f, 0.259f, 0.322f, 1.00f);
-    colors[ImGuiCol_ButtonHovered] = ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
-    colors[ImGuiCol_ButtonActive] = ImVec4(0.506f, 0.631f, 0.757f, 1.00f);
+    colors[ImGuiCol_Button] = ImVec4(0.231F, 0.259F, 0.322F, 1.00F);
+    colors[ImGuiCol_ButtonHovered] = ImVec4(0.369F, 0.506F, 0.675F, 1.00F);
+    colors[ImGuiCol_ButtonActive] = ImVec4(0.506F, 0.631F, 0.757F, 1.00F);
 
-    colors[ImGuiCol_Header] = ImVec4(0.298f, 0.337f, 0.416f, 1.00f);
-    colors[ImGuiCol_HeaderHovered] = ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
-    colors[ImGuiCol_HeaderActive] = ImVec4(0.506f, 0.631f, 0.757f, 1.00f);
+    colors[ImGuiCol_Header] = ImVec4(0.298F, 0.337F, 0.416F, 1.00F);
+    colors[ImGuiCol_HeaderHovered] = ImVec4(0.369F, 0.506F, 0.675F, 1.00F);
+    colors[ImGuiCol_HeaderActive] = ImVec4(0.506F, 0.631F, 0.757F, 1.00F);
 
-    colors[ImGuiCol_Separator] = ImVec4(0.298f, 0.337f, 0.416f, 1.00f);
-    colors[ImGuiCol_SeparatorHovered] = ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
-    colors[ImGuiCol_SeparatorActive] = ImVec4(0.506f, 0.631f, 0.757f, 1.00f);
+    colors[ImGuiCol_Separator] = ImVec4(0.298F, 0.337F, 0.416F, 1.00F);
+    colors[ImGuiCol_SeparatorHovered] = ImVec4(0.369F, 0.506F, 0.675F, 1.00F);
+    colors[ImGuiCol_SeparatorActive] = ImVec4(0.506F, 0.631F, 0.757F, 1.00F);
 
-    colors[ImGuiCol_ResizeGrip] = ImVec4(0.298f, 0.337f, 0.416f, 1.00f);
-    colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
-    colors[ImGuiCol_ResizeGripActive] = ImVec4(0.506f, 0.631f, 0.757f, 1.00f);
+    colors[ImGuiCol_ResizeGrip] = ImVec4(0.298F, 0.337F, 0.416F, 1.00F);
+    colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.369F, 0.506F, 0.675F, 1.00F);
+    colors[ImGuiCol_ResizeGripActive] = ImVec4(0.506F, 0.631F, 0.757F, 1.00F);
 
-    colors[ImGuiCol_Tab] = ImVec4(0.298f, 0.337f, 0.416f, 1.00f);
-    colors[ImGuiCol_TabHovered] = ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
-    colors[ImGuiCol_TabActive] = ImVec4(0.506f, 0.631f, 0.757f, 1.00f);
-    colors[ImGuiCol_TabUnfocused] = ImVec4(0.231f, 0.259f, 0.322f, 1.00f);
-    colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
+    colors[ImGuiCol_Tab] = ImVec4(0.298F, 0.337F, 0.416F, 1.00F);
+    colors[ImGuiCol_TabHovered] = ImVec4(0.369F, 0.506F, 0.675F, 1.00F);
+    colors[ImGuiCol_TabActive] = ImVec4(0.506F, 0.631F, 0.757F, 1.00F);
+    colors[ImGuiCol_TabUnfocused] = ImVec4(0.231F, 0.259F, 0.322F, 1.00F);
+    colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.369F, 0.506F, 0.675F, 1.00F);
 
     colors[ImGuiCol_PlotLines] =
-      ImVec4(0.533f, 0.753f, 0.816f, 1.00f); // #88C0D0
+      ImVec4(0.533F, 0.753F, 0.816F, 1.00F); // #88C0D0
     colors[ImGuiCol_PlotLinesHovered] =
-      ImVec4(0.706f, 0.557f, 0.678f, 1.00f); // #B48EAD
+      ImVec4(0.706F, 0.557F, 0.678F, 1.00F); // #B48EAD
     colors[ImGuiCol_PlotHistogram] =
-      ImVec4(0.847f, 0.682f, 0.369f, 1.00f); // #EBCB8B
+      ImVec4(0.847F, 0.682F, 0.369F, 1.00F); // #EBCB8B
     colors[ImGuiCol_PlotHistogramHovered] =
-      ImVec4(0.749f, 0.380f, 0.416f, 1.00f); // #BF616A
+      ImVec4(0.749F, 0.380F, 0.416F, 1.00F); // #BF616A
 
-    colors[ImGuiCol_TextSelectedBg] = ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
-    colors[ImGuiCol_DragDropTarget] = ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
-    colors[ImGuiCol_NavHighlight] = ImVec4(0.369f, 0.506f, 0.675f, 1.00f);
+    colors[ImGuiCol_TextSelectedBg] = ImVec4(0.369F, 0.506F, 0.675F, 1.00F);
+    colors[ImGuiCol_DragDropTarget] = ImVec4(0.369F, 0.506F, 0.675F, 1.00F);
+    colors[ImGuiCol_NavHighlight] = ImVec4(0.369F, 0.506F, 0.675F, 1.00F);
     colors[ImGuiCol_NavWindowingHighlight] =
-      ImVec4(0.506f, 0.631f, 0.757f, 1.00f);
-    colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.180f, 0.204f, 0.251f, 0.70f);
-    colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.180f, 0.204f, 0.251f, 0.78f);
+      ImVec4(0.506F, 0.631F, 0.757F, 1.00F);
+    colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.180F, 0.204F, 0.251F, 0.70F);
+    colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.180F, 0.204F, 0.251F, 0.78F);
 
     ImGuiStyle& style = ImGui::GetStyle();
 
     // These values are commonly adjusted for visual feel and alignment with the
     // Nord theme
-    style.WindowRounding = 5.0f;
-    style.FrameRounding = 4.0f;
-    style.GrabRounding = 4.0f;
-    style.ScrollbarRounding = 6.0f;
-    style.TabRounding = 4.0f;
+    style.WindowRounding = 5.0F;
+    style.FrameRounding = 4.0F;
+    style.GrabRounding = 4.0F;
+    style.ScrollbarRounding = 6.0F;
+    style.TabRounding = 4.0F;
     style.PopupRounding = 4.0F;
 
-    style.FramePadding = ImVec2(6.0f, 4.0f);
-    style.ItemSpacing = ImVec2(8.0f, 6.0f);
-    style.ItemInnerSpacing = ImVec2(6.0f, 4.0f);
-    style.IndentSpacing = 20.0f;
-    style.ScrollbarSize = 14.0f;
-    style.GrabMinSize = 10.0f;
+    style.FramePadding = ImVec2(6.0F, 4.0F);
+    style.ItemSpacing = ImVec2(8.0F, 6.0F);
+    style.ItemInnerSpacing = ImVec2(6.0F, 4.0F);
+    style.IndentSpacing = 20.0F;
+    style.ScrollbarSize = 14.0F;
+    style.GrabMinSize = 10.0F;
 
-    style.WindowPadding = ImVec2(8.0f, 8.0f);
-    style.WindowTitleAlign = ImVec2(0.5f, 0.5f); // Center title
+    style.WindowPadding = ImVec2(8.0F, 8.0F);
+    style.WindowTitleAlign = ImVec2(0.5F, 0.5F); // Center title
   }
 }

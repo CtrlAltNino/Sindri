@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TextureSettings/TextureSettings.hpp"
+#include "WorkflowSettings/WorkflowSettings.hpp"
 
 namespace Sindri
 {
@@ -10,7 +10,7 @@ namespace Sindri
     virtual ~ITexturePipelineExecutor() = default;
 
     virtual void
-    ExecutePipeline(TextureSettings settings) = 0;
+    ExecutePipeline(WorkflowSettings workflowSettings) = 0;
 
     virtual void
     CancelExecution() = 0;

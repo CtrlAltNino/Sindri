@@ -14,6 +14,7 @@ add_subdirectory(TextureExporter)
 add_subdirectory(TexturePipeline)
 add_subdirectory(TexturePipelineExecutor)
 add_subdirectory(TexturePreview)
+add_subdirectory(Variables)
 add_subdirectory(Window)
 
 target_include_directories(${targetName} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

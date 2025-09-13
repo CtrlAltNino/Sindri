@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TextureSettings/TextureSettings.hpp"
+#include "WorkflowSettings/WorkflowSettings.hpp"
 #include <cstdint>
 
 namespace Sindri
@@ -13,9 +13,13 @@ namespace Sindri
   enum class MathOperationType : uint8_t
   {
     Add,
-    Subtract,
+    Divide,
     Multiply,
-    Divide
+    Negate,
+    OneMinus,
+    Pow,
+    Sqrt,
+    Subtract,
   };
 
   enum class MathDataType : uint8_t

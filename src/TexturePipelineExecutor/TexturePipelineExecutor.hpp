@@ -37,7 +37,7 @@ namespace Sindri
     std::shared_ptr<ITexturePipeline>   mTexturePipeline = nullptr;
     std::shared_ptr<ITextureBuffer>     mTexture = nullptr;
     std::shared_ptr<IGpuPreviewTexture> mGpuPreviewTexture = nullptr;
-    TextureSettings                     mCurrentTextureSettings;
+    WorkflowSettings                    mCurrentWorkflowSettings;
 
     size_t                mThreadCount = 1;
     size_t                mWorkloadSize = 2048;
@@ -71,7 +71,7 @@ namespace Sindri
     ~TexturePipelineExecutor() override;
 
     void
-    ExecutePipeline(TextureSettings settings) override;
+    ExecutePipeline(WorkflowSettings workflowSettings) override;
 
     void
     CancelExecution() override;

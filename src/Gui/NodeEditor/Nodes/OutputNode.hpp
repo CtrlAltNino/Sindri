@@ -2,7 +2,7 @@
 
 #include "NodeTypes.hpp"
 #include "TextureExporter.hpp"
-#include "TextureSettings/TextureSettings.hpp"
+#include "WorkflowSettings/WorkflowSettings.hpp"
 #include <ImNodeFlow.h>
 
 namespace Sindri
@@ -35,6 +35,13 @@ namespace Sindri
     void
     draw() override
     {
+      for (int x = 0; x < 64; ++x)
+      {
+        for (int y = 0; y < 64; ++y)
+        {
+          // getInVal<std::function<float(glm::vec2)>>("R")({ x, y });
+        }
+      }
     }
   };
 }

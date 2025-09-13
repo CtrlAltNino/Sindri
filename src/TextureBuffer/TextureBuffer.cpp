@@ -1,7 +1,7 @@
 #include "pch.hpp"
 
 #include "TextureBuffer.hpp"
-#include "TextureSettings/TextureSettings.hpp"
+#include "WorkflowSettings/WorkflowSettings.hpp"
 
 namespace Sindri
 {

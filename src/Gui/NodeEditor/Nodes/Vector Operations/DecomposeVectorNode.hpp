@@ -1,8 +1,8 @@
 #pragma once
 
-#include "NodeTypes.hpp"
+#include "../NodeTypes.hpp"
 #include "TextureExporter.hpp"
-#include "TextureSettings/TextureSettings.hpp"
+#include "WorkflowSettings/WorkflowSettings.hpp"
 #include <ImNodeFlow.h>
 
 namespace Sindri
@@ -18,11 +18,22 @@ namespace Sindri
       getStyle()->bg = IM_COL32(46, 52, 64, 255);
       getStyle()->header_bg = IM_COL32(208, 135, 112, 255);
 
-      ImFlow::BaseNode::addIN<glm::vec2>(
-        "Vector2D", glm::vec2(0), ImFlow::ConnectionFilter::SameType());
+      ImFlow::BaseNode::addIN<std::function<glm::vec2(glm::vec2)>>(
+        "Vector2D",
+        [](glm::vec2 vector) -> glm::vec2 { return { 0, 0 }; },
+        ImFlow::ConnectionFilter::SameType());
 
-      ImFlow::BaseNode::addOUT<float>("X", nullptr)
-        ->behaviour([this]() { return getInVal<glm::vec2>("Vector").x; });
+      ImFlow::BaseNode::addOUT<std::function<float(glm::vec2)>>("X", nullptr)
+        ->behaviour(
+          [this]()
+          {
+            return [this](glm::vec2 vector) -> float
+            {
+              return getInVal<std::function<glm::vec2(glm::vec2)>>("Vector")(
+                       vector)
+                .x;
+            };
+          });
       ImFlow::BaseNode::addOUT<float>("Y", nullptr)
         ->behaviour([this]() { return getInVal<glm::vec2>("Vector").y; });
     }
@@ -48,11 +59,14 @@ namespace Sindri
         "Vector", glm::vec3(0), ImFlow::ConnectionFilter::SameType());
 
       ImFlow::BaseNode::addOUT<float>("X", nullptr)
-        ->behaviour([this]() { return getInVal<glm::vec3>("Vector").x; });
+        ->behaviour([this]() -> float
+                    { return getInVal<glm::vec3>("Vector").x; });
       ImFlow::BaseNode::addOUT<float>("Y", nullptr)
-        ->behaviour([this]() { return getInVal<glm::vec3>("Vector").y; });
+        ->behaviour([this]() -> float
+                    { return getInVal<glm::vec3>("Vector").y; });
       ImFlow::BaseNode::addOUT<float>("Z", nullptr)
-        ->behaviour([this]() { return getInVal<glm::vec3>("Vector").z; });
+        ->behaviour([this]() -> float
+                    { return getInVal<glm::vec3>("Vector").z; });
     }
 
     void
