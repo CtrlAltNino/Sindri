@@ -23,24 +23,36 @@ namespace Sindri
         [](glm::vec2 vector) -> glm::vec2 { return { 0, 0 }; },
         ImFlow::ConnectionFilter::SameType());
 
-      ImFlow::BaseNode::addOUT<std::function<float(glm::vec2)>>("X", nullptr)
+      ImFlow::BaseNode::addOUT<std::function<Scalar(glm::vec2)>>("X", nullptr)
         ->behaviour(
           [this]()
           {
-            return [this](glm::vec2 vector) -> float
+            return [this](glm::vec2 vector) -> Scalar
             {
-              return getInVal<std::function<glm::vec2(glm::vec2)>>("Vector")(
+              return getInVal<std::function<glm::vec2(glm::vec2)>>("Vector2D")(
                        vector)
                 .x;
             };
           });
-      ImFlow::BaseNode::addOUT<float>("Y", nullptr)
-        ->behaviour([this]() { return getInVal<glm::vec2>("Vector").y; });
+      ImFlow::BaseNode::addOUT<std::function<Scalar(glm::vec2)>>("Y", nullptr)
+        ->behaviour(
+          [this]()
+          {
+            return [this](glm::vec2 vector) -> Scalar
+            {
+              return getInVal<std::function<glm::vec2(glm::vec2)>>("Vector2D")(
+                       vector)
+                .y;
+            };
+          });
     }
 
     void
     draw() override
     {
+      const auto& b =
+        getInVal<std::function<glm::vec2(glm::vec2)>>("Vector2D")({ 0, 0 });
+      ImGui::Text("X: %g | Y: %g", b.x, b.y);
     }
   };
 

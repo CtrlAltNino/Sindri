@@ -123,9 +123,9 @@ namespace Sindri
     ComboEnum("Channels", mWorkflowSettings->ChannelCount);
 
     ImGui::Spacing();
-    ImGui::SeparatorText("Preview Settings");
+    /*ImGui::SeparatorText("Preview Settings");
 
-    mPreview->RenderSettings();
+    mPreview->RenderSettings();*/
 
     /*if (mTexturePipeline->GetLayers().empty() || mExecutor->IsRunning())
     {
@@ -193,10 +193,14 @@ namespace Sindri
     ImGui::SetNextWindowSize(size);
 
     ImGui::Begin("PreviewWindow", nullptr, windowFlags);
-    ImGui::SeparatorText("Texture Preview");
+    ImGui::SeparatorText("Variables");
+
+    // TODO: Draw all variables
+
+    // TODO: Draw add variable
 
     // Note: cast GLuint to void* to pass as ImTextureID
-    if (mGpuPreviewTexture->GetIsUploaded())
+    /*if (mGpuPreviewTexture->GetIsUploaded())
     {
       ImVec2 position = ImGui::GetCursorPos();
 
@@ -222,7 +226,7 @@ namespace Sindri
                                    : ImGui::GetContentRegionAvail().y);
 
       mPreview->Render(size, deltaTime);
-    }
+    }*/
 
     // You can add buttons, sliders, etc. here
     ImGui::End();

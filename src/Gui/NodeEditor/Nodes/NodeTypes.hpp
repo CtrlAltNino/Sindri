@@ -5,6 +5,9 @@
 
 namespace Sindri
 {
+  using Scalar = std::variant<int, float>;
+  using Vector = std::variant<glm::vec2, glm::vec3, glm::vec4>;
+
   struct UvType
   {
     TextureDimension Dimension;

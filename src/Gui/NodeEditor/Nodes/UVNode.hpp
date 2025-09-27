@@ -14,7 +14,8 @@ namespace Sindri
       setTitle("Texture Coordinate");
       // setStyle(ImFlow::NodeStyle::red());
       getStyle()->header_bg = ImU32(0);
-      ImFlow::BaseNode::addOUT<float>("Vector1D", nullptr);
+      ImFlow::BaseNode::addOUT<std::function<float(glm::vec2)>>("Vector1D",
+                                                                nullptr);
     }
 
     void
@@ -33,7 +34,11 @@ namespace Sindri
       setStyle(ImFlow::NodeStyle::red());
       getStyle()->bg = IM_COL32(46, 52, 64, 255);
       getStyle()->header_bg = IM_COL32(191, 97, 106, 255);
-      ImFlow::BaseNode::addOUT<glm::vec2>("Vector2D", nullptr);
+      ImFlow::BaseNode::addOUT<std::function<glm::vec2(glm::vec2)>>("Vector2D",
+                                                                    nullptr)
+        ->behaviour(
+          [this]()
+          { return [this](glm::vec2 vector) -> glm::vec2 { return vector; }; });
     }
 
     void

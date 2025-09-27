@@ -1,46 +1,55 @@
 // SubtractNode_variant.h
+#include "../NodeTypes.hpp"
 #include "ImNodeFlow.h" // adjust path as needed
 #include <string>
 #include <variant>
 
-using Scalar = std::variant<int, float, double>;
-
-class OneMinusNode : public ImFlow::BaseNode
+namespace Sindri
 {
-public:
-  OneMinusNode()
+  class OneMinusNode : public ImFlow::BaseNode
   {
-    setTitle("OneMinus");
-    setStyle(ImFlow::NodeStyle::green());
-    getStyle()->bg = IM_COL32(46, 52, 64, 255);
-    getStyle()->header_bg = IM_COL32(208, 135, 112, 255);
+  public:
+    OneMinusNode()
+    {
+      setTitle("OneMinus");
+      setStyle(ImFlow::NodeStyle::green());
+      getStyle()->bg = IM_COL32(46, 52, 64, 255);
+      getStyle()->header_bg = IM_COL32(208, 135, 112, 255);
 
-    // add two inputs and one output all typed as the Variant "Scalar"
-    addIN<Scalar>("A", Scalar{ 0 }, ImFlow::ConnectionFilter::SameType());
+      // add two inputs and one output all typed as the Variant "Scalar"
+      addIN<std::function<Scalar(glm::vec2)>>(
+        "A",
+        [](glm::vec2 vector) -> Scalar { return { 0 }; },
+        ImFlow::ConnectionFilter::SameType());
 
-    // output behaviour: compute the sum and return a Scalar (we return a double
-    // for precision)
-    addOUT<Scalar>("Result")->behaviour(
-      [this]() -> Scalar
-      {
-        const auto& a = getInVal<Scalar>("A");
+      // output behaviour: compute the sum and return a Scalar (we return a
+      // double for precision)
+      addOUT<std::function<Scalar(glm::vec2)>>("Result")->behaviour(
+        [this]()
+        {
+          return [this](glm::vec2 vector) -> Scalar
+          {
+            const auto& a =
+              getInVal<std::function<Scalar(glm::vec2)>>("A")(vector);
 
-        double res = std::visit([](auto&& lhs) -> double
-                                { return 1.0 - static_cast<double>(lhs); },
-                                a);
+            float res = std::visit([](auto&& lhs) -> float
+                                   { return 1.0 - static_cast<float>(lhs); },
+                                   a);
 
-        return Scalar{ res }; // stored as the double alternative in the variant
-      });
-  }
+            return res;
+          };
+        });
+    }
 
-  void
-  draw() override
-  {
-    // Show a simple readout of the computed result (not required — behaviour is
-    // where outputs are computed)
-    const auto& a = getInVal<Scalar>("A");
-    double      res =
-      std::visit([](auto&& lhs) { return 1.0 - static_cast<double>(lhs); }, a);
-    ImGui::Text("Result: %g", res);
-  }
-};
+    void
+    draw() override
+    {
+      // Show a simple readout of the computed result (not required — behaviour
+      // is where outputs are computed)
+      const auto& a = getInVal<std::function<Scalar(glm::vec2)>>("A")({ 0, 0 });
+      double      res = std::visit(
+        [](auto&& lhs) { return 1.0 - static_cast<double>(lhs); }, a);
+      ImGui::Text("Result: %g", res);
+    }
+  };
+}

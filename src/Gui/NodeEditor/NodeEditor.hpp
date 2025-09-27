@@ -43,9 +43,9 @@ namespace Sindri
               mINF.addNode<ScriptNode>(ImGui::GetMousePos());
             }
 
-            if (ImGui::Selectable("Add variable node"))
+            /*if (ImGui::Selectable("Add variable node"))
             {
-            }
+            }*/
 
             if (ImGui::BeginMenu("Arithmetic operations"))
             {
@@ -69,9 +69,17 @@ namespace Sindri
               {
                 mINF.addNode<NegateNode>(ImGui::GetMousePos());
               }
-              if (ImGui::MenuItem("Negate"))
+              if (ImGui::MenuItem("OneMinus"))
               {
-                mINF.addNode<NegateNode>(ImGui::GetMousePos());
+                mINF.addNode<OneMinusNode>(ImGui::GetMousePos());
+              }
+              if (ImGui::MenuItem("Pow"))
+              {
+                mINF.addNode<PowNode>(ImGui::GetMousePos());
+              }
+              if (ImGui::MenuItem("Sqrt"))
+              {
+                mINF.addNode<SqrtNode>(ImGui::GetMousePos());
               }
               ImGui::EndMenu();
             }
