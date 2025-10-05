@@ -10,6 +10,10 @@
 
 namespace Sindri
 {
+  /**
+   * @brief Main class for the Sindri application.
+   *
+   */
   class Sindri
   {
   private:
@@ -25,6 +29,10 @@ namespace Sindri
 
     std::shared_ptr<IGpuPreviewTexture> mGpuPreviewTexture;
 
+    /**
+     * @brief Function containing the main application loop.
+     *
+     */
     void
     MainLoop();
 
@@ -39,6 +47,10 @@ namespace Sindri
     auto
     operator=(const Sindri&) -> Sindri& = delete;
 
+    /**
+     * @brief Runs the application.
+     *
+     */
     void
     Run();
   };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WorkflowSettings/WorkflowSettings.hpp"
+#include "WorkflowSettings.hpp"
 #include <glm/glm.hpp>
 
 namespace Sindri

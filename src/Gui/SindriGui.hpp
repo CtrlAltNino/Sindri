@@ -1,15 +1,17 @@
 #pragma once
 
-#include "Gui/ISindriGui.hpp"
 #include "IGpuPreviewTexture.hpp"
+#include "INodeEditor.hpp"
+#include "ISindriGui.hpp"
 #include "ITextureBuffer.hpp"
 #include "ITextureExporter.hpp"
 #include "ITexturePipeline.hpp"
 #include "ITexturePipelineExecutor.hpp"
 #include "ITexturePreview.hpp"
+#include "IVariableRegistry.hpp"
+#include "IVariablesGui.hpp"
 #include "IWindow.hpp"
-#include "NodeEditor/INodeEditor.hpp"
-#include "WorkflowSettings/WorkflowSettings.hpp"
+#include "WorkflowSettings.hpp"
 #include <imgui.h>
 
 namespace Sindri
@@ -34,6 +36,8 @@ namespace Sindri
     std::shared_ptr<IGpuPreviewTexture> mGpuPreviewTexture;
 
     std::shared_ptr<INodeEditor> mNodeEditor;
+
+    std::shared_ptr<IVariablesGui> mVariablesGui;
 
     std::random_device mRandomDevice;
 
@@ -79,7 +83,8 @@ namespace Sindri
               std::shared_ptr<ITexturePreview>          preview,
               std::shared_ptr<IGpuPreviewTexture>       gpuPreviewTexture,
               std::shared_ptr<ITexturePipelineExecutor> texturePipelineExecutor,
-              std::shared_ptr<INodeEditor>              nodeEditor);
+              std::shared_ptr<INodeEditor>              nodeEditor,
+              std::shared_ptr<IVariablesGui>            variablesGui);
     ~SindriGui() override = default;
 
     void

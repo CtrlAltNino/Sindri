@@ -1,11 +1,15 @@
 #pragma once
 
-#include "GraphicsContext/IGraphicsContextFactory.hpp"
-#include "Gui/ImGui/IImGuiLayerFactory.hpp"
-#include "Window/IWindow.hpp"
+#include "IGraphicsContextFactory.hpp"
+#include "IImGuiLayerFactory.hpp"
+#include "IWindow.hpp"
 
 namespace Sindri
 {
+  /**
+   * @brief Window management class implementation.
+   *
+   */
   class SDL3Window : public IWindow
   {
     struct WindowData
@@ -32,25 +36,15 @@ namespace Sindri
                         std::shared_ptr<IImGuiLayerFactory> imguiLayerFactory);
     ~SDL3Window() override;
 
-    /**
-     * @brief Running logic for the beginning of a frame
-     *
-     */
+    /// @copydoc IWindow::NewFrame
     void
     NewFrame() override;
 
-    /**
-     * @brief Running logic for the end of a frame
-     *
-     */
+    /// @copydoc IWindow::EndFrame
     void
     EndFrame() override;
 
-    /**
-     * @brief Gets the width of the window
-     *
-     * @return Width in pixels
-     */
+    /// @copydoc IWindow::GetWidth
     [[nodiscard]] auto
     GetWidth() const -> uint32_t override
     {

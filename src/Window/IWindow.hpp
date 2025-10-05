@@ -4,6 +4,10 @@
 
 namespace Sindri
 {
+  /**
+   * @brief Simple struct containing the props for the window
+   *
+   */
   struct WindowProps
   {
     std::string Title = "Sindri";

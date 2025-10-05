@@ -1,10 +1,11 @@
-#include "Helpers/UI.hpp"
 #include "pch.hpp"
 
-#include "Helper/FileHelper.hpp"
+#include "FileHelper.hpp"
+#include "ImGuiHelper.hpp"
 #include "SindriGui.hpp"
-#include "WorkflowSettings/WorkflowSettings.hpp"
+#include "WorkflowSettings.hpp"
 #include <imgui.h>
+
 
 namespace Sindri
 {
@@ -17,7 +18,8 @@ namespace Sindri
     std::shared_ptr<ITexturePreview>          preview,
     std::shared_ptr<IGpuPreviewTexture>       gpuPreviewTexture,
     std::shared_ptr<ITexturePipelineExecutor> texturePipelineExecutor,
-    std::shared_ptr<INodeEditor>              nodeEditor)
+    std::shared_ptr<INodeEditor>              nodeEditor,
+    std::shared_ptr<IVariablesGui>            variablesGui)
     : mWindow(std::move(window))
     , mWorkflowSettings(std::move(workflowSettings))
     , mTexturePipeline(std::move(texturePipeline))
@@ -27,6 +29,7 @@ namespace Sindri
     , mGpuPreviewTexture(std::move(gpuPreviewTexture))
     , mExecutor(std::move(texturePipelineExecutor))
     , mNodeEditor(std::move(nodeEditor))
+    , mVariablesGui(std::move(variablesGui))
   {
     mWorkflowSettings->Seed = mRandomDevice();
     mScripts = GetLuaScripts();
@@ -195,9 +198,7 @@ namespace Sindri
     ImGui::Begin("PreviewWindow", nullptr, windowFlags);
     ImGui::SeparatorText("Variables");
 
-    // TODO: Draw all variables
-
-    // TODO: Draw add variable
+    mVariablesGui->Render();
 
     // Note: cast GLuint to void* to pass as ImTextureID
     /*if (mGpuPreviewTexture->GetIsUploaded())

@@ -1,6 +1,5 @@
 #include "pch.hpp"
 
-#include "DI/SindriInjector.hpp"
 #include "GraphicsContextFactory.hpp"
 #include "IGpuPreviewTexture.hpp"
 #include "IGraphicsContextFactory.hpp"
@@ -14,13 +13,17 @@
 #include "NoiseLayerFactory.hpp"
 #include "OpenGLPreviewTexture.hpp"
 #include "SindriGui.hpp"
+#include "SindriInjector.hpp"
 #include "TextureBuffer.hpp"
 #include "TextureExporter.hpp"
 #include "TexturePipeline.hpp"
 #include "TexturePipelineExecutor.hpp"
 #include "TexturePreview.hpp"
+#include "VariableRegistry.hpp"
+#include "VariablesGui.hpp"
 #include "Window.hpp"
 #include <boost/di.hpp>
+
 
 namespace Sindri
 {
@@ -32,7 +35,11 @@ namespace Sindri
       boost::di::bind<WorkflowSettings>.in(boost::di::extension::shared),
       boost::di::bind<ITextureBuffer>.to<TextureBuffer>().in(
         boost::di::extension::shared),
+      boost::di::bind<IVariableRegistry>.to<VariableRegistry>().in(
+        boost::di::extension::shared),
       boost::di::bind<INodeEditor>.to<NodeEditor>().in(
+        boost::di::extension::shared),
+      boost::di::bind<IVariablesGui>.to<VariablesGui>().in(
         boost::di::extension::shared),
       boost::di::bind<ITexturePreview>.to<TexturePreview>().in(
         boost::di::extension::shared),
