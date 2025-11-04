@@ -1,7 +1,7 @@
-#include "DI/SindriInjector.hpp"
 #include "pch.hpp"
 
-#include "Application/Sindri.hpp"
+#include "Sindri.hpp"
+#include "SindriInjector.hpp"
 
 auto
 main() -> int

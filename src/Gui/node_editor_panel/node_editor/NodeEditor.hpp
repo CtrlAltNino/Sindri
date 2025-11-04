@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Gui/node_editor_panel/nodes/OutputNode.hpp"
-#include "Gui/node_editor_panel/nodes/UVNode.hpp"
 #include "INodeEditor.hpp"
 #include "IWorkflowSettingsObserver.hpp"
+#include "OutputNode.hpp"
+#include "UVNode.hpp"
 #include <ImNodeFlow.h>
 #include <imgui.h>
 

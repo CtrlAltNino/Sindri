@@ -2,9 +2,9 @@
 
 #include "DecomposeVectorNode.hpp"
 #include "DivideNode.hpp"
-#include "Gui/workflow_settings_panel/IWorkflowSettingsPanel.hpp"
 #include "INodeEditorPanel.hpp"
 #include "IVariableRegistry.hpp"
+#include "IWorkflowSettingsPanel.hpp"
 #include "LuaScriptNode.hpp"
 #include "MultiplyNode.hpp"
 #include "NegateNode.hpp"
@@ -20,6 +20,7 @@
 #include "WorkflowSettings.hpp"
 #include <ImNodeFlow.h>
 #include <imgui.h>
+
 
 namespace Sindri
 {

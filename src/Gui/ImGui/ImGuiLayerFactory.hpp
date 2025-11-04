@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Gui/ImGui/IImGuiLayer.hpp"
+#include "IImGuiLayer.hpp"
 #include "IImGuiLayerFactory.hpp"
 
 namespace Sindri

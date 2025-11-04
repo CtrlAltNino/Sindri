@@ -1,7 +1,7 @@
 #include "pch.hpp"
 
-#include "Gui/node_editor_panel/nodes/UVNode.hpp"
 #include "ImGuiHelper.hpp"
+#include "UVNode.hpp"
 #include "VariableNode.hpp"
 #include "VariablesPanel.hpp"
 #include <glm/gtc/type_ptr.hpp>
