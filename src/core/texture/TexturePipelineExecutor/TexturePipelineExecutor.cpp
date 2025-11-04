@@ -105,7 +105,8 @@ namespace Sindri
   }
 
   void
-  TexturePipelineExecutor::ExecutePipeline(WorkflowSettings workflowSettings)
+  TexturePipelineExecutor::ExecutePipeline(
+    std::shared_ptr<IWorkflowSettings> workflowSettings)
   {
     mCurrentWorkflowSettings = workflowSettings;
 
@@ -205,7 +206,7 @@ namespace Sindri
 
       if (state.LuaState["Setup"].valid())
       {
-        state.LuaState["Setup"](mCurrentWorkflowSettings.Seed);
+        state.LuaState["Setup"](mCurrentWorkflowSettings->GetSeed());
       }
 
       stackState.push_back(std::move(state));

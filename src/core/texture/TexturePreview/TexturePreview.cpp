@@ -10,7 +10,7 @@
 namespace Sindri
 {
   TexturePreview::TexturePreview(
-    std::shared_ptr<WorkflowSettings>   workflowSettings,
+    std::shared_ptr<IWorkflowSettings>  workflowSettings,
     std::shared_ptr<ITextureBuffer>     texture,
     std::shared_ptr<IGpuPreviewTexture> gpuPreviewTexture)
     : mWorkflowSettings(std::move(workflowSettings))
@@ -295,7 +295,7 @@ namespace Sindri
   void
   TexturePreview::Render(glm::vec2 resolution, float deltaTime)
   {
-    switch (mWorkflowSettings->Dimensions)
+    switch (mWorkflowSettings->GetDimensions())
     {
       case TextureDimension::Texture1D: break;
       case TextureDimension::Texture2D: Render2DPreview(resolution); break;
@@ -316,7 +316,7 @@ namespace Sindri
       mGpuPreviewTexture->SetInterpolatePreview(interpolatePreviewTexture);
     }
 
-    if (mWorkflowSettings->Dimensions == TextureDimension::Texture3D)
+    if (mWorkflowSettings->GetDimensions() == TextureDimension::Texture3D)
     {
       ImGui::SliderFloat("Density factor", &mDensityFactor, 0.0F, 4.0F, "%.2F");
       ImGui::SliderFloat("Step Size", &mStepSize, 0.000001F, 0.1F, "%.4F");

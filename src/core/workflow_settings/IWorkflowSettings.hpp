@@ -1,86 +1,69 @@
 #pragma once
 
-#include "IWorkflowSettings.hpp"
 #include "IWorkflowSettingsObserver.hpp"
 #include "TextureTypes.hpp"
-
 namespace Sindri
 {
-  /*struct WorkflowSettings
+  class IWorkflowSettings
   {
-    WorkflowSettings() = default;
-    TextureDimension Dimensions = TextureDimension::Texture2D;
-    ChannelCount     ChannelCount = ChannelCount::R;
-    uint32_t         Seed override;
-  };*/
-
-  class WorkflowSettings : public IWorkflowSettings
-  {
-  private:
-    std::random_device                      mRandomDevice;
-    std::vector<IWorkflowSettingsObserver*> mObservers;
-    TextureDimension mDimensions = TextureDimension::Texture2D;
-    ChannelCount     mChannelCount = ChannelCount::R;
-    uint32_t         mSeed = 0;
-
   public:
-    WorkflowSettings();
+    virtual ~IWorkflowSettings() = default;
 
     /**
      * @brief Get the dimensions of the current workflow
      *
      * @return 1D, 2D or 3D
      */
-    auto
-    GetDimensions() -> TextureDimension override;
+    virtual auto
+    GetDimensions() -> TextureDimension = 0;
 
     /**
      * @brief Sets the dimensions of the workflow
      *
      * @param textureDimension New dimensions
      */
-    void
-    SetDimensions(TextureDimension textureDimension) override;
+    virtual void
+    SetDimensions(TextureDimension textureDimension) = 0;
 
     /**
      * @brief Gets the amount of channels to use for the output
      *
      * @return Amount of channels for the output texture
      */
-    auto
-    GetChannelCount() -> ChannelCount override;
+    virtual auto
+    GetChannelCount() -> ChannelCount = 0;
 
     /**
      * @brief Sets the desired channels for the work flow
      *
      * @param channelCount Desired channel count
      */
-    void
-    SetChannelCount(ChannelCount channelCount) override;
+    virtual void
+    SetChannelCount(ChannelCount channelCount) = 0;
 
     /**
      * @brief Gets the current seed
      *
      * @return  Current seed
      */
-    auto
-    GetSeed() -> uint32_t override;
+    virtual auto
+    GetSeed() -> uint32_t = 0;
 
     /**
      * @brief Randomizes the current seed and returns it
      *
      * @return The seed
      */
-    auto
-    RandomizeSeed() -> uint32_t override;
+    virtual auto
+    RandomizeSeed() -> uint32_t = 0;
 
     /**
      * @brief Sets the seed of the workflow
      *
      * @param seed The new seed for the workflow
      */
-    void
-    SetSeed(uint32_t seed) override;
+    virtual void
+    SetSeed(uint32_t seed) = 0;
 
     /**
      * @brief Registers an observer who will be notified at changes of the
@@ -88,15 +71,15 @@ namespace Sindri
      *
      * @param observer Observer pointer to register
      */
-    void
-    RegisterObserver(IWorkflowSettingsObserver* observer) override;
+    virtual void
+    RegisterObserver(IWorkflowSettingsObserver* observer) = 0;
 
     /**
      * @brief Removes an observer
      *
      * @param observer Observer to remove
      */
-    void
-    UnregisterObserver(IWorkflowSettingsObserver* observer) override;
+    virtual void
+    UnregisterObserver(IWorkflowSettingsObserver* observer) = 0;
   };
 }

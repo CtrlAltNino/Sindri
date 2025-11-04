@@ -11,8 +11,8 @@
 namespace Sindri
 {
   TextureExporter::TextureExporter(
-    std::shared_ptr<ITextureBuffer>   texture,
-    std::shared_ptr<WorkflowSettings> workflowSettings)
+    std::shared_ptr<ITextureBuffer>    texture,
+    std::shared_ptr<IWorkflowSettings> workflowSettings)
     : mTexture(std::move(texture))
     , mWorkflowSettings(std::move(workflowSettings))
   {
@@ -226,6 +226,12 @@ namespace Sindri
                             mExportSettings.channels,
                             mExportSettings.dataType,
                             mExportSettings.path);
+      case FileFormat::TGA:
+      case FileFormat::EXR:
+      case FileFormat::HDR:
+      case FileFormat::DDS:
+      case FileFormat::KTX:
+      case FileFormat::KTX2: break;
     }
   }
 }

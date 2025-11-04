@@ -1,14 +1,16 @@
 #include "pch.hpp"
 
+#include "Gui/node_editor_panel/nodes/UVNode.hpp"
 #include "ImGuiHelper.hpp"
-#include "VariablesGui.hpp"
+#include "VariableNode.hpp"
+#include "VariablesPanel.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
 #include <utility>
 
 namespace Sindri
 {
-  VariablesGui::VariablesGui(
+  VariablesPanel::VariablesPanel(
     std::shared_ptr<IVariableRegistry> variableRegistry,
     std::shared_ptr<INodeEditor>       nodeEditor)
     : mVariableRegistry(std::move(variableRegistry))
@@ -17,7 +19,7 @@ namespace Sindri
   }
 
   void
-  VariablesGui::Render()
+  VariablesPanel::Render()
   {
     // TODO: Draw all variables
     for (auto& var : mVariableRegistry->All())
@@ -84,7 +86,8 @@ namespace Sindri
       ImGui::SameLine();
       if (ImGui::Button("+"))
       {
-        mNodeEditor->AddVariableNode(var.first);
+        mNodeEditor->AddNode<VariableNode>(
+          { 170, 300 }, mVariableRegistry->GetByName(var.first));
       }
     }
 

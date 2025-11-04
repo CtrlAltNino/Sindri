@@ -19,7 +19,7 @@ namespace Sindri
       // add two inputs and one output all typed as the Variant "Scalar"
       addIN<std::function<float(glm::vec2)>>(
         "A",
-        [](glm::vec2 vector) -> float { return { 0 }; },
+        [](glm::vec2 /*vector*/) -> float { return 0; },
         ImFlow::ConnectionFilter::SameType());
 
       // output behaviour: compute the sum and return a Scalar (we return a

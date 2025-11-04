@@ -1,4 +1,5 @@
-// SubtractNode_variant.h
+#pragma once
+
 #include "ImNodeFlow.h" // adjust path as needed
 #include "Variable.hpp"
 #include <string>

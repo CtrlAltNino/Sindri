@@ -10,7 +10,7 @@ namespace Sindri
     virtual ~ITexturePipelineExecutor() = default;
 
     virtual void
-    ExecutePipeline(WorkflowSettings workflowSettings) = 0;
+    ExecutePipeline(std::shared_ptr<IWorkflowSettings> workflowSettings) = 0;
 
     virtual void
     CancelExecution() = 0;

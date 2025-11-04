@@ -10,6 +10,7 @@
 #include "ITexturePreview.hpp"
 #include "ImGuiLayerFactory.hpp"
 #include "NodeEditor.hpp"
+#include "NodeEditorPanel.hpp"
 #include "NoiseLayerFactory.hpp"
 #include "OpenGLPreviewTexture.hpp"
 #include "SindriGui.hpp"
@@ -20,10 +21,10 @@
 #include "TexturePipelineExecutor.hpp"
 #include "TexturePreview.hpp"
 #include "VariableRegistry.hpp"
-#include "VariablesGui.hpp"
+#include "VariablesPanel.hpp"
 #include "Window.hpp"
+#include "WorkflowSettingsPanel.hpp"
 #include <boost/di.hpp>
-
 
 namespace Sindri
 {
@@ -32,14 +33,19 @@ namespace Sindri
     -> boost::di::injector<std::shared_ptr<Sindri>>
   {
     return boost::di::make_injector<boost::di::extension::shared_config>(
-      boost::di::bind<WorkflowSettings>.in(boost::di::extension::shared),
       boost::di::bind<ITextureBuffer>.to<TextureBuffer>().in(
         boost::di::extension::shared),
       boost::di::bind<IVariableRegistry>.to<VariableRegistry>().in(
         boost::di::extension::shared),
       boost::di::bind<INodeEditor>.to<NodeEditor>().in(
         boost::di::extension::shared),
-      boost::di::bind<IVariablesGui>.to<VariablesGui>().in(
+      boost::di::bind<INodeEditorPanel>.to<NodeEditorPanel>().in(
+        boost::di::extension::shared),
+      boost::di::bind<IVariablesPanel>.to<VariablesPanel>().in(
+        boost::di::extension::shared),
+      boost::di::bind<IWorkflowSettings>.to<WorkflowSettings>().in(
+        boost::di::extension::shared),
+      boost::di::bind<IWorkflowSettingsPanel>.to<WorkflowSettingsPanel>().in(
         boost::di::extension::shared),
       boost::di::bind<ITexturePreview>.to<TexturePreview>().in(
         boost::di::extension::shared),

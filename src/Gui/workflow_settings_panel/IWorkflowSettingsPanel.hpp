@@ -2,10 +2,10 @@
 
 namespace Sindri
 {
-  class IVariablesGui
+  class IWorkflowSettingsPanel
   {
   public:
-    virtual ~IVariablesGui() = default;
+    virtual ~IWorkflowSettingsPanel() = default;
     virtual void
     Render() = 0;
   };

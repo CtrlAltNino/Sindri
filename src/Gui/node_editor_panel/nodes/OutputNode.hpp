@@ -7,11 +7,9 @@
 
 namespace Sindri
 {
-  /* The simple sum basic node */
   class OutputNode : public ImFlow::BaseNode
   {
   private:
-    // TextureDimension mDimension = TextureDimension::Texture2D;
     ChannelCount mChannels = ChannelCount::R;
 
   public:

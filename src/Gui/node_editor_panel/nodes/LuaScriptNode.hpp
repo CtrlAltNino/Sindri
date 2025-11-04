@@ -200,7 +200,7 @@ namespace Sindri
       getStyle()->header_bg = IM_COL32(180, 142, 173, 255);
       ImFlow::BaseNode::addIN<glm::vec2>(
         "Vector2D", glm::vec2(0), ImFlow::ConnectionFilter::SameType());
-      ImFlow::BaseNode::addOUT<float>("Out", nullptr);
+      // ImFlow::BaseNode::addOUT<float>("Out", nullptr);
       //->behaviour([this]() { return getInVal<float>("In") + m_valB; });
     }
 

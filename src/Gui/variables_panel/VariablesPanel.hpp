@@ -1,8 +1,7 @@
 #pragma once
-
-#include "INodeEditor.hpp"
 #include "IVariableRegistry.hpp"
-#include "IVariablesGui.hpp"
+#include "IVariablesPanel.hpp"
+#include "NodeEditor.hpp"
 
 namespace Sindri
 {
@@ -12,7 +11,7 @@ namespace Sindri
     VarKind     Kind = VarKind::Float;
   };
 
-  class VariablesGui : public IVariablesGui
+  class VariablesPanel : public IVariablesPanel
   {
   private:
     std::shared_ptr<IVariableRegistry> mVariableRegistry;
@@ -20,8 +19,8 @@ namespace Sindri
     std::shared_ptr<INodeEditor>       mNodeEditor;
 
   public:
-    VariablesGui(std::shared_ptr<IVariableRegistry> variableRegistry,
-                 std::shared_ptr<INodeEditor>       nodeEditor);
+    VariablesPanel(std::shared_ptr<IVariableRegistry> variableRegistry,
+                   std::shared_ptr<INodeEditor>       nodeEditor);
 
     void
     Render() override;

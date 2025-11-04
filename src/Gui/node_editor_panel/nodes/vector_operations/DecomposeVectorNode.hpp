@@ -6,13 +6,13 @@
 
 namespace Sindri
 {
-  class DecomposeVec2Node : public ImFlow::BaseNode
+  class DecomposeVectorNode : public ImFlow::BaseNode
   {
   private:
   public:
-    DecomposeVec2Node()
+    DecomposeVectorNode()
     {
-      setTitle("Decompose (2D)");
+      setTitle("Decompose Vector");
       setStyle(ImFlow::NodeStyle::red());
       getStyle()->bg = IM_COL32(46, 52, 64, 255);
       getStyle()->header_bg = IM_COL32(208, 135, 112, 255);

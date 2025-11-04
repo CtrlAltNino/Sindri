@@ -104,16 +104,16 @@ namespace Sindri
   class TextureExporter : public ITextureExporter
   {
   private:
-    ExportSettings                    mExportSettings;
-    std::shared_ptr<ITextureBuffer>   mTexture;
-    std::shared_ptr<WorkflowSettings> mWorkflowSettings;
+    ExportSettings                     mExportSettings;
+    std::shared_ptr<ITextureBuffer>    mTexture;
+    std::shared_ptr<IWorkflowSettings> mWorkflowSettings;
 
     void
     Export();
 
   public:
-    TextureExporter(std::shared_ptr<ITextureBuffer>   texture,
-                    std::shared_ptr<WorkflowSettings> workflowSettings);
+    TextureExporter(std::shared_ptr<ITextureBuffer>    texture,
+                    std::shared_ptr<IWorkflowSettings> workflowSettings);
 
     void
     Render() override;

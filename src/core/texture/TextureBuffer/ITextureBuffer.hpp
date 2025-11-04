@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Texture/TextureTypes.hpp"
+#include "TextureTypes.hpp"
 #include <glad/glad.h>
 
 namespace Sindri

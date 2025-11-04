@@ -1,12 +1,14 @@
 #pragma once
 
-#include "WorkflowSettings.hpp"
+#include "TextureTypes.hpp"
 #include <glm/glm.hpp>
 
 namespace Sindri
 {
+  using UVCoordinate = std::variant<float, glm::vec2, glm::vec3>;
+
   // Converts a linear index into a coordinate in 1D, 2D, or 3D space
-  auto
+  static auto
   IndexToCoord(size_t            index,
                const glm::ivec3& resolution,
                TextureDimension  dimension) -> glm::ivec3
@@ -42,7 +44,7 @@ namespace Sindri
     }
   }
 
-  auto
+  static auto
   CoordToIndex(const glm::ivec3& coordinate,
                const glm::ivec3& resolution,
                TextureDimension  dimension) -> int
