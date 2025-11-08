@@ -1,15 +1,19 @@
 #pragma once
 
 #include "FileHelper.hpp"
+#include "Gui/node_editor_panel/nodes/IPreviewableNode.hpp"
 #include "NodeTypes.hpp"
 #include <ImNodeFlow.h>
 #include <imgui.h>
 #include <sol/sol.hpp>
+#include <utility>
 
 namespace Sindri
 {
   /* The simple sum basic node */
-  class ScriptNode : public ImFlow::BaseNode
+  class ScriptNode
+    : public ImFlow::BaseNode
+    , public IPreviewableNode
   {
   private:
     int                                mSelectedScriptIndex = 0;
@@ -191,7 +195,8 @@ namespace Sindri
     }
 
   public:
-    ScriptNode()
+    ScriptNode(std::shared_ptr<IGpuPreviewTexture> previewTexture)
+      : IPreviewableNode(std::move(previewTexture))
     {
       mScripts = GetLuaScripts();
       setTitle("Lua Script");
@@ -199,31 +204,100 @@ namespace Sindri
       getStyle()->bg = IM_COL32(46, 52, 64, 255);
       getStyle()->header_bg = IM_COL32(180, 142, 173, 255);
       ImFlow::BaseNode::addIN<std::function<TexCoord(TexCoord)>>(
-        "Vector2D",
+        "TexCoord",
         [](TexCoord coord) -> TexCoord { return { 0, 0, 0 }; },
         ImFlow::ConnectionFilter::SameType());
 
-      // ImFlow::BaseNode::addOUT<std::function<float(TexCoord)>>("Result
-      // (float)", nullptr)
-      //->behaviour([this](TexCoord coord) { return getInVal<float>("In") +
-      //m_valB; });
+      ImFlow::BaseNode::addIN<std::function<uint32_t(TexCoord)>>(
+        "Seed",
+        [](TexCoord coord) -> uint32_t { return 89273272; },
+        ImFlow::ConnectionFilter::SameType());
+
+      ImFlow::BaseNode::addOUT<std::function<float(TexCoord)>>("Result (float)",
+                                                               nullptr)
+        ->behaviour(
+          [this]()
+          { return [this](TexCoord coordinate) -> float { return 0.0F; }; });
     }
 
     void
     draw() override
     {
-      // if (ImFlow::BaseNode::isSelected())
-      //{
-      //  Script drop down
-
       LuaScriptSelector();
 
-      // Script settings
+      ImGui::Text("Preview");
 
-      // Preview
-      // ImGui::InputInt("##ValB", &m_valB);
-      // ImGui::Button("Hello");
-      //}
+      if (ImGui::Button("Generate"))
+      {
+        if (mLua["Setup"].valid())
+        {
+          mLua["Setup"](
+            getInVal<std::function<uint32_t(glm::vec3)>>("Seed")({ 0, 0, 0 }));
+        }
+
+        for (auto& pair : mSettings)
+        {
+          std::string                    key = pair.first;
+          std::variant<bool, int, float> value = pair.second;
+
+          if (std::holds_alternative<int>(value))
+          {
+            mLua["Settings"][key] = std::get<int>(value);
+          }
+          else if (std::holds_alternative<float>(value))
+          {
+            mLua["Settings"][key] = std::get<float>(value);
+          }
+          else if (std::holds_alternative<bool>(value))
+          {
+            mLua["Settings"][key] = std::get<bool>(value);
+          }
+        }
+
+        GetPreviewTexture()->GetTextureBuffer()->Reserve(128, 128, 1);
+        auto& tempBuffer =
+          GetPreviewTexture()->GetTextureBuffer()->GetTempData();
+        const int width = 128;
+        const int height = 128;
+        const int channels = 1;
+        int       index = 0;
+
+        for (int y = 0; y < height; ++y)
+        {
+          for (int x = 0; x < width; ++x)
+          {
+            glm::vec2 uv = { static_cast<float>(x) / 127,
+                             static_cast<float>(y) / 127 };
+            uint32_t  seed = getInVal<std::function<uint32_t(glm::vec3)>>(
+              "Seed")({ uv.x, uv.y, 0 });
+
+            sol::protected_function_result functionResult =
+              mLua["Evaluate2D"](uv.x, uv.y, seed);
+
+            if (!functionResult.valid())
+            {
+              sol::error err = functionResult;
+              std::cerr << "Lua error: " << err.what() << std::endl;
+            }
+            else
+            {
+              tempBuffer[index++] =
+                functionResult
+                  .get<float>(); // or result.get<float>() for safety
+            }
+          }
+        }
+
+        GetPreviewTexture()->GetTextureBuffer()->PromoteTemp();
+        GetPreviewTexture()->Upload();
+      }
+
+      // Draw Preview
+      if (GetPreviewTexture()->GetIsUploaded())
+      {
+        ImGui::Image((ImTextureID)GetPreviewTexture()->GetTextureId(),
+                     ImVec2(128, 128));
+      }
     }
   };
 }

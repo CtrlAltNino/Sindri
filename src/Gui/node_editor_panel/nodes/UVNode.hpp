@@ -5,6 +5,8 @@
 #include "TextureTypes.hpp"
 #include <ImNodeFlow.h>
 
+#include <utility>
+
 namespace Sindri
 {
   class UVNode
@@ -16,7 +18,7 @@ namespace Sindri
 
   public:
     UVNode(std::shared_ptr<IGpuPreviewTexture> previewTexture)
-      : IPreviewableNode(previewTexture)
+      : IPreviewableNode(std::move(previewTexture))
     {
       setTitle("UV");
       setStyle(ImFlow::NodeStyle::red());

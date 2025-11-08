@@ -40,7 +40,8 @@ namespace Sindri
           // ImGui::Text("Background right click");
           if (ImGui::Selectable("Add script node"))
           {
-            mINF.addNode<ScriptNode>(ImGui::GetMousePos());
+            mINF.addNode<ScriptNode>(ImGui::GetMousePos(),
+                                     mPreviewTextureFactory->Create());
           }
 
           if (ImGui::BeginMenu("Arithmetic operations"))
