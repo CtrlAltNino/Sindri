@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ITextureBuffer.hpp"
 #include <cstdint>
 
 namespace Sindri
@@ -8,6 +9,9 @@ namespace Sindri
   {
   public:
     virtual ~IGpuPreviewTexture() = default;
+
+    virtual auto
+    GetTextureBuffer() -> std::shared_ptr<ITextureBuffer> = 0;
 
     virtual void
     Upload() = 0;

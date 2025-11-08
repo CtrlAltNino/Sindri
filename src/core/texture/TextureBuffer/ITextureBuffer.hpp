@@ -11,13 +11,13 @@ namespace Sindri
     virtual ~ITextureBuffer() = default;
 
     virtual void
-    Reserve(size_t width) = 0;
+    Reserve(size_t width, size_t channels) = 0;
 
     virtual void
-    Reserve(size_t width, size_t height) = 0;
+    Reserve(size_t width, size_t height, size_t channels) = 0;
 
     virtual void
-    Reserve(size_t width, size_t height, size_t depth) = 0;
+    Reserve(size_t width, size_t height, size_t depth, size_t channels) = 0;
 
     virtual auto
     GetData() -> std::vector<float>& = 0;
@@ -36,6 +36,9 @@ namespace Sindri
 
     virtual auto
     GetDepth() -> size_t = 0;
+
+    virtual auto
+    GetChannels() -> size_t = 0;
 
     virtual auto
     GetDimension() -> TextureDimension = 0;

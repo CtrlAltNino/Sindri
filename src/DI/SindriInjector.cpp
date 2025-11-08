@@ -1,3 +1,6 @@
+#include "GpuPreviewTextureFactory.hpp"
+#include "ITextureBufferFactory.hpp"
+#include "TextureBufferFactory.hpp"
 #include "pch.hpp"
 
 #include "GraphicsContextFactory.hpp"
@@ -36,6 +39,10 @@ namespace Sindri
       boost::di::bind<ITextureBuffer>.to<TextureBuffer>().in(
         boost::di::extension::shared),
       boost::di::bind<IVariableRegistry>.to<VariableRegistry>().in(
+        boost::di::extension::shared),
+      boost::di::bind<ITextureBufferFactory>.to<TextureBufferFactory>().in(
+        boost::di::extension::shared),
+      boost::di::bind<IGpuPreviewTextureFactory>.to<GpuPreviewTextureFactory>().in(
         boost::di::extension::shared),
       boost::di::bind<INodeEditor>.to<NodeEditor>().in(
         boost::di::extension::shared),

@@ -6,30 +6,37 @@
 namespace Sindri
 {
   void
-  TextureBuffer::Reserve(size_t width)
+  TextureBuffer::Reserve(size_t width, size_t channels)
   {
     mTempWidth = width;
+    mTempChannels = channels;
     mTextureDimension = TextureDimension::Texture1D;
-    mTempData = std::vector<float>(mTempWidth);
+    mTempData = std::vector<float>(mTempWidth * mTempChannels);
   }
 
   void
-  TextureBuffer::Reserve(size_t width, size_t height)
+  TextureBuffer::Reserve(size_t width, size_t height, size_t channels)
   {
     mTempWidth = width;
     mTempHeight = height;
+    mTempChannels = channels;
     mTextureDimension = TextureDimension::Texture2D;
-    mTempData = std::vector<float>(mTempWidth * mTempHeight);
+    mTempData = std::vector<float>(mTempWidth * mTempHeight * mTempChannels);
   }
 
   void
-  TextureBuffer::Reserve(size_t width, size_t height, size_t depth)
+  TextureBuffer::Reserve(size_t width,
+                         size_t height,
+                         size_t depth,
+                         size_t channels)
   {
     mTempWidth = width;
     mTempHeight = height;
     mTempDepth = depth;
+    mTempChannels = channels;
     mTextureDimension = TextureDimension::Texture3D;
-    mTempData = std::vector<float>(mTempWidth * mTempHeight * mTempDepth);
+    mTempData =
+      std::vector<float>(mTempWidth * mTempHeight * mTempDepth * mTempChannels);
   }
 
   auto
@@ -50,6 +57,7 @@ namespace Sindri
     mWidth = mTempWidth;
     mHeight = mTempHeight;
     mDepth = mTempDepth;
+    mChannels = mTempChannels;
     mData = mTempData;
   }
 
@@ -69,6 +77,12 @@ namespace Sindri
   TextureBuffer::GetDepth() -> size_t
   {
     return mDepth;
+  }
+
+  auto
+  TextureBuffer::GetChannels() -> size_t
+  {
+    return mChannels;
   }
 
   auto

@@ -1,5 +1,6 @@
 #include "pch.hpp"
 
+#include "DecomposeTexCoord.hpp"
 #include "DecomposeVectorNode.hpp"
 #include "DivideNode.hpp"
 #include "LuaScriptNode.hpp"
@@ -15,8 +16,11 @@
 
 namespace Sindri
 {
-  NodeEditor::NodeEditor(std::shared_ptr<IWorkflowSettings> workflowSettings)
+  NodeEditor::NodeEditor(
+    std::shared_ptr<IWorkflowSettings>         workflowSettings,
+    std::shared_ptr<IGpuPreviewTextureFactory> previewTextureFactory)
     : mWorkflowSettings(std::move(workflowSettings))
+    , mPreviewTextureFactory(std::move(previewTextureFactory))
     , BaseNode()
   {
     float d = 1500;
@@ -88,9 +92,21 @@ namespace Sindri
             if (ImGui::MenuItem("Cross Product"))
             {
             }
-            if (ImGui::MenuItem("Decompose Vector"))
+            if (ImGui::MenuItem("Decompose Vec2"))
             {
-              mINF.addNode<DecomposeVectorNode>(ImGui::GetMousePos());
+              mINF.addNode<DecomposeVec2Node>(ImGui::GetMousePos());
+            }
+            if (ImGui::MenuItem("Decompose Vec3"))
+            {
+              mINF.addNode<DecomposeVec3Node>(ImGui::GetMousePos());
+            }
+            if (ImGui::MenuItem("Decompose Vec4"))
+            {
+              mINF.addNode<DecomposeVec4Node>(ImGui::GetMousePos());
+            }
+            if (ImGui::MenuItem("Decompose TexCoord"))
+            {
+              mINF.addNode<DecomposeTexCoordNode>(ImGui::GetMousePos());
             }
             if (ImGui::MenuItem("Divide Vectors"))
             {
@@ -152,10 +168,8 @@ namespace Sindri
   {
     if (!mUVNode)
     {
-      mUVNode = AddNode<UVNode>({ 170, 300 });
+      mUVNode = AddNode<UVNode>({ 170, 300 }, mPreviewTextureFactory->Create());
     }
-
-    mUVNode->setup(mWorkflowSettings->GetDimensions());
   }
 
   void

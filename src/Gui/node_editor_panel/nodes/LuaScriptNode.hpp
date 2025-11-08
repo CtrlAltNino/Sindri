@@ -198,10 +198,15 @@ namespace Sindri
       setStyle(ImFlow::NodeStyle::red());
       getStyle()->bg = IM_COL32(46, 52, 64, 255);
       getStyle()->header_bg = IM_COL32(180, 142, 173, 255);
-      ImFlow::BaseNode::addIN<glm::vec2>(
-        "Vector2D", glm::vec2(0), ImFlow::ConnectionFilter::SameType());
-      // ImFlow::BaseNode::addOUT<float>("Out", nullptr);
-      //->behaviour([this]() { return getInVal<float>("In") + m_valB; });
+      ImFlow::BaseNode::addIN<std::function<TexCoord(TexCoord)>>(
+        "Vector2D",
+        [](TexCoord coord) -> TexCoord { return { 0, 0, 0 }; },
+        ImFlow::ConnectionFilter::SameType());
+
+      // ImFlow::BaseNode::addOUT<std::function<float(TexCoord)>>("Result
+      // (float)", nullptr)
+      //->behaviour([this](TexCoord coord) { return getInVal<float>("In") +
+      //m_valB; });
     }
 
     void

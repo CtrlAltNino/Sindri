@@ -20,6 +20,12 @@ namespace Sindri
     }
   }
 
+  auto
+  OpenGLPreviewTexture::GetTextureBuffer() -> std::shared_ptr<ITextureBuffer>
+  {
+    return mTextureBuffer;
+  }
+
   void
   OpenGLPreviewTexture::Upload()
   {
@@ -31,6 +37,29 @@ namespace Sindri
     GLenum target = 0;
     GLint  internalFormat = GL_R32F;
     GLenum glFormat = GL_RED; // single channel
+
+    switch (mTextureBuffer->GetChannels())
+    {
+      case 2:
+        {
+          glFormat = GL_RG;
+          internalFormat = GL_RG32F;
+          break;
+        }
+      case 3:
+        {
+          glFormat = GL_RGB;
+          internalFormat = GL_RGB32F;
+          break;
+        }
+      case 4:
+        {
+          glFormat = GL_RGBA;
+          internalFormat = GL_RGBA32F;
+          break;
+        }
+    }
+
     GLenum glType = GL_FLOAT;
 
     switch (mTextureBuffer->GetDimension())
@@ -43,8 +72,8 @@ namespace Sindri
     glCreateTextures(target, 1, &mTextureId);
 
     // glBindTexture(target, mTextureId);
-    GLint swizzleMask[] = { GL_RED, GL_RED, GL_RED, GL_ONE };
-    glTextureParameteriv(mTextureId, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+    // GLint swizzleMask[] = { GL_RED, GL_RED, GL_RED, GL_ONE };
+    // glTextureParameteriv(mTextureId, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 
     // Set default parameters, can customize
     UpdateTextureFiltering();

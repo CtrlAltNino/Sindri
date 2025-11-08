@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IGpuPreviewTextureFactory.hpp"
 #include "INodeEditor.hpp"
 #include "IWorkflowSettingsObserver.hpp"
 #include "OutputNode.hpp"
@@ -16,10 +17,11 @@ namespace Sindri
     , public IWorkflowSettingsObserver
   {
   private:
-    ImFlow::ImNodeFlow                 mINF;
-    std::shared_ptr<UVNode>            mUVNode;
-    std::shared_ptr<OutputNode>        mOutputNode;
-    std::shared_ptr<IWorkflowSettings> mWorkflowSettings;
+    ImFlow::ImNodeFlow                         mINF;
+    std::shared_ptr<UVNode>                    mUVNode;
+    std::shared_ptr<OutputNode>                mOutputNode;
+    std::shared_ptr<IWorkflowSettings>         mWorkflowSettings;
+    std::shared_ptr<IGpuPreviewTextureFactory> mPreviewTextureFactory;
 
     void
     UpdateUVNode();
@@ -28,7 +30,9 @@ namespace Sindri
     UpdateOutputNode();
 
   public:
-    NodeEditor(std::shared_ptr<IWorkflowSettings> workflowSettings);
+    NodeEditor(
+      std::shared_ptr<IWorkflowSettings>         workflowSettings,
+      std::shared_ptr<IGpuPreviewTextureFactory> previewTextureFactory);
     ~NodeEditor() override;
 
     void

@@ -5,8 +5,6 @@
 
 namespace Sindri
 {
-  using UVCoordinate = std::variant<float, glm::vec2, glm::vec3>;
-
   // Converts a linear index into a coordinate in 1D, 2D, or 3D space
   static auto
   IndexToCoord(size_t            index,

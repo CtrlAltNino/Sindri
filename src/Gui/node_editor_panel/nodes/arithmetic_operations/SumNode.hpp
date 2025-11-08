@@ -17,26 +17,26 @@ namespace Sindri
       getStyle()->header_bg = IM_COL32(208, 135, 112, 255);
 
       // add two inputs and one output all typed as the Variant "Scalar"
-      addIN<std::function<float(glm::vec2)>>(
+      addIN<std::function<float(glm::vec3)>>(
         "A",
-        [](glm::vec2 vector) -> float { return 0.0F; },
+        [](glm::vec3 vector) -> float { return 0.0F; },
         ImFlow::ConnectionFilter::SameType());
-      addIN<std::function<float(glm::vec2)>>(
+      addIN<std::function<float(glm::vec3)>>(
         "B",
-        [](glm::vec2 vector) -> float { return 0.0F; },
+        [](glm::vec3 vector) -> float { return 0.0F; },
         ImFlow::ConnectionFilter::SameType());
 
       // output behaviour: compute the sum and return a Scalar (we return a
       // double for precision)
-      addOUT<std::function<float(glm::vec2)>>("Result")->behaviour(
+      addOUT<std::function<float(glm::vec3)>>("Result")->behaviour(
         [this]()
         {
-          return [this](glm::vec2 vector) -> float
+          return [this](glm::vec3 vector) -> float
           {
             const auto& a =
-              getInVal<std::function<float(glm::vec2)>>("A")(vector);
+              getInVal<std::function<float(glm::vec3)>>("A")(vector);
             const auto& b =
-              getInVal<std::function<float(glm::vec2)>>("B")(vector);
+              getInVal<std::function<float(glm::vec3)>>("B")(vector);
 
             float res = a + b;
 
@@ -50,9 +50,11 @@ namespace Sindri
     {
       // Show a simple readout of the computed result (not required — behaviour
       // is where outputs are computed)
-      const auto& a = getInVal<std::function<float(glm::vec2)>>("A")({ 0, 0 });
-      const auto& b = getInVal<std::function<float(glm::vec2)>>("B")({ 0, 0 });
-      double      res = a + b;
+      const auto& a =
+        getInVal<std::function<float(glm::vec3)>>("A")({ 0, 0, 0 });
+      const auto& b =
+        getInVal<std::function<float(glm::vec3)>>("B")({ 0, 0, 0 });
+      double res = a + b;
       ImGui::Text("Result: %g", res);
     }
   };

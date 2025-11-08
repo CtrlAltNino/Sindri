@@ -1,46 +1,47 @@
 #pragma once
 
 #include "TextureExporter.hpp"
+#include "TextureTypes.hpp"
 #include "WorkflowSettings.hpp"
 #include <ImNodeFlow.h>
 
 namespace Sindri
 {
-  class DecomposeVectorNode : public ImFlow::BaseNode
+  class DecomposeVec2Node : public ImFlow::BaseNode
   {
   private:
   public:
-    DecomposeVectorNode()
+    DecomposeVec2Node()
     {
-      setTitle("Decompose Vector");
+      setTitle("Decompose Vec2");
       setStyle(ImFlow::NodeStyle::red());
       getStyle()->bg = IM_COL32(46, 52, 64, 255);
       getStyle()->header_bg = IM_COL32(208, 135, 112, 255);
 
-      ImFlow::BaseNode::addIN<std::function<glm::vec2(glm::vec2)>>(
-        "Vector2D",
-        [](glm::vec2 vector) -> glm::vec2 { return { 0, 0 }; },
+      ImFlow::BaseNode::addIN<std::function<glm::vec2(TexCoord)>>(
+        "In (Vec2)",
+        [](glm::vec3 vector) -> glm::vec2 { return { 0, 0 }; },
         ImFlow::ConnectionFilter::SameType());
 
-      ImFlow::BaseNode::addOUT<std::function<float(glm::vec2)>>("X", nullptr)
+      ImFlow::BaseNode::addOUT<std::function<float(TexCoord)>>("X", nullptr)
         ->behaviour(
           [this]()
           {
-            return [this](glm::vec2 vector) -> float
+            return [this](TexCoord texCoord) -> float
             {
-              return getInVal<std::function<glm::vec2(glm::vec2)>>("Vector2D")(
-                       vector)
+              return getInVal<std::function<glm::vec2(TexCoord)>>("In (Vec2)")(
+                       texCoord)
                 .x;
             };
           });
-      ImFlow::BaseNode::addOUT<std::function<float(glm::vec2)>>("Y", nullptr)
+      ImFlow::BaseNode::addOUT<std::function<float(TexCoord)>>("Y", nullptr)
         ->behaviour(
           [this]()
           {
-            return [this](glm::vec2 vector) -> float
+            return [this](TexCoord texCoord) -> float
             {
-              return getInVal<std::function<glm::vec2(glm::vec2)>>("Vector2D")(
-                       vector)
+              return getInVal<std::function<glm::vec2(glm::vec3)>>("In (Vec2)")(
+                       texCoord)
                 .y;
             };
           });
@@ -49,9 +50,9 @@ namespace Sindri
     void
     draw() override
     {
-      const auto& b =
-        getInVal<std::function<glm::vec2(glm::vec2)>>("Vector2D")({ 0, 0 });
-      ImGui::Text("X: %g | Y: %g", b.x, b.y);
+      /*const auto& b =
+        getInVal<std::function<glm::vec2(glm::vec3)>>("Vector2D")({ 0, 0 });
+      ImGui::Text("X: %g | Y: %g", b.x, b.y);*/
     }
   };
 
@@ -61,23 +62,49 @@ namespace Sindri
   public:
     DecomposeVec3Node()
     {
-      setTitle("Decompose (3D)");
+      setTitle("Decompose Vec3");
       setStyle(ImFlow::NodeStyle::red());
-      getStyle()->header_bg = ((ImU32)208) | ((ImU32)135 << 8) |
-                              ((ImU32)112 << 16) | ((ImU32)255 << 24);
+      getStyle()->bg = IM_COL32(46, 52, 64, 255);
+      getStyle()->header_bg = IM_COL32(208, 135, 112, 255);
 
-      ImFlow::BaseNode::addIN<glm::vec3>(
-        "Vector", glm::vec3(0), ImFlow::ConnectionFilter::SameType());
+      ImFlow::BaseNode::addIN<std::function<glm::vec3(TexCoord)>>(
+        "In (Vec3)",
+        [](TexCoord texCoord) -> glm::vec3 { return { 0, 0, 0 }; },
+        ImFlow::ConnectionFilter::SameType());
 
-      ImFlow::BaseNode::addOUT<float>("X", nullptr)
-        ->behaviour([this]() -> float
-                    { return getInVal<glm::vec3>("Vector").x; });
-      ImFlow::BaseNode::addOUT<float>("Y", nullptr)
-        ->behaviour([this]() -> float
-                    { return getInVal<glm::vec3>("Vector").y; });
-      ImFlow::BaseNode::addOUT<float>("Z", nullptr)
-        ->behaviour([this]() -> float
-                    { return getInVal<glm::vec3>("Vector").z; });
+      ImFlow::BaseNode::addOUT<std::function<float(TexCoord)>>("X", nullptr)
+        ->behaviour(
+          [this]()
+          {
+            return [this](TexCoord texCoord) -> float
+            {
+              return getInVal<std::function<glm::vec3(TexCoord)>>("In (Vec3)")(
+                       texCoord)
+                .x;
+            };
+          });
+      ImFlow::BaseNode::addOUT<std::function<float(TexCoord)>>("Y", nullptr)
+        ->behaviour(
+          [this]()
+          {
+            return [this](TexCoord texCoord) -> float
+            {
+              return getInVal<std::function<glm::vec3(TexCoord)>>("In (Vec3)")(
+                       texCoord)
+                .y;
+            };
+          });
+      ImFlow::BaseNode::addOUT<std::function<float(TexCoord)>>("Z", nullptr)
+        ->behaviour(
+          [this]()
+          {
+            return [this](TexCoord texCoord) -> float
+            {
+              return getInVal<std::function<glm::vec3(TexCoord)>>("In (Vec3)")(
+                       texCoord)
+                .z;
+            };
+          });
     }
 
     void
@@ -92,22 +119,60 @@ namespace Sindri
   public:
     DecomposeVec4Node()
     {
-      setTitle("Decompose (4D)");
+      setTitle("Decompose Vec4");
       setStyle(ImFlow::NodeStyle::red());
-      getStyle()->header_bg = ((ImU32)208) | ((ImU32)135 << 8) |
-                              ((ImU32)112 << 16) | ((ImU32)255 << 24);
+      getStyle()->bg = IM_COL32(46, 52, 64, 255);
+      getStyle()->header_bg = IM_COL32(208, 135, 112, 255);
 
-      ImFlow::BaseNode::addIN<glm::vec4>(
-        "Vector", glm::vec4(0), ImFlow::ConnectionFilter::SameType());
+      ImFlow::BaseNode::addIN<std::function<glm::vec4(TexCoord)>>(
+        "In (Vec4)",
+        [](TexCoord texCoord) -> glm::vec4 { return { 0, 0, 0, 0 }; },
+        ImFlow::ConnectionFilter::SameType());
 
-      ImFlow::BaseNode::addOUT<float>("X", nullptr)
-        ->behaviour([this]() { return getInVal<glm::vec4>("Vector").x; });
-      ImFlow::BaseNode::addOUT<float>("Y", nullptr)
-        ->behaviour([this]() { return getInVal<glm::vec4>("Vector").y; });
-      ImFlow::BaseNode::addOUT<float>("Z", nullptr)
-        ->behaviour([this]() { return getInVal<glm::vec4>("Vector").z; });
-      ImFlow::BaseNode::addOUT<float>("W", nullptr)
-        ->behaviour([this]() { return getInVal<glm::vec4>("Vector").w; });
+      ImFlow::BaseNode::addOUT<std::function<float(TexCoord)>>("X", nullptr)
+        ->behaviour(
+          [this]()
+          {
+            return [this](TexCoord texCoord) -> float
+            {
+              return getInVal<std::function<glm::vec4(TexCoord)>>("In (Vec4)")(
+                       texCoord)
+                .x;
+            };
+          });
+      ImFlow::BaseNode::addOUT<std::function<float(TexCoord)>>("Y", nullptr)
+        ->behaviour(
+          [this]()
+          {
+            return [this](TexCoord texCoord) -> float
+            {
+              return getInVal<std::function<glm::vec4(TexCoord)>>("In (Vec4)")(
+                       texCoord)
+                .y;
+            };
+          });
+      ImFlow::BaseNode::addOUT<std::function<float(TexCoord)>>("Z", nullptr)
+        ->behaviour(
+          [this]()
+          {
+            return [this](TexCoord texCoord) -> float
+            {
+              return getInVal<std::function<glm::vec4(TexCoord)>>("In (Vec4)")(
+                       texCoord)
+                .z;
+            };
+          });
+      ImFlow::BaseNode::addOUT<std::function<float(TexCoord)>>("W", nullptr)
+        ->behaviour(
+          [this]()
+          {
+            return [this](TexCoord texCoord) -> float
+            {
+              return getInVal<std::function<glm::vec4(TexCoord)>>("In (Vec4)")(
+                       texCoord)
+                .w;
+            };
+          });
     }
 
     void

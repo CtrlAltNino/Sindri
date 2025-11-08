@@ -22,7 +22,7 @@ namespace Sindri
       switch (mVariable->kind)
       {
         case VarKind::Float:
-          addOUT<std::function<float(glm::vec2)>>("Value (Float)", nullptr)
+          addOUT<std::function<float(glm::vec3)>>("Value (Float)", nullptr)
             ->behaviour(
               [this]()
               {
@@ -31,7 +31,7 @@ namespace Sindri
               });
           break;
         case VarKind::Int:
-          addOUT<std::function<int(glm::vec2)>>("Value (Int)", nullptr)
+          addOUT<std::function<int(glm::vec3)>>("Value (Int)", nullptr)
             ->behaviour(
               [this]()
               {
@@ -40,7 +40,7 @@ namespace Sindri
               });
           break;
         case VarKind::Vec2:
-          addOUT<std::function<glm::vec2(glm::vec2)>>("Value (Vec2)", nullptr)
+          addOUT<std::function<glm::vec2(glm::vec3)>>("Value (Vec2)", nullptr)
             ->behaviour(
               [this]()
               {
@@ -49,7 +49,7 @@ namespace Sindri
               });
           break;
         case VarKind::Vec3:
-          addOUT<std::function<glm::vec3(glm::vec2)>>("Value (Vec3)", nullptr)
+          addOUT<std::function<glm::vec3(glm::vec3)>>("Value (Vec3)", nullptr)
             ->behaviour(
               [this]()
               {
@@ -58,7 +58,7 @@ namespace Sindri
               });
           break;
         case VarKind::Vec4:
-          addOUT<std::function<glm::vec4(glm::vec2)>>("Value (Vec4)", nullptr)
+          addOUT<std::function<glm::vec4(glm::vec3)>>("Value (Vec4)", nullptr)
             ->behaviour(
               [this]()
               {

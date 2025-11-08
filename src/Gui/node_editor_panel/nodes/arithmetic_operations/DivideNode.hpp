@@ -18,26 +18,26 @@ namespace Sindri
       getStyle()->header_bg = IM_COL32(208, 135, 112, 255);
 
       // add two inputs and one output all typed as the Variant "Scalar"
-      addIN<std::function<float(glm::vec2)>>(
+      addIN<std::function<float(glm::vec3)>>(
         "A",
-        [](glm::vec2 vector) -> float { return 0.0F; },
+        [](glm::vec3 vector) -> float { return 0.0F; },
         ImFlow::ConnectionFilter::SameType());
-      addIN<std::function<float(glm::vec2)>>(
+      addIN<std::function<float(glm::vec3)>>(
         "B",
-        [](glm::vec2 vector) -> float { return 1.0F; },
+        [](glm::vec3 vector) -> float { return 1.0F; },
         ImFlow::ConnectionFilter::SameType());
 
       // output behaviour: compute the sum and return a Scalar (we return a
       // double for precision)
-      addOUT<std::function<float(glm::vec2)>>("Result")->behaviour(
+      addOUT<std::function<float(glm::vec3)>>("Result")->behaviour(
         [this]()
         {
-          return [this](glm::vec2 vector) -> float
+          return [this](glm::vec3 vector) -> float
           {
             const auto& aValue =
-              getInVal<std::function<float(glm::vec2)>>("A")(vector);
+              getInVal<std::function<float(glm::vec3)>>("A")(vector);
             const auto& bValue =
-              getInVal<std::function<float(glm::vec2)>>("B")(vector);
+              getInVal<std::function<float(glm::vec3)>>("B")(vector);
 
             return aValue /
                    bValue; // stored as the double alternative in the variant
@@ -49,9 +49,9 @@ namespace Sindri
     draw() override
     {
       const auto& aValue =
-        getInVal<std::function<float(glm::vec2)>>("A")({ 0, 0 });
+        getInVal<std::function<float(glm::vec3)>>("A")({ 0, 0, 0 });
       const auto& bValue =
-        getInVal<std::function<float(glm::vec2)>>("B")({ 0, 0 });
+        getInVal<std::function<float(glm::vec3)>>("B")({ 0, 0, 0 });
 
       float res = aValue / bValue;
 

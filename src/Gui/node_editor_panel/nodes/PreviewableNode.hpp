@@ -13,6 +13,6 @@ namespace Sindri
     RenderPreview();
 
     void
-    Update(std::function<float(glm::vec2)> fillFunction);
+    Update(std::function<float(glm::vec3)> fillFunction);
   };
 }

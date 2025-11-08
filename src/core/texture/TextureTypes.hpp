@@ -2,6 +2,7 @@
 
 namespace Sindri
 {
+  using TexCoord = glm::vec3;
   enum class TextureDimension : uint8_t
   {
     Texture1D,

@@ -22,6 +22,9 @@ namespace Sindri
     OpenGLPreviewTexture(std::shared_ptr<ITextureBuffer> textureBuffer);
     ~OpenGLPreviewTexture() override;
 
+    auto
+    GetTextureBuffer() -> std::shared_ptr<ITextureBuffer> override;
+
     void
     Upload() override;
 
