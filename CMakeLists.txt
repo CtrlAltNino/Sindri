@@ -70,7 +70,7 @@ target_compile_definitions(${targetName} PRIVATE
     $<$<CONFIG:Debug>:SINDRI_DEBUG_BUILD>
 )
 
-target_include_directories(${targetName} PRIVATE src)
+target_include_directories(${targetName} PRIVATE src /include/metal-cpp)
 target_precompile_headers(${targetName} PRIVATE src/pch.hpp)
 
 # =========================================

@@ -1,0 +1,7 @@
+add_subdirectory(gpu_preview_texture)
+add_subdirectory(texture_buffer)
+add_subdirectory(texture_pipeline)
+add_subdirectory(texture_pipeline_executor)
+add_subdirectory(texture_preview)
+
+target_include_directories(${targetName} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

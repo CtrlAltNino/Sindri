@@ -7,7 +7,8 @@
       "name": "glad",
       "features": [
         "extensions"
-      ]
+      ],
+      "platform": "!(osx)"
     },
     "glm",
     "sdl3",
@@ -18,7 +19,17 @@
       "features": [
         "sdl3-binding",
         "opengl3-binding"
-      ]
+      ],
+      "platform": "!(osx)"
+    },
+    {
+      "name": "imgui",
+      "default-features": false,
+      "features": [
+        "sdl3-binding",
+        "metal-binding"
+      ],
+      "platform": "(osx)"
     },
     "stb",
     "nativefiledialog-extended",
