@@ -21,6 +21,8 @@ IF(WIN32)
     set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/app_icon_windows.rc")
     set(EXECUTABLE_ADDITIONAL_SETTINGS ${APP_ICON_RESOURCE_WINDOWS})
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+ELSEIF(APPLE)
+    set(VCPKG_TARGET_TRIPLET "x64-osx")
 ELSEIF(UNIX)
     set(VCPKG_TARGET_TRIPLET "x64-linux")
 ENDIF()
@@ -99,9 +101,11 @@ target_include_directories(${targetName}
     PRIVATE ${IMNODEFLOW_DIR}/include
 )
 
-# this is heuristically generated, and may not be correct
-find_package(glad CONFIG REQUIRED)
-target_link_libraries(${targetName} PRIVATE glad::glad)
+IF(NOT APPLE)
+    # this is heuristically generated, and may not be correct
+    find_package(glad CONFIG REQUIRED)
+    target_link_libraries(${targetName} PRIVATE glad::glad)
+ENDIF()
 
 find_package(glm CONFIG REQUIRED)
 target_link_libraries(${targetName} PRIVATE glm::glm)
@@ -136,6 +140,18 @@ target_link_libraries(${targetName} PRIVATE $<IF:$<TARGET_EXISTS:spng::spng>,spn
 
 find_path(BEXT_DI_INCLUDE_DIRS "boost/di.hpp")
 target_include_directories(${targetName} PRIVATE ${BEXT_DI_INCLUDE_DIRS})
+
+if(APPLE)
+    find_library(COCOA_LIBRARY Cocoa)
+    find_library(METAL_LIBRARY Metal)
+    find_library(QUARTZCORE_LIBRARY QuartzCore)
+
+    target_link_libraries(${targetName} PRIVATE
+        ${COCOA_LIBRARY}
+        ${METAL_LIBRARY}
+        ${QUARTZCORE_LIBRARY}
+    )
+endif()
 
 # ===============================================
 # ========== Copy into build directory ==========

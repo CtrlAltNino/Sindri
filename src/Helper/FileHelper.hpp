@@ -28,6 +28,9 @@ namespace Sindri
                   nullptr,
                   nullptr,
                   SW_SHOWNORMAL);
+#elif __APPLE__
+    std::string command = "open \"" + absolutePath.string() + "\" &";
+    std::system(command.c_str());
 #elif __linux__
     std::string command = "xdg-open \"" + absolutePath.string() + "\" &";
     std::system(command.c_str());

@@ -1,7 +1,7 @@
 {
   "name": "sindri",
   "version-string": "0.1.0",
-  "supports": "(windows & x64 & static) | (linux & x64)",
+  "supports": "(windows & x64 & static) | (linux & x64)  | (osx & x64) ",
   "dependencies": [
     {
       "name": "glad",
