@@ -11,13 +11,9 @@
 namespace Sindri
 {
   Sindri::Sindri(std::shared_ptr<ISindriGui>         gui,
-                 std::shared_ptr<IWindow>            window,
-                 std::shared_ptr<ITexturePreview>    preview,
-                 std::shared_ptr<IGpuPreviewTexture> gpuPreviewTexture)
+                 std::shared_ptr<IWindow>            window)
     : mGui(std::move(gui))
     , mWindow(std::move(window))
-    , mPreview(std::move(preview))
-    , mGpuPreviewTexture(std::move(gpuPreviewTexture))
   {
   }
 
@@ -25,8 +21,6 @@ namespace Sindri
   Sindri::Run()
   {
     mWindow->ShowWindow();
-
-    mPreview->Init();
 
     MainLoop();
   }
@@ -44,11 +38,6 @@ namespace Sindri
       lastTime = now;
 
       mGui->Render(deltaTime);
-
-      if (mGpuPreviewTexture->GetWaitingForUpload())
-      {
-        mGpuPreviewTexture->Upload();
-      }
 
       // SDL_Delay(1); // prevent CPU spinlock
     }

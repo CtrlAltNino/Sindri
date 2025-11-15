@@ -5,14 +5,14 @@
 
 namespace Sindri
 {
-  class OpenGLImGuiLayer : public IImGuiLayer
+  class MetalImGuiLayer : public IImGuiLayer
   {
   private:
     SDL_Window* mWindow = nullptr;
 
   public:
-    OpenGLImGuiLayer() = default;
-    ~OpenGLImGuiLayer() override;
+    MetalImGuiLayer() = default;
+    ~MetalImGuiLayer() override;
 
     /**
      * @brief Initializes the ImGui context for a given SDL window

@@ -21,14 +21,6 @@ namespace Sindri
 
     std::shared_ptr<IWindow> mWindow = nullptr;
 
-    std::shared_ptr<ITextureExporter> mExporter = nullptr;
-
-    std::shared_ptr<ITexturePreview> mPreview = nullptr;
-
-    std::shared_ptr<ITexturePipelineExecutor> mPipelineExecutor;
-
-    std::shared_ptr<IGpuPreviewTexture> mGpuPreviewTexture;
-
     /**
      * @brief Function containing the main application loop.
      *
@@ -38,9 +30,7 @@ namespace Sindri
 
   public:
     Sindri(std::shared_ptr<ISindriGui>         gui,
-           std::shared_ptr<IWindow>            window,
-           std::shared_ptr<ITexturePreview>    preview,
-           std::shared_ptr<IGpuPreviewTexture> gpuPreviewTexture);
+           std::shared_ptr<IWindow>            window);
     ~Sindri() = default;
 
     Sindri(const Sindri&) = delete;

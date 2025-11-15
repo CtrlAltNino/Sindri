@@ -19,12 +19,6 @@ namespace Sindri
   {
   private:
     std::shared_ptr<IWindow>                  mWindow;
-    std::shared_ptr<ITexturePipeline>         mTexturePipeline;
-    std::shared_ptr<ITextureExporter>         mExporter;
-    std::shared_ptr<ITextureBuffer>           mTextureBuffer;
-    std::shared_ptr<ITexturePipelineExecutor> mExecutor;
-    std::shared_ptr<ITexturePreview>          mPreview;
-    std::shared_ptr<IGpuPreviewTexture>       mGpuPreviewTexture;
     std::shared_ptr<INodeEditorPanel>         mNodeEditor;
     std::shared_ptr<IVariablesPanel>          mVariablesGui;
     std::shared_ptr<IWorkflowSettingsPanel>   mWorkflowSettingsPanel;
@@ -48,12 +42,6 @@ namespace Sindri
   public:
     SindriGui(std::shared_ptr<IWindow>                  window,
               std::shared_ptr<IWorkflowSettingsPanel>   workflowSettingsPanel,
-              std::shared_ptr<ITexturePipeline>         texturePipeline,
-              std::shared_ptr<ITextureExporter>         exporter,
-              std::shared_ptr<ITextureBuffer>           textureBuffer,
-              std::shared_ptr<ITexturePreview>          preview,
-              std::shared_ptr<IGpuPreviewTexture>       gpuPreviewTexture,
-              std::shared_ptr<ITexturePipelineExecutor> texturePipelineExecutor,
               std::shared_ptr<INodeEditorPanel>         nodeEditor,
               std::shared_ptr<IVariablesPanel>          variablesGui);
     ~SindriGui() override = default;

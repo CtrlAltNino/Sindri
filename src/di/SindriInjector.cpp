@@ -54,17 +54,7 @@ namespace Sindri
         boost::di::extension::shared),
       boost::di::bind<IWorkflowSettingsPanel>.to<WorkflowSettingsPanel>().in(
         boost::di::extension::shared),
-      boost::di::bind<ITexturePreview>.to<TexturePreview>().in(
-        boost::di::extension::shared),
-      boost::di::bind<ITextureExporter>.to<TextureExporter>().in(
-        boost::di::extension::shared),
-      boost::di::bind<ITexturePipeline>.to<TexturePipeline>().in(
-        boost::di::extension::shared),
-      boost::di::bind<ITexturePipelineExecutor>.to<TexturePipelineExecutor>().in(
-        boost::di::extension::shared),
       boost::di::bind<IWindow>.to<SDL3Window>().in(
-        boost::di::extension::shared),
-      boost::di::bind<IGpuPreviewTexture>.to<OpenGLPreviewTexture>().in(
         boost::di::extension::shared),
       boost::di::bind<IGraphicsContextFactory>.to<GraphicsContextFactory>().in(
         boost::di::extension::shared),

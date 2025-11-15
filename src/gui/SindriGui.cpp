@@ -8,22 +8,10 @@ namespace Sindri
   SindriGui::SindriGui(
     std::shared_ptr<IWindow>                  window,
     std::shared_ptr<IWorkflowSettingsPanel>   workflowSettingsPanel,
-    std::shared_ptr<ITexturePipeline>         texturePipeline,
-    std::shared_ptr<ITextureExporter>         exporter,
-    std::shared_ptr<ITextureBuffer>           textureBuffer,
-    std::shared_ptr<ITexturePreview>          preview,
-    std::shared_ptr<IGpuPreviewTexture>       gpuPreviewTexture,
-    std::shared_ptr<ITexturePipelineExecutor> texturePipelineExecutor,
     std::shared_ptr<INodeEditorPanel>         nodeEditor,
     std::shared_ptr<IVariablesPanel>          variablesGui)
     : mWindow(std::move(window))
     , mWorkflowSettingsPanel(std::move(workflowSettingsPanel))
-    , mTexturePipeline(std::move(texturePipeline))
-    , mExporter(std::move(exporter))
-    , mTextureBuffer(std::move(textureBuffer))
-    , mPreview(std::move(preview))
-    , mGpuPreviewTexture(std::move(gpuPreviewTexture))
-    , mExecutor(std::move(texturePipelineExecutor))
     , mNodeEditor(std::move(nodeEditor))
     , mVariablesGui(std::move(variablesGui))
   {
