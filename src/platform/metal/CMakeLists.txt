@@ -3,7 +3,7 @@ IF(APPLE)
     PRIVATE
     MetalContext.cpp
     MetalImGuiLayer.cpp
-    MetalPreviewTexture.cpp
+    MetalTexture.cpp
   )
 ENDIF()
 
