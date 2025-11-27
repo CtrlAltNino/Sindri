@@ -28,14 +28,6 @@ namespace Sindri
     windowFlags |= SDL_WINDOW_MOUSE_CAPTURE;
     windowFlags |= SDL_WINDOW_RESIZABLE;
 
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-                        SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-    windowFlags |= SDL_WINDOW_OPENGL;
-
     mWindow = SDL_CreateWindow(
       mData.Title.c_str(), mData.Width, mData.Height, windowFlags);
 
@@ -62,15 +54,7 @@ namespace Sindri
     }
 
     mContext->Init();
-
-    if (mData.VSync)
-    {
-      SDL_GL_SetSwapInterval(1);
-    }
-    else
-    {
-      SDL_GL_SetSwapInterval(0);
-    }
+    mContext->SetVsync(mData.VSync);
 
     std::string deviceInfo;
     mImGuiLayer = std::move(mImguiLayerFactory->Create());
@@ -132,14 +116,7 @@ namespace Sindri
   void
   SDL3Window::SetVSync(bool enabled)
   {
-    if (enabled)
-    {
-      SDL_GL_SetSwapInterval(1);
-    }
-    else
-    {
-      SDL_GL_SetSwapInterval(0);
-    }
+    mContext->SetVsync(enabled);
 
     mData.VSync = enabled;
   }

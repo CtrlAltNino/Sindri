@@ -26,5 +26,8 @@ namespace Sindri
     /// @copydoc IGraphicsContext::SwapBuffers
     void
     SwapBuffers() override;
+
+    void
+    SetVsync(bool vsync) override;
   };
 }

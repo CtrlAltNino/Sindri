@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IGraphicsContext.hpp"
 #include "IGraphicsContextFactory.hpp"
 #include "IImGuiLayerFactory.hpp"
 #include "IWindow.hpp"

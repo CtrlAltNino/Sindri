@@ -24,5 +24,8 @@ namespace Sindri
      */
     virtual void
     SwapBuffers() = 0;
+
+    virtual void
+    SetVsync(bool vsync) = 0;
   };
 }
