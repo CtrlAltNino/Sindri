@@ -1,5 +1,7 @@
 #include "pch.hpp"
 
+#define IMGUI_IMPL_METAL_CPP
+
 #include "MetalImGuiLayer.hpp"
 #include <MetalContext.hpp>
 #include <SDL3/SDL.h>
@@ -26,8 +28,9 @@ namespace Sindri
                             std::shared_ptr<IGraphicsContext> graphicsContext)
   {
     mWindow = window;
+    mGraphicsContext = graphicsContext;
     auto metalContext =
-      std::dynamic_pointer_cast<MetalContext>(graphicsContext);
+      std::dynamic_pointer_cast<MetalContext>(mGraphicsContext);
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -59,13 +62,13 @@ namespace Sindri
     ImGui::StyleColorsDark();
 
     ImGui_ImplSDL3_InitForMetal(mWindow);
-    ImGui_ImplMetal_Init("#version 410");
+    ImGui_ImplMetal_Init(metalContext->GetDevice());
   }
 
   void
   MetalImGuiLayer::OnDetach()
   {
-    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplMetal_Shutdown();
     ImGui_ImplSDL3_Shutdown();
     ImGui::DestroyContext();
   }
@@ -73,7 +76,7 @@ namespace Sindri
   void
   MetalImGuiLayer::Begin()
   {
-    ImGui_ImplMetal_NewFrame();
+    // ImGui_ImplMetal_NewFrame();
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
   }
@@ -81,14 +84,44 @@ namespace Sindri
   void
   MetalImGuiLayer::End()
   {
-    const ImGuiIO* io = &ImGui::GetIO();
+    auto metalContext =
+      std::dynamic_pointer_cast<MetalContext>(mGraphicsContext);
+
     ImGui::Render();
-    ImGui_ImplMetal_RenderDrawData(ImGui::GetDrawData());
-    /*if ((io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0)
+    ImDrawData* drawData = ImGui::GetDrawData();
+
+    // Acquire drawable
+    CA::MetalDrawable* drawable = metalContext->GetMetalLayer()->nextDrawable();
+    if (drawable == nullptr)
     {
-      ImGui::UpdatePlatformWindows();
-      ImGui::RenderPlatformWindowsDefault();
-    }*/
+      return;
+    }
+
+    // Begin Metal commands
+    MTL::CommandBuffer* cmd = metalContext->BeginFrame();
+
+    // Create RenderPassDescriptor for ImGui
+    MTL::RenderPassDescriptor* rpDesc =
+      metalContext->CreateImGuiRenderPass(drawable);
+
+    // Tell ImGui about it
+    ImGui_ImplMetal_NewFrame(rpDesc);
+
+    // Create encoder
+    MTL::RenderCommandEncoder* encoder = cmd->renderCommandEncoder(rpDesc);
+
+    // ImGui draws here
+    ImGui_ImplMetal_RenderDrawData(drawData, cmd, encoder);
+
+    encoder->endEncoding();
+    encoder->release();
+    rpDesc->release();
+
+    // Present framebuffer
+    cmd->presentDrawable(drawable);
+
+    // Submit GPU work
+    metalContext->EndFrame(cmd);
   }
 
   void

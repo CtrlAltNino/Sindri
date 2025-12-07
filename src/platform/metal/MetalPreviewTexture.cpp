@@ -1,35 +1,34 @@
 #include "pch.hpp"
 
-#include "OpenGLPreviewTexture.hpp"
+#include "MetalPreviewTexture.hpp"
 #include "WorkflowSettings.hpp"
-#include <glad/glad.h>
 
 namespace Sindri
 {
-  OpenGLPreviewTexture::OpenGLPreviewTexture(
+  MetalPreviewTexture::MetalPreviewTexture(
     std::shared_ptr<ITextureBuffer> textureBuffer)
     : mTextureBuffer(std::move(textureBuffer))
   {
   }
 
-  OpenGLPreviewTexture::~OpenGLPreviewTexture()
+  MetalPreviewTexture::~MetalPreviewTexture()
   {
-    if (glIsTexture(mTextureId))
+    /*if (glIsTexture(mTextureId))
     {
       glDeleteTextures(1, &mTextureId);
-    }
+    }*/
   }
 
   auto
-  OpenGLPreviewTexture::GetTextureBuffer() -> std::shared_ptr<ITextureBuffer>
+  MetalPreviewTexture::GetTextureBuffer() -> std::shared_ptr<ITextureBuffer>
   {
     return mTextureBuffer;
   }
 
   void
-  OpenGLPreviewTexture::Upload()
+  MetalPreviewTexture::Upload()
   {
-    if (glIsTexture(mTextureId))
+    /*if (glIsTexture(mTextureId))
     {
       glDeleteTextures(1, &mTextureId);
     }
@@ -140,29 +139,29 @@ namespace Sindri
     }
 
     mIsUploaded = true;
-    SetWaitingForUpload(false);
+    SetWaitingForUpload(false);*/
   }
 
   auto
-  OpenGLPreviewTexture::GetTextureId() const -> uintptr_t
+  MetalPreviewTexture::GetTextureId() const -> uintptr_t
   {
-    return mTextureId;
+    return 0;
   }
 
   auto
-  OpenGLPreviewTexture::GetIsUploaded() const -> bool
+  MetalPreviewTexture::GetIsUploaded() const -> bool
   {
     return mIsUploaded;
   }
 
   auto
-  OpenGLPreviewTexture::GetInterpolatePreview() const -> bool
+  MetalPreviewTexture::GetInterpolatePreview() const -> bool
   {
     return mInterpolate;
   }
 
   void
-  OpenGLPreviewTexture::SetInterpolatePreview(bool interpolate)
+  MetalPreviewTexture::SetInterpolatePreview(bool interpolate)
   {
     mInterpolate = interpolate;
 
@@ -173,10 +172,10 @@ namespace Sindri
   }
 
   void
-  OpenGLPreviewTexture::UpdateTextureFiltering() const
+  MetalPreviewTexture::UpdateTextureFiltering() const
   {
 
-    if (mInterpolate)
+    /*if (mInterpolate)
     {
       glTextureParameteri(mTextureId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       glTextureParameteri(mTextureId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -185,17 +184,17 @@ namespace Sindri
     {
       glTextureParameteri(mTextureId, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
       glTextureParameteri(mTextureId, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    }
+    }*/
   }
 
   auto
-  OpenGLPreviewTexture::GetWaitingForUpload() const -> bool
+  MetalPreviewTexture::GetWaitingForUpload() const -> bool
   {
     return mWaitingForUpload.load();
   }
 
   void
-  OpenGLPreviewTexture::SetWaitingForUpload(bool waitingForUpload)
+  MetalPreviewTexture::SetWaitingForUpload(bool waitingForUpload)
   {
     mWaitingForUpload.store(waitingForUpload);
   }

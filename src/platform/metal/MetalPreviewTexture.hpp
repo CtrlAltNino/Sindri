@@ -2,16 +2,15 @@
 
 #include "IGpuPreviewTexture.hpp"
 #include "ITextureBuffer.hpp"
-#include <glad/glad.h>
 
 namespace Sindri
 {
-  class OpenGLPreviewTexture : public IGpuPreviewTexture
+  class MetalPreviewTexture : public IGpuPreviewTexture
   {
   private:
-    std::atomic<bool>               mWaitingForUpload = false;
-    bool                            mIsUploaded = false;
-    GLuint                          mTextureId = 0;
+    std::atomic<bool> mWaitingForUpload = false;
+    bool              mIsUploaded = false;
+    // GLuint                          mTextureId = 0;
     bool                            mInterpolate = true;
     std::shared_ptr<ITextureBuffer> mTextureBuffer;
 
@@ -19,8 +18,8 @@ namespace Sindri
     UpdateTextureFiltering() const;
 
   public:
-    OpenGLPreviewTexture(std::shared_ptr<ITextureBuffer> textureBuffer);
-    ~OpenGLPreviewTexture() override;
+    MetalPreviewTexture(std::shared_ptr<ITextureBuffer> textureBuffer);
+    ~MetalPreviewTexture() override;
 
     auto
     GetTextureBuffer() -> std::shared_ptr<ITextureBuffer> override;

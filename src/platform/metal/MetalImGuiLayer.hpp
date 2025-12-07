@@ -1,14 +1,17 @@
 #pragma once
 
+#include "IGraphicsContext.hpp"
 #include "IImGuiLayer.hpp"
 #include <SDL3/SDL_video.h>
+#include <memory>
 
 namespace Sindri
 {
   class MetalImGuiLayer : public IImGuiLayer
   {
   private:
-    SDL_Window* mWindow = nullptr;
+    SDL_Window*                       mWindow = nullptr;
+    std::shared_ptr<IGraphicsContext> mGraphicsContext;
 
   public:
     MetalImGuiLayer() = default;

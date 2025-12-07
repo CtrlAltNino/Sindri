@@ -1,8 +1,7 @@
 #include "pch.hpp"
 
 #include "MetalContext.hpp"
-#include <Metal/Metal.hpp>
-#include <QuartzCore/CAMetalLayer.hpp>
+#include <iostream>
 
 namespace Sindri
 {
@@ -13,64 +12,150 @@ namespace Sindri
 
   MetalContext::~MetalContext()
   {
-    if (mCommandQueue) mCommandQueue->release();
+    if (mCommandQueue != nullptr)
+    {
+      mCommandQueue->release();
+    }
 
-    if (mDevice) mDevice->release();
+    if (mDevice != nullptr)
+    {
+      mDevice->release();
+    }
 
-    if (mMetalView) SDL_Metal_DestroyView(mMetalView);
+    if (mMetalView != nullptr)
+    {
+      SDL_Metal_DestroyView(mMetalView);
+    }
   }
 
   void
   MetalContext::Init()
   {
-    // Create Metal view
+    //
+    // 1) Create the SDL Metal View (NSView wrapper)
+    //
     mMetalView = SDL_Metal_CreateView(mWindowHandle);
-    mMetalLayer = SDL_Metal_GetLayer(mMetalView);
-
-    if (!mMetalLayer)
+    if (mMetalView == nullptr)
     {
-      std::cerr << "Failed to get Metal layer from SDL window." << std::endl;
+      std::cerr << "[MetalContext] Failed to create SDL_MetalView\n";
       return;
     }
 
-    // Create Metal device
+    //
+    // 2) Get the CAMetalLayer from SDL
+    //
+    mMetalLayer =
+      reinterpret_cast<CA::MetalLayer*>(SDL_Metal_GetLayer(mMetalView));
+    if (mMetalLayer == nullptr)
+    {
+      std::cerr << "[MetalContext] Failed to get CAMetalLayer from SDL\n";
+      return;
+    }
+
+    //
+    // 3) Create Metal device
+    //
     mDevice = MTL::CreateSystemDefaultDevice();
-    if (!mDevice)
+    if (mDevice == nullptr)
     {
-      std::cerr << "Failed to create Metal device." << std::endl;
+      std::cerr << "[MetalContext] Failed to create MTL::Device\n";
       return;
     }
 
-    // Configure the CAMetalLayer
-    CAMetalLayer* layer = static_cast<CAMetalLayer*>(mMetalLayer);
-    layer.device = (__bridge id<MTLDevice>)mDevice->retained_id();
-    layer.pixelFormat = MTLPixelFormatBGRA8Unorm;
-    layer.framebufferOnly = YES;
+    //
+    // 4) Configure CAMetalLayer (metal-cpp style)
+    //
+    mMetalLayer->setDevice(mDevice);
+    mMetalLayer->setPixelFormat(MTL::PixelFormatBGRA8Unorm);
+    mMetalLayer->setFramebufferOnly(true);
 
-    // Create a command queue
+    //
+    // 5) Create command queue
+    //
     mCommandQueue = mDevice->newCommandQueue();
-
-    if (!mCommandQueue)
+    if (mCommandQueue == nullptr)
     {
-      std::cerr << "Failed to create Metal command queue." << std::endl;
+      std::cerr << "[MetalContext] Failed to create MTL::CommandQueue\n";
       return;
     }
+
+    std::cout << "[MetalContext] Metal initialized successfully.\n";
   }
 
   void
   MetalContext::SwapBuffers()
   {
-    // Get next drawable
-    CAMetalLayer*       layer = static_cast<CAMetalLayer*>(mMetalLayer);
-    id<CAMetalDrawable> drawable = [layer nextDrawable];
-    if (!drawable) return;
+    if ((mMetalLayer == nullptr) || (mCommandQueue == nullptr))
+    {
+      return;
+    }
 
-    // Create command buffer
+    //
+    // 1) Acquire next drawable
+    //
+    CA::MetalDrawable* drawable = mMetalLayer->nextDrawable();
+    if (drawable == nullptr)
+    {
+      return;
+    }
+
+    //
+    // 2) Create command buffer
+    //
     MTL::CommandBuffer* cmdBuffer = mCommandQueue->commandBuffer();
+    if (cmdBuffer == nullptr)
+    {
+      return;
+    }
 
-    // Present the drawable
-    [cmdBuffer presentDrawable:drawable];
+    //
+    // 3) Present drawable
+    //
+    cmdBuffer->presentDrawable(drawable);
+
+    //
+    // 4) Commit buffer
+    //
+    cmdBuffer->commit();
+
+    // Optional (only if you want strict CPU sync)
+    // cmdBuffer->waitUntilCompleted();
+
+    cmdBuffer->release();
+  }
+
+  MTL::CommandBuffer*
+  MetalContext::BeginFrame()
+  {
+    return mCommandQueue->commandBuffer();
+  }
+
+  auto
+  MetalContext::CreateImGuiRenderPass(CA::MetalDrawable* drawable)
+    -> MTL::RenderPassDescriptor*
+  {
+    MTL::RenderPassDescriptor* rpDesc =
+      MTL::RenderPassDescriptor::alloc()->init();
+
+    auto colorAttachment = rpDesc->colorAttachments()->object(0);
+    colorAttachment->setTexture(drawable->texture());
+    colorAttachment->setLoadAction(MTL::LoadActionClear);
+    colorAttachment->setClearColor(MTL::ClearColor(0.1, 0.1, 0.1, 1.0));
+    colorAttachment->setStoreAction(MTL::StoreActionStore);
+
+    return rpDesc; // caller will release later
+  }
+
+  void
+  MetalContext::EndFrame(MTL::CommandBuffer* cmdBuffer)
+  {
     cmdBuffer->commit();
     cmdBuffer->release();
   }
+
+  void
+  MetalContext::SetVsync(bool vsync)
+  {
+  }
+
 }

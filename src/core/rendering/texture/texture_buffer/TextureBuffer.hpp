@@ -3,7 +3,6 @@
 #include "ITextureBuffer.hpp"
 #include "TextureTypes.hpp"
 #include "WorkflowSettings.hpp"
-#include <glad/glad.h>
 
 namespace Sindri
 {

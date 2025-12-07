@@ -1,9 +1,10 @@
 IF(APPLE)
   target_sources(${targetName}
     PRIVATE
+    definitions.cpp
     MetalContext.cpp
     MetalImGuiLayer.cpp
-    MetalTexture.cpp
+    MetalPreviewTexture.cpp
   )
 ENDIF()
 

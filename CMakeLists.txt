@@ -70,7 +70,7 @@ target_compile_definitions(${targetName} PRIVATE
     $<$<CONFIG:Debug>:SINDRI_DEBUG_BUILD>
 )
 
-target_include_directories(${targetName} PRIVATE src /include/metal-cpp)
+target_include_directories(${targetName} PRIVATE src include include/metal-cpp)
 target_precompile_headers(${targetName} PRIVATE src/pch.hpp)
 
 # =========================================
@@ -114,6 +114,7 @@ find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3)
 target_link_libraries(${targetName} PRIVATE SDL3::SDL3)
 
 find_package(imgui CONFIG REQUIRED)
+
 target_link_libraries(${targetName} PRIVATE imgui::imgui)
 target_compile_definitions(${targetName}
     PRIVATE IMGUI_DEFINE_MATH_OPERATORS
@@ -151,6 +152,73 @@ if(APPLE)
         ${METAL_LIBRARY}
         ${QUARTZCORE_LIBRARY}
     )
+
+    target_link_libraries(${targetName} PRIVATE
+        "-framework Metal"
+        "-framework QuartzCore"
+        "-framework Foundation"
+        "-framework CoreGraphics"
+        "-framework AppKit"
+    )
+
+    # add_compile_definitions(IMGUI_USER_CONFIG="/gui/imgui/imconfig.h")
+    # target_link_options(${targetName} PUBLIC
+    # "-Wl,-ObjC"
+    # "-Wl,-dead_strip"
+    # )
+
+    # Path where vcpkg installed imgui (headers only)
+    get_target_property(IMGUI_INCLUDE_DIR imgui::imgui INTERFACE_INCLUDE_DIRECTORIES)
+
+    # Create a tiny static library for the Metal backend
+    add_library(imgui_metal_backend STATIC
+        src/platform/metal/imgui_metal.mm
+    )
+
+    target_include_directories(imgui_metal_backend PRIVATE include include/metal-cpp)
+
+    # Compile the backend as Objective-C++
+    set_source_files_properties(
+        src/platform/metal/imgui_metal.mm
+        PROPERTIES
+        COMPILE_FLAGS "-ObjC++"
+        SKIP_PRECOMPILE_HEADERS ON
+    )
+
+    # No PCH for this library
+    # target_precompile_headers(imgui_metal_backend PRIVATE "")
+
+    # Includes
+    target_include_directories(imgui_metal_backend PRIVATE
+        ${IMGUI_INCLUDE_DIR}
+        ${IMGUI_INCLUDE_DIR}/backends
+    )
+
+    # find_package(imgui CONFIG REQUIRED)
+
+    # target_link_libraries(${targetName} PRIVATE imgui::imgui)
+    # target_compile_definitions(${targetName}
+    # PRIVATE IMGUI_DEFINE_MATH_OPERATORS
+    # )
+
+    # Frameworks needed by ImGui Metal backend
+    target_link_libraries(imgui_metal_backend PRIVATE
+        "-framework Metal"
+        "-framework QuartzCore"
+        "-framework Foundation"
+        "-framework AppKit"
+    )
+
+    target_link_libraries(imgui_metal_backend PRIVATE
+        ${COCOA_LIBRARY}
+        ${METAL_LIBRARY}
+        ${QUARTZCORE_LIBRARY}
+    )
+
+    target_compile_definitions(imgui_metal_backend PRIVATE IMGUI_IMPL_METAL_CPP)
+
+    # Link it into your main target
+    target_link_libraries(${targetName} PRIVATE imgui_metal_backend)
 endif()
 
 # ===============================================

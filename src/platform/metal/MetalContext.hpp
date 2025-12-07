@@ -3,13 +3,8 @@
 #include "IGraphicsContext.hpp"
 #include <SDL3/SDL.h>
 #include <TargetConditionals.h>
-
-namespace MTL
-{
-  class Device;
-  class CommandQueue;
-  class Drawable;
-}
+#include <metal-cpp/Metal/Metal.hpp>
+#include <metal-cpp/QuartzCore/CAMetalLayer.hpp>
 
 namespace Sindri
 {
@@ -21,7 +16,7 @@ namespace Sindri
   private:
     SDL_Window*        mWindowHandle;
     SDL_MetalView      mMetalView = nullptr;
-    void*              mMetalLayer = nullptr; // actually a CAMetalLayer*
+    CA::MetalLayer*    mMetalLayer = nullptr; // actually a CAMetalLayer*
     MTL::Device*       mDevice = nullptr;
     MTL::CommandQueue* mCommandQueue = nullptr;
 
@@ -31,19 +26,40 @@ namespace Sindri
 
     void
     Init() override;
+
     void
     SwapBuffers() override;
 
+    void
+    SetVsync(bool vsync) override;
+
+    // Called each frame
+    auto
+    BeginFrame() -> MTL::CommandBuffer*;
+
+    auto
+    CreateImGuiRenderPass(CA::MetalDrawable* drawable)
+      -> MTL::RenderPassDescriptor*;
+    void
+    EndFrame(MTL::CommandBuffer* cmdBuffer);
+
     // Optional getters if your renderer needs access
-    MTL::Device*
-    GetDevice() const
+    [[nodiscard]] auto
+    GetDevice() const -> MTL::Device*
     {
       return mDevice;
     }
-    MTL::CommandQueue*
-    GetCommandQueue() const
+
+    [[nodiscard]] auto
+    GetCommandQueue() const -> MTL::CommandQueue*
     {
       return mCommandQueue;
+    }
+
+    [[nodiscard]] auto
+    GetMetalLayer() const -> CA::MetalLayer*
+    {
+      return mMetalLayer;
     }
   };
 }

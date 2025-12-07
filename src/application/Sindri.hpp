@@ -1,11 +1,7 @@
 #pragma once
 
-#include "IGpuPreviewTexture.hpp"
 #include "ISindriGui.hpp"
-#include "ITextureExporter.hpp"
-#include "ITexturePreview.hpp"
 #include "IWindow.hpp"
-#include "ITexturePipelineExecutor.hpp"
 #include <SDL3/SDL.h>
 
 namespace Sindri
@@ -29,8 +25,7 @@ namespace Sindri
     MainLoop();
 
   public:
-    Sindri(std::shared_ptr<ISindriGui>         gui,
-           std::shared_ptr<IWindow>            window);
+    Sindri(std::shared_ptr<ISindriGui> gui, std::shared_ptr<IWindow> window);
     ~Sindri() = default;
 
     Sindri(const Sindri&) = delete;

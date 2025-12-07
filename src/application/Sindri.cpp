@@ -2,16 +2,12 @@
 
 #include "Sindri.hpp"
 #include <chrono>
-#include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
-#include <imgui.h>
-#include <imgui_impl_opengl3.h>
-#include <imgui_impl_sdl3.h>
 
 namespace Sindri
 {
-  Sindri::Sindri(std::shared_ptr<ISindriGui>         gui,
-                 std::shared_ptr<IWindow>            window)
+  Sindri::Sindri(std::shared_ptr<ISindriGui> gui,
+                 std::shared_ptr<IWindow>    window)
     : mGui(std::move(gui))
     , mWindow(std::move(window))
   {
