@@ -28,6 +28,18 @@ namespace Sindri
     windowFlags |= SDL_WINDOW_MOUSE_CAPTURE;
     windowFlags |= SDL_WINDOW_RESIZABLE;
 
+#if defined(__APPLE__)
+    windowFlags |= SDL_WINDOW_METAL;
+#elif defined(_WIN32) || defined(__linux__)
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
+                        SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+    windowFlags |= SDL_WINDOW_OPENGL;
+#endif
+
     mWindow = SDL_CreateWindow(
       mData.Title.c_str(), mData.Width, mData.Height, windowFlags);
 
