@@ -20,7 +20,8 @@ namespace Sindri
      * @param window
      */
     void
-    OnAttach(SDL_Window* window) override;
+    OnAttach(SDL_Window*                       window,
+             std::shared_ptr<IGraphicsContext> graphicsContext) override;
 
     /**
      * @brief Cleans up the imgui context

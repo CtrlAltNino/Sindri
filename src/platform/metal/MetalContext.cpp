@@ -1,6 +1,6 @@
 #include "pch.hpp"
-#include "MetalContext.hpp"
 
+#include "MetalContext.hpp"
 #include <Metal/Metal.hpp>
 #include <QuartzCore/CAMetalLayer.hpp>
 
@@ -13,17 +13,15 @@ namespace Sindri
 
   MetalContext::~MetalContext()
   {
-    if (mCommandQueue)
-      mCommandQueue->release();
+    if (mCommandQueue) mCommandQueue->release();
 
-    if (mDevice)
-      mDevice->release();
+    if (mDevice) mDevice->release();
 
-    if (mMetalView)
-      SDL_Metal_DestroyView(mMetalView);
+    if (mMetalView) SDL_Metal_DestroyView(mMetalView);
   }
 
-  void MetalContext::Init()
+  void
+  MetalContext::Init()
   {
     // Create Metal view
     mMetalView = SDL_Metal_CreateView(mWindowHandle);
@@ -59,13 +57,13 @@ namespace Sindri
     }
   }
 
-  void MetalContext::SwapBuffers()
+  void
+  MetalContext::SwapBuffers()
   {
     // Get next drawable
-    CAMetalLayer* layer = static_cast<CAMetalLayer*>(mMetalLayer);
+    CAMetalLayer*       layer = static_cast<CAMetalLayer*>(mMetalLayer);
     id<CAMetalDrawable> drawable = [layer nextDrawable];
-    if (!drawable)
-      return;
+    if (!drawable) return;
 
     // Create command buffer
     MTL::CommandBuffer* cmdBuffer = mCommandQueue->commandBuffer();

@@ -88,4 +88,10 @@ namespace Sindri
       SDL_GL_SetSwapInterval(0);
     }
   }
+
+  auto
+  OpenGLContext::GetContextHandle() -> SDL_GLContext
+  {
+    return mContext;
+  }
 }

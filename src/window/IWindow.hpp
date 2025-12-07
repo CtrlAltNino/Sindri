@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IGraphicsContext.hpp"
 #include <SDL3/SDL.h>
 
 namespace Sindri
@@ -110,5 +111,8 @@ namespace Sindri
      */
     virtual void
     SetWindowTitle(std::string_view windowTitle) = 0;
+
+    virtual auto
+    GetGraphicsCotnext() -> std::shared_ptr<IGraphicsContext> = 0;
   };
 }

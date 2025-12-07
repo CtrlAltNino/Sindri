@@ -29,5 +29,8 @@ namespace Sindri
 
     void
     SetVsync(bool vsync) override;
+
+    auto
+    GetContextHandle() -> SDL_GLContext;
   };
 }

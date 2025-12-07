@@ -77,7 +77,7 @@ namespace Sindri
       SDL_Quit();
     }
 
-    mImGuiLayer->OnAttach(mWindow);
+    mImGuiLayer->OnAttach(mWindow, mContext);
   }
 
   SDL3Window::~SDL3Window()
@@ -149,5 +149,11 @@ namespace Sindri
   SDL3Window::SetWindowTitle(std::string_view windowTitle)
   {
     SDL_SetWindowTitle(mWindow, windowTitle.data());
+  }
+
+  auto
+  SDL3Window::GetGraphicsCotnext() -> std::shared_ptr<IGraphicsContext>
+  {
+    return mContext;
   }
 }

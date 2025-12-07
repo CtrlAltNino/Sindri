@@ -25,7 +25,7 @@ namespace Sindri
 
   private:
     SDL_Window*                              mWindow;
-    std::unique_ptr<IGraphicsContext>        mContext;
+    std::shared_ptr<IGraphicsContext>        mContext;
     std::unique_ptr<IImGuiLayer>             mImGuiLayer;
     std::shared_ptr<IGraphicsContextFactory> mContextFactory;
     std::shared_ptr<IImGuiLayerFactory>      mImguiLayerFactory;
@@ -122,5 +122,8 @@ namespace Sindri
     {
       return mWindow;
     }
+
+    auto
+    GetGraphicsCotnext() -> std::shared_ptr<IGraphicsContext> override;
   };
 }

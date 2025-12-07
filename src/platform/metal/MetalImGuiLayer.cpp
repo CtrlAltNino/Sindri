@@ -1,11 +1,13 @@
 #include "pch.hpp"
 
 #include "MetalImGuiLayer.hpp"
+#include <MetalContext.hpp>
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_metal.h>
 #include <imgui_impl_metal.h>
 #include <imgui_impl_sdl3.h>
 #include <imgui_internal.h>
+#include <memory>
 
 namespace Sindri
 {
@@ -13,16 +15,19 @@ namespace Sindri
   {
     if ((mWindow != nullptr) && (ImGui::GetCurrentContext() != nullptr))
     {
-      ImGui_ImplOpenGL3_Shutdown();
+      ImGui_ImplMetal_Shutdown();
       ImGui_ImplSDL3_Shutdown();
       ImGui::DestroyContext();
     }
   }
 
   void
-  OpenGLImGuiLayer::OnAttach(SDL_Window* window)
+  MetalImGuiLayer::OnAttach(SDL_Window*                       window,
+                            std::shared_ptr<IGraphicsContext> graphicsContext)
   {
     mWindow = window;
+    auto metalContext =
+      std::dynamic_pointer_cast<MetalContext>(graphicsContext);
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -53,12 +58,12 @@ namespace Sindri
 
     ImGui::StyleColorsDark();
 
-    ImGui_ImplSDL3_InitForOpenGL(mWindow, SDL_GL_CreateContext(mWindow));
-    ImGui_ImplOpenGL3_Init("#version 410");
+    ImGui_ImplSDL3_InitForMetal(mWindow);
+    ImGui_ImplMetal_Init("#version 410");
   }
 
   void
-  OpenGLImGuiLayer::OnDetach()
+  MetalImGuiLayer::OnDetach()
   {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL3_Shutdown();
@@ -66,19 +71,19 @@ namespace Sindri
   }
 
   void
-  OpenGLImGuiLayer::Begin()
+  MetalImGuiLayer::Begin()
   {
-    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplMetal_NewFrame();
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
   }
 
   void
-  OpenGLImGuiLayer::End()
+  MetalImGuiLayer::End()
   {
     const ImGuiIO* io = &ImGui::GetIO();
     ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    ImGui_ImplMetal_RenderDrawData(ImGui::GetDrawData());
     /*if ((io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0)
     {
       ImGui::UpdatePlatformWindows();
@@ -87,7 +92,7 @@ namespace Sindri
   }
 
   void
-  OpenGLImGuiLayer::HandleSDLEvent(SDL_Event* event)
+  MetalImGuiLayer::HandleSDLEvent(SDL_Event* event)
   {
     ImGui_ImplSDL3_ProcessEvent(event);
   }

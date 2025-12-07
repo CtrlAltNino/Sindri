@@ -1,3 +1,4 @@
+#include "OpenGLContext.hpp"
 #include "pch.hpp"
 
 #include "OpenGLImGuiLayer.hpp"
@@ -6,6 +7,7 @@
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_sdl3.h>
 #include <imgui_internal.h>
+#include <memory>
 
 namespace Sindri
 {
@@ -20,7 +22,8 @@ namespace Sindri
   }
 
   void
-  OpenGLImGuiLayer::OnAttach(SDL_Window* window)
+  OpenGLImGuiLayer::OnAttach(SDL_Window*                       window,
+                             std::shared_ptr<IGraphicsContext> graphicsContext)
   {
     mWindow = window;
     IMGUI_CHECKVERSION();
@@ -53,7 +56,10 @@ namespace Sindri
 
     ImGui::StyleColorsDark();
 
-    ImGui_ImplSDL3_InitForOpenGL(mWindow, SDL_GL_CreateContext(mWindow));
+    ImGui_ImplSDL3_InitForOpenGL(
+      mWindow,
+      std::dynamic_pointer_cast<OpenGLContext>(graphicsContext)
+        ->GetContextHandle());
     ImGui_ImplOpenGL3_Init("#version 410");
   }
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IWindow.hpp"
 #include <SDL3/SDL.h>
 
 namespace Sindri
@@ -19,7 +20,8 @@ namespace Sindri
      * @param window
      */
     virtual void
-    OnAttach(SDL_Window* window) = 0;
+    OnAttach(SDL_Window*                       window,
+             std::shared_ptr<IGraphicsContext> graphicsContext) = 0;
 
     /**
      * @brief Cleans up the imgui context
